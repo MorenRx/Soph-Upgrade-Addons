@@ -32,8 +32,11 @@ import top.morenrx.sbua.SophUpgradeAddons;
 import top.morenrx.sbua.network.S2CEnderChestSyncMessage;
 import top.morenrx.sbua.upgrades.base.ISBUAItemConfig;
 
+import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 @Mod.EventBusSubscriber(modid = SophUpgradeAddons.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class EnderChestUpgrade extends UpgradeItemBase<EnderChestUpgrade.Wrapper> implements ISBUAItemConfig {
@@ -89,9 +92,37 @@ public class EnderChestUpgrade extends UpgradeItemBase<EnderChestUpgrade.Wrapper
         eventBus.addListener(EnderChestUpgrade::onPlayerJoin);
         eventBus.addListener(EnderChestUpgrade::onContainerClose);
         eventBus.addListener(EnderChestUpgrade::onPlayerClone);
-        PlayerInventoryProvider.get().addPlayerInventoryHandler("ender_chest", (player) -> PlayerInventoryHandler.SINGLE_IDENTIFIER, (player, identifier) -> player.getEnderChestInventory().getContainerSize(),
-                EnderChestUpgrade::enderChestSlotStackGetter, false, false, false, false);
+        initEnderChestCompat();
+
     }
+
+    private static void initEnderChestCompat() {
+//        ArtifactVersion currentVersion = new DefaultArtifactVersion(FMLLoader.getLoadingModList().getModFileById(SophisticatedBackpacks.MOD_ID).versionString());
+//        ArtifactVersion targetVersion = new DefaultArtifactVersion("3.24.14");
+//        if (currentVersion.compareTo(targetVersion) >= 0) {
+//            PlayerInventoryProvider.get().addPlayerInventoryHandler("ender_chest", (player) -> PlayerInventoryHandler.SINGLE_IDENTIFIER, (player, identifier) -> player.getEnderChestInventory().getContainerSize(),
+//                    EnderChestUpgrade::enderChestSlotStackGetter, false, false, false, false);
+//            return;
+//        }
+
+        try {
+            Method method = PlayerInventoryProvider.class.getMethod("addPlayerInventoryHandler", String.class, Function.class,
+                    PlayerInventoryHandler.SlotCountGetter.class,
+                    PlayerInventoryHandler.SlotStackGetter.class,
+                    boolean.class, boolean.class, boolean.class, boolean.class
+            );
+
+            method.invoke(PlayerInventoryProvider.get(), "ender_chest",
+                    (Function<Object, Set<String>>) ignored -> PlayerInventoryHandler.SINGLE_IDENTIFIER,
+                    (PlayerInventoryHandler.SlotCountGetter) (player, identifier) -> player.getEnderChestInventory().getContainerSize(),
+                    (PlayerInventoryHandler.SlotStackGetter) EnderChestUpgrade::enderChestSlotStackGetter,
+                    false, false, false, false
+            );
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     private static ItemStack enderChestSlotStackGetter(Player player, String identifier, int slot) {
         ItemStack stack = player.getEnderChestInventory().getItem(slot);

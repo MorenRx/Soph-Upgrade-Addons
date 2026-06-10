@@ -124,7 +124,7 @@ public class RSPickupUpgrade extends UpgradeItemBase<RSPickupUpgradeWrapper> imp
 
         BlockPos blockPos = BlockPos.of(pos);
         String[] split = dim.split(":");
-        String dimKey = "dimension." + split[0] + split[1];
+        String dimKey = "dimension." + split[0] + "." + split[1];
         tooltip.add(Component.translatable("item.soph_upgrade_addons.rs_pickup_upgrade.tooltip.linked")
                 .append(I18n.exists(dimKey) ? Component.translatable(dimKey) : Component.literal(split[1]))
                 .append(String.format(" %d, %d, %d", blockPos.getX(), blockPos.getY(), blockPos.getZ()))
