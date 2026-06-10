@@ -1,7 +1,56 @@
 {
-  "soph_upgrade_addons.sbua_tab": "精妙背包: 更多升级",
+  "tab.soph_upgrade_addons.main": "精妙背包: 升级扩展",
+
+  "item.soph_upgrade_addons.tooltip.disable": "已禁用",
 
   "item.soph_upgrade_addons.rs_magnet_upgrade": "RS网络磁铁升级",
+  "item.soph_upgrade_addons.rs_magnet_upgrade.tooltip": "右键RS控制器链接RS网络, 右键其他位置解除链接",
+  "item.soph_upgrade_addons.rs_magnet_upgrade.tooltip.unlinked": "未链接",
+  "item.soph_upgrade_addons.rs_magnet_upgrade.tooltip.linked": "已链接: ",
+
+  "item.soph_upgrade_addons.rs_pickup_upgrade": "RS网络拾取升级",
+  "item.soph_upgrade_addons.rs_pickup_upgrade.tooltip": "右键RS控制器链接RS网络, 右键其他位置解除链接",
+  "item.soph_upgrade_addons.rs_pickup_upgrade.tooltip.unlinked": "未链接",
+  "item.soph_upgrade_addons.rs_pickup_upgrade.tooltip.linked": "已链接: ",
+
+  "item.soph_upgrade_addons.rs_deposit_upgrade": "RS卸货升级",
+  "item.soph_upgrade_addons.rs_deposit_upgrade.tooltip": "可对RS使用卸货功能",
+
+  "item.soph_upgrade_addons.ender_chest_upgrade": "末影升级",
+  "item.soph_upgrade_addons.ender_chest_upgrade.tooltip": "使背包可以在末影箱内生效",
+
+  "item.soph_upgrade_addons.super_void_upgrade": "超级虚空升级",
+  "item.soph_upgrade_addons.super_void_upgrade.tooltip": "更大的虚空升级",
+
   "item.soph_upgrade_addons.potion_charm_upgrade": "药水护符升级",
-  "item.soph_upgrade_addons.drink_upgrade": "饮水升级"
+  "item.soph_upgrade_addons.potion_charm_upgrade.tooltip": "还没做",
+
+  "item.soph_upgrade_addons.advanced_potion_charm_upgrade": "高级药水护符升级",
+  "item.soph_upgrade_addons.advanced_potion_charm_upgrade.tooltip": "还没做",
+
+  "item.soph_upgrade_addons.drink_upgrade": "饮水升级",
+  "item.soph_upgrade_addons.drink_upgrade.tooltip": "还没做",
+
+  "item.soph_upgrade_addons.advanced_drink_upgrade": "高级饮水升级",
+  "item.soph_upgrade_addons.advanced_drink_upgrade.tooltip": "还没做",
+
+  "message.soph_upgrade_addons.rs.clear": "已断开RS网络链接",
+  "message.soph_upgrade_addons.rs.linker": "成功链接RS网络",
+
+  "gui.sophisticatedbackpacks.upgrades.rs_magnet": "RS网络磁铁",
+  "gui.sophisticatedbackpacks.upgrades.rs_magnet.tooltip": "RS网络磁铁设置",
+
+  "gui.sophisticatedbackpacks.upgrades.rs_pickup": "RS网络拾取",
+  "gui.sophisticatedbackpacks.upgrades.rs_pickup.tooltip": "RS网络拾取设置",
+
+  "gui.sophisticatedbackpacks.upgrades.rs_deposit": "RS卸货",
+  "gui.sophisticatedbackpacks.upgrades.rs_deposit.tooltip": "RS卸货设置",
+
+  "gui.sophisticatedbackpacks.upgrades.super_void": "超级虚空",
+  "gui.sophisticatedbackpacks.upgrades.super_void.tooltip": "超级虚空设置",
+
+  "gui.sophisticatedbackpacks.upgrades.buttons.enable_void": "允许虚空升级销毁物品",
+  "gui.sophisticatedbackpacks.upgrades.buttons.do_not_enable_void": "不允许虚空升级销毁物品",
+
+  "gui.sophisticatedbackpacks.error.add.ender_chest_exists": "另一插槽中已存在末影箱升级"
 }

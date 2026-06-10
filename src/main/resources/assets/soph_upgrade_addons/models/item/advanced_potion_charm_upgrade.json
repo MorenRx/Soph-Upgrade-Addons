@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "soph_upgrade_addons:item/advanced_drink_upgrade"
+    "layer0": "soph_upgrade_addons:item/advanced_potion_charm_upgrade"
   }
 }

@@ -2,9 +2,11 @@
   "required": true,
   "minVersion": "0.8",
   "package": "top.morenrx.sbua.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_17",
   "refmap": "soph_upgrade_addons.refmap.json",
   "mixins": [
+    "common.MixinInventoryInteractionHelper",
+    "common.MixinStorageUpgradeSlot"
   ],
   "client": [
   ],

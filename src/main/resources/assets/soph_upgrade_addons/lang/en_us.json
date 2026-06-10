@@ -1,7 +1,56 @@
 {
-  "soph_upgrade_addons.sbua_tab": "Soph Backpacks Upgrade Addons",
+  "tab.soph_upgrade_addons.main": "Soph Backpacks: Upgrade Addons",
+
+  "item.soph_upgrade_addons.tooltip.disable": "Disabled",
 
   "item.soph_upgrade_addons.rs_magnet_upgrade": "RS Network Magnet Upgrade",
+  "item.soph_upgrade_addons.rs_magnet_upgrade.tooltip": "Right-click the RS controller to connect to the RS network, right-click elsewhere to unlink.",
+  "item.soph_upgrade_addons.rs_magnet_upgrade.tooltip.unlinked": "UnLinked",
+  "item.soph_upgrade_addons.rs_magnet_upgrade.tooltip.linked": "Linked: ",
+
+  "item.soph_upgrade_addons.rs_pickup_upgrade": "RS Network Pickup Upgrade",
+  "item.soph_upgrade_addons.rs_pickup_upgrade.tooltip": "Right-click the RS controller to connect to the RS network, right-click elsewhere to unlink.",
+  "item.soph_upgrade_addons.rs_pickup_upgrade.tooltip.unlinked": "UnLinked",
+  "item.soph_upgrade_addons.rs_pickup_upgrade.tooltip.linked": "Linked: ",
+
+  "item.soph_upgrade_addons.rs_deposit_upgrade": "RS Deposit Upgrade",
+  "item.soph_upgrade_addons.rs_deposit_upgrade.tooltip": "The Deposit Function can be used on RS.",
+
+  "item.soph_upgrade_addons.ender_chest_upgrade": "Ender Upgrade",
+  "item.soph_upgrade_addons.ender_chest_upgrade.tooltip": "Makes the backpack effective inside the Ender Chest",
+
+  "item.soph_upgrade_addons.super_void_upgrade": "Void Upgrade",
+  "item.soph_upgrade_addons.super_void_upgrade.tooltip": "Greater Void Upgrade",
+
   "item.soph_upgrade_addons.potion_charm_upgrade": "Potion Charm Upgrade",
-  "item.soph_upgrade_addons.drink_upgrade": "Drink Upgrade"
+  "item.soph_upgrade_addons.potion_charm_upgrade.tooltip": "Not yet made",
+
+  "item.soph_upgrade_addons.advanced_potion_charm_upgrade": "Advanced Potion Charm Upgrade",
+  "item.soph_upgrade_addons.advanced_potion_charm_upgrade.tooltip": "Not yet made",
+
+  "item.soph_upgrade_addons.drink_upgrade": "Drink Upgrade",
+  "item.soph_upgrade_addons.drink_upgrade.tooltip": "Not yet made",
+
+  "item.soph_upgrade_addons.advanced_drink_upgrade": "Advanced Drink Upgrade",
+  "item.soph_upgrade_addons.advanced_drink_upgrade.tooltip": "Not yet made",
+
+  "message.soph_upgrade_addons.rs.clear": "RS network link disconnected",
+  "message.soph_upgrade_addons.rs.linker": "Successfully connected to RS network",
+
+  "gui.sophisticatedbackpacks.upgrades.rs_magnet": "RS Network Magnet",
+  "gui.sophisticatedbackpacks.upgrades.rs_magnet.tooltip": "RS Network Magnet Setting",
+
+  "gui.sophisticatedbackpacks.upgrades.rs_pickup": "RS Network Pickup",
+  "gui.sophisticatedbackpacks.upgrades.rs_pickup.tooltip": "RS Network Pickup Setting",
+
+  "gui.sophisticatedbackpacks.upgrades.rs_deposit": "RS Deposit",
+  "gui.sophisticatedbackpacks.upgrades.rs_deposit.tooltip": "RS Deposit Setting",
+
+  "gui.sophisticatedbackpacks.upgrades.super_void": "Super Void",
+  "gui.sophisticatedbackpacks.upgrades.super_void.tooltip": "Super Void Setting",
+
+  "gui.sophisticatedbackpacks.upgrades.buttons.enable_void": "Allow Void Upgrade to Destroy Items",
+  "gui.sophisticatedbackpacks.upgrades.buttons.do_not_enable_void": "Void upgrades are not allowed to destroy items.",
+
+  "gui.sophisticatedbackpacks.error.add.ender_chest_exists": "There's already EndChest Upgrade in another upgrade slot"
 }

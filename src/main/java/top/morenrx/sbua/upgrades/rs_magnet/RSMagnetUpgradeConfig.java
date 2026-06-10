@@ -1,9 +1,9 @@
-package top.morenrx.sbua.upgrades.rsmagnet;
+package top.morenrx.sbua.upgrades.rs_magnet;
 
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.p3pp3rf1y.sophisticatedcore.upgrades.FilteredUpgradeConfigBase;
+import top.morenrx.sbua.upgrades.base.FilteredUpgradeConfig;
 
-public class RSMagnetUpgradeConfig extends FilteredUpgradeConfigBase {
+public class RSMagnetUpgradeConfig extends FilteredUpgradeConfig {
     public final ForgeConfigSpec.BooleanValue enable;
     public final ForgeConfigSpec.IntValue magnetRange;
 

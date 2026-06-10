@@ -3,27 +3,24 @@
   "conditions": [
     {
       "type": "soph_upgrade_addons:item_enabled",
-      "itemRegistryName": "soph_upgrade_addons:ender_chest_upgrade"
+      "itemRegistryName": "soph_upgrade_addons:super_void_upgrade"
     }
   ],
   "pattern": [
-    "ACA",
-    "CBC",
-    "ACA"
+    " B ",
+    "BAB",
+    " B "
   ],
   "key": {
     "A": {
-      "item": "minecraft:ender_chest"
-    },
-    "B": {
       "item": "sophisticatedbackpacks:upgrade_base"
     },
-    "C": {
-      "tag": "forge:ender_pearls"
+    "B": {
+      "item": "sophisticatedbackpacks:advanced_void_upgrade"
     }
   },
   "result": {
-    "item": "soph_upgrade_addons:ender_chest_upgrade",
+    "item": "soph_upgrade_addons:super_void_upgrade",
     "count": 1
   }
 }

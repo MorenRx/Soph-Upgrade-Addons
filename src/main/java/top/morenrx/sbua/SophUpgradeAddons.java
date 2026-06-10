@@ -1,25 +1,27 @@
 package top.morenrx.sbua;
 
 import com.mojang.logging.LogUtils;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 import top.morenrx.sbua.init.SBUAItems;
 import top.morenrx.sbua.init.SBUANetwork;
+import top.morenrx.sbua.init.SBUARecipes;
 
-@Mod(SBUAInit.MODID)
-public class SBUAInit {
+@Mod(SophUpgradeAddons.MODID)
+public class SophUpgradeAddons {
     public static final String MODID = "soph_upgrade_addons";
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public SBUAInit(FMLJavaModLoadingContext context) {
+    public SophUpgradeAddons(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
-        context.registerConfig(ModConfig.Type.SERVER, SBUAConfig.INSTANCE.SPEC);
 
+        SBUAConfig.init(context);
         SBUAItems.init(modEventBus);
-        SBUANetwork.NETWORK_HANDLER.register();
+        SBUARecipes.init(modEventBus);
+        SBUANetwork.init();
     }
 
 }

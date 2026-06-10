@@ -1,28 +1,49 @@
 package top.morenrx.sbua;
 
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
-@Mod.EventBusSubscriber(modid = SBUAInit.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class Config {
-    private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
-    private static final ForgeConfigSpec.BooleanValue RS_MAGNET_UPGRADE_ENABLE = BUILDER.comment("(RS)网络磁铁升级 启用").define("RSMagnetUpgradeEnable", true);
-    private static final ForgeConfigSpec.IntValue RS_MAGNET_UPGRADE_RANGE = BUILDER.comment("(RS)网络磁铁升级 吸取范围").defineInRange("RSMagnetUpgradeRange", 5, 1, 20);
-    private static final ForgeConfigSpec.IntValue RS_MAGNET_UPGRADE_FILTER_SLOTS = BUILDER.comment("(RS)网络磁铁升级 过滤槽位数量").defineInRange("RSMagnetUpgradeFilterSlots", 16, 1, 20);
-    private static final ForgeConfigSpec.BooleanValue POTION_CHARM_UPGRADE_ENABLE = BUILDER.comment("(神化)是否启用 药水护符升级").define("PotionCharmUpgradeEnable", true);
-    private static final ForgeConfigSpec.BooleanValue DRINK_UPGRADE_ENABLE = BUILDER.comment("(口渴)是否启用 饮水升级").define("DrinkUpgradeEnable", true);
-    static final ForgeConfigSpec SPEC = BUILDER.build();
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import top.morenrx.sbua.upgrades.drink.DrinkUpgradeConfig;
+import top.morenrx.sbua.upgrades.ender_chest.EnderChestUpgradeConfig;
+import top.morenrx.sbua.upgrades.potion_charm.PotionCharmUpgradeConfig;
+import top.morenrx.sbua.upgrades.rs_deposit.RSDepositUpgradeConfig;
+import top.morenrx.sbua.upgrades.rs_magnet.RSMagnetUpgradeConfig;
+import top.morenrx.sbua.upgrades.rs_pickup.RSPickupUpgradeConfig;
+import top.morenrx.sbua.upgrades.voiding.SuperVoidUpgradeConfig;
 
-    public static boolean enableRSMagnetUpgrade;
-    public static boolean enablePotionCharmUpgrade;
-    public static boolean enableDrinkUpgrade;
+public class SBUAConfig {
+    public static final SBUAConfig INSTANCE = new SBUAConfig();
+    public final ForgeConfigSpec SPEC;
+
+    public final RSMagnetUpgradeConfig rsMagnetUpgrade;
+    public final RSPickupUpgradeConfig rsPickupUpgrade;
+    public final RSDepositUpgradeConfig rsDepositUpgrade;
+    public final SuperVoidUpgradeConfig superVoidUpgrade;
+    public final EnderChestUpgradeConfig endChestUpgrade;
+    public final DrinkUpgradeConfig drinkUpgrade;
+    public final DrinkUpgradeConfig advancedDrinkUpgrade;
+    public final PotionCharmUpgradeConfig potionCharmUpgradeConfig;
+    public final PotionCharmUpgradeConfig advancedPotionCharmUpgradeConfig;
 
 
-    @SubscribeEvent
-    public static void onLoad(ModConfigEvent event) {
-        enableRSMagnetUpgrade = RS_MAGNET_UPGRADE_ENABLE.get();
-        enablePotionCharmUpgrade = POTION_CHARM_UPGRADE_ENABLE.get();
-        enableDrinkUpgrade = DRINK_UPGRADE_ENABLE.get();
+    public SBUAConfig() {
+        ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+
+        rsMagnetUpgrade = new RSMagnetUpgradeConfig(builder, "RS网络磁铁升级", "RSMagnetUpgrade", 24, 4, 5);
+        rsPickupUpgrade = new RSPickupUpgradeConfig(builder, "RS网络拾取升级", "RSPickupUpgrade", 24, 4);
+        rsDepositUpgrade = new RSDepositUpgradeConfig(builder, "RS卸货升级", "RSDepositUpgrade", 24, 4);
+
+        endChestUpgrade = new EnderChestUpgradeConfig(builder, "末影升级", "EndChestUpgrade");
+        superVoidUpgrade = new SuperVoidUpgradeConfig(builder, "超级虚空升级", "SuperVoidUpgrade", 48, 6);
+        drinkUpgrade = new DrinkUpgradeConfig(builder, "饮水升级", "DrinkUpgrade", 9, 3);
+        advancedDrinkUpgrade = new DrinkUpgradeConfig(builder, "高级饮水升级", "AdvancedDrinkUpgrade", 16, 4);
+        potionCharmUpgradeConfig = new PotionCharmUpgradeConfig(builder, "药水护符升级", "PotionCharmUpgrade", 4, 2);
+        advancedPotionCharmUpgradeConfig = new PotionCharmUpgradeConfig(builder, "高级药水护符升级", "PotionCharmUpgrade", 9, 3);
+
+        SPEC = builder.build();
+    }
+
+    public static void init(FMLJavaModLoadingContext context) {
+        context.registerConfig(ModConfig.Type.COMMON, SBUAConfig.INSTANCE.SPEC);
     }
 }

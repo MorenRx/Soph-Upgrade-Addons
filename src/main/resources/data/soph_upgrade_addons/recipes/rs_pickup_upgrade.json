@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "conditions": [
+    {
+      "type": "soph_upgrade_addons:item_enabled",
+      "itemRegistryName": "soph_upgrade_addons:rs_pickup_upgrade"
+    }
+  ],
+  "pattern": [
+    " A ",
+    "CBC",
+    " C "
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:nether_star"
+    },
+    "B": {
+      "item": "sophisticatedbackpacks:advanced_pickup_upgrade"
+    },
+    "C": {
+      "tag": "forge:ender_pearls"
+    }
+  },
+  "result": {
+    "item": "soph_upgrade_addons:rs_pickup_upgrade",
+    "count": 1
+  }
+}

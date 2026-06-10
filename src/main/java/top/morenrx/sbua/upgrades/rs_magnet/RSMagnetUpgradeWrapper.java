@@ -1,8 +1,9 @@
-package top.morenrx.sbua.upgrades.rsmagnet;
+package top.morenrx.sbua.upgrades.rs_magnet;
 
 import com.refinedmods.refinedstorage.api.network.INetwork;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -22,23 +23,17 @@ import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.init.ModFluids;
 import net.p3pp3rf1y.sophisticatedcore.settings.memory.MemorySettingsCategory;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.*;
-import net.p3pp3rf1y.sophisticatedcore.upgrades.magnet.IMagnetPreventionChecker;
-import net.p3pp3rf1y.sophisticatedcore.upgrades.voiding.VoidUpgradeItem;
-import net.p3pp3rf1y.sophisticatedcore.upgrades.voiding.VoidUpgradeWrapper;
 import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.XpHelper;
 import org.jetbrains.annotations.NotNull;
-import top.morenrx.sbua.SBUAInit;
-import top.morenrx.sbua.util.RSUtil;
+import org.jetbrains.annotations.Nullable;
+import top.morenrx.sbua.SophUpgradeAddons;
+import top.morenrx.sbua.util.SBUAUtils;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 
-@Mod.EventBusSubscriber(modid = SBUAInit.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = SophUpgradeAddons.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class RSMagnetUpgradeWrapper extends UpgradeWrapperBase<RSMagnetUpgradeWrapper, RSMagnetUpgrade>
         implements IContentsFilteredUpgrade, ITickableUpgrade, IPickupResponseUpgrade {
     private static final String PREVENT_REMOTE_MOVEMENT = "PreventRemoteMovement";
@@ -68,11 +63,6 @@ public class RSMagnetUpgradeWrapper extends UpgradeWrapperBase<RSMagnetUpgradeWr
     private INetwork networkCache = null;
     private Player playerCache = null;
 
-    private static final Set<IMagnetPreventionChecker> magnetCheckers = new HashSet<>();
-
-    public static void addMagnetPreventionChecker(IMagnetPreventionChecker checker) {
-        magnetCheckers.add(checker);
-    }
 
     public RSMagnetUpgradeWrapper(IStorageWrapper storageWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
         super(storageWrapper, upgrade, upgradeSaveHandler);
@@ -94,43 +84,33 @@ public class RSMagnetUpgradeWrapper extends UpgradeWrapperBase<RSMagnetUpgradeWr
 
     @Override
     public @NotNull ItemStack pickup(@NotNull Level world, @NotNull ItemStack stack, boolean simulate) {
-        if (!shouldPickupItems() || !filterLogic.matchesFilter(stack)) {
-            return stack;
-        }
+        if (!shouldPickupItems() || !filterLogic.matchesFilter(stack)) return stack;
+        if (!(world instanceof ServerLevel level)) return stack;
 
-        List<VoidUpgradeWrapper> wrappers = storageWrapper.getUpgradeHandler().getTypeWrappers(VoidUpgradeItem.TYPE);
-        for (VoidUpgradeWrapper voidUpgradeWrapper : wrappers) {
-            if (voidUpgradeWrapper.getFilterLogic().matchesFilter(stack)) {
-                return ItemStack.EMPTY;
-            }
-        }
+        if (shouldEnableVoid() && SBUAUtils.Backpack.shouldDestroy(storageWrapper, stack)) return ItemStack.EMPTY;
 
-        if (this.playerCache == null) {
-            if (RSUtil.fakePlayer == null) RSUtil.createFakePlayer(world);
-            this.playerCache = RSUtil.fakePlayer;
-        }
+        if (this.playerCache == null) playerCache = SBUAUtils.Backpack.getBackpackOwner(level, storageWrapper.getContentsUuid().orElse(null));
 
         if (networkCache == null || !networkCache.canRun()) {
             CompoundTag tag = upgrade.getOrCreateTag();
-            if ((networkCache = RSUtil.getRSNetwork(world, tag.getLong("pos"), tag.getString("dim"))) == null) {
+            if ((networkCache = SBUAUtils.RS.getRSNetwork(level, tag.getLong("pos"), tag.getString("dim"))) == null) {
                 return stack;
             }
         }
 
-        return RSUtil.insertItem(networkCache, stack, playerCache, simulate);
+        return SBUAUtils.RS.insertItemToRS(networkCache, stack, playerCache, simulate);
     }
 
     @Override
     public void tick(@Nullable Entity entity, @NotNull Level world, @NotNull BlockPos pos) {
-        if (isInCooldown(world, entity)) {
-            return;
-        }
+        if (isInCooldown(world, entity)) return;
 
-        if (this.playerCache != entity && entity instanceof Player player) {
-            this.playerCache = player;
-        } else {
-            if (RSUtil.fakePlayer == null) RSUtil.createFakePlayer(world);
-            this.playerCache = RSUtil.fakePlayer;
+        if (world instanceof ServerLevel level) {
+            if (this.playerCache != entity && entity instanceof Player player) {
+                this.playerCache = player;
+            } else if (this.playerCache == null) {
+                this.playerCache = SBUAUtils.Backpack.getBackpackOwner(level, storageWrapper.getContentsUuid().orElse(null));
+            }
         }
 
         int cooldown = shouldPickupItems() ? pickupItems(entity, world, pos) : FULL_COOLDOWN_TICKS;
@@ -209,28 +189,15 @@ public class RSMagnetUpgradeWrapper extends UpgradeWrapperBase<RSMagnetUpgradeWr
         return cooldown;
     }
 
-    private static void playItemPickupSound(Level world, @Nonnull Player player) {
+    private static void playItemPickupSound(Level world, @NotNull Player player) {
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, (world.random.nextFloat() - world.random.nextFloat()) * 1.4F + 2.0F);
     }
 
-    private static void playXpPickupSound(Level world, @Nonnull Player player) {
+    private static void playXpPickupSound(Level world, @NotNull Player player) {
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.1F, (world.random.nextFloat() - world.random.nextFloat()) * 0.35F + 0.9F);
     }
 
-    private boolean isBlockedBySomething(Entity entity) {
-        for (IMagnetPreventionChecker checker : magnetCheckers) {
-            if (checker.isBlocked(entity)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private boolean canNotPickup(Entity pickedUpEntity, @Nullable Entity entity) {
-        if (isBlockedBySomething(pickedUpEntity)) {
-            return true;
-        }
-
         CompoundTag data = pickedUpEntity.getPersistentData();
         return entity instanceof Player ? data.contains(PREVENT_REMOTE_MOVEMENT) : data.contains(PREVENT_REMOTE_MOVEMENT) && !data.contains(ALLOW_MACHINE_MOVEMENT);
     }
@@ -238,24 +205,21 @@ public class RSMagnetUpgradeWrapper extends UpgradeWrapperBase<RSMagnetUpgradeWr
     private boolean tryToInsertItem(ItemEntity itemEntity) {
         ItemStack stack = itemEntity.getItem();
 
-        List<VoidUpgradeWrapper> wrappers = storageWrapper.getUpgradeHandler().getTypeWrappers(VoidUpgradeItem.TYPE);
-        for (VoidUpgradeWrapper voidUpgradeWrapper : wrappers) {
-            if (voidUpgradeWrapper.getFilterLogic().matchesFilter(stack)) {
-                itemEntity.setItem(ItemStack.EMPTY);
-                return true;
-            }
+        if (shouldEnableVoid() && SBUAUtils.Backpack.shouldDestroy(storageWrapper, stack)) {
+            itemEntity.setItem(ItemStack.EMPTY);
+            return true;
         }
 
         if (networkCache == null || !networkCache.canRun()) {
             CompoundTag tag = upgrade.getOrCreateTag();
-            if ((networkCache = RSUtil.getRSNetwork(itemEntity.level(), tag.getLong("pos"), tag.getString("dim"))) == null) {
+            if ((networkCache = SBUAUtils.RS.getRSNetwork(itemEntity.level(), tag.getLong("pos"), tag.getString("dim"))) == null) {
                 return false;
             }
         }
 
-        ItemStack remainingStack = RSUtil.insertItem(networkCache, stack, playerCache, true);
+        ItemStack remainingStack = SBUAUtils.RS.insertItemToRS(networkCache, stack, playerCache, true);
         if (remainingStack.getCount() >= stack.getCount()) return false;
-        remainingStack = RSUtil.insertItem(networkCache, stack, playerCache, false);
+        remainingStack = SBUAUtils.RS.insertItemToRS(networkCache, stack, playerCache, false);
 
         itemEntity.setItem(remainingStack);
         return true;
@@ -279,4 +243,12 @@ public class RSMagnetUpgradeWrapper extends UpgradeWrapperBase<RSMagnetUpgradeWr
         return NBTHelper.getBoolean(upgrade, "pickupXp").orElse(true);
     }
 
+    public void setEnableVoid(boolean enableVoid) {
+        NBTHelper.setBoolean(upgrade, "enableVoid", enableVoid);
+        save();
+    }
+
+    public boolean shouldEnableVoid() {
+        return NBTHelper.getBoolean(upgrade, "enableVoid").orElse(true);
+    }
 }

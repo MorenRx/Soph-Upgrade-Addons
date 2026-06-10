@@ -1,4 +1,4 @@
-package top.morenrx.sbua.upgrades.rsmagnet;
+package top.morenrx.sbua.upgrades.rs_magnet;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -9,6 +9,7 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.ContentsFilterLogicContainer;
 public class RSMagnetUpgradeContainer extends UpgradeContainerBase<RSMagnetUpgradeWrapper, RSMagnetUpgradeContainer> {
     private static final String DATA_PICKUP_ITEMS = "pickupItems";
     private static final String DATA_PICKUP_XP = "pickupXp";
+    private static final String DATA_ENABLE_VOID = "enableVoid";
 
     private final ContentsFilterLogicContainer filterLogicContainer;
 
@@ -24,6 +25,8 @@ public class RSMagnetUpgradeContainer extends UpgradeContainerBase<RSMagnetUpgra
             setPickupItems(data.getBoolean(DATA_PICKUP_ITEMS));
         } else if (data.contains(DATA_PICKUP_XP)) {
             setPickupXp(data.getBoolean(DATA_PICKUP_XP));
+        } else if (data.contains(DATA_ENABLE_VOID)) {
+            setEnableVoid(data.getBoolean(DATA_ENABLE_VOID));
         }
         filterLogicContainer.handleMessage(data);
     }
@@ -48,5 +51,14 @@ public class RSMagnetUpgradeContainer extends UpgradeContainerBase<RSMagnetUpgra
 
     public boolean shouldPickupXp() {
         return upgradeWrapper.shouldPickupXp();
+    }
+
+    public void setEnableVoid(boolean enableVoid) {
+        upgradeWrapper.setEnableVoid(enableVoid);
+        sendBooleanToServer(DATA_ENABLE_VOID, enableVoid);
+    }
+
+    public boolean shouldEnableVoid() {
+        return upgradeWrapper.shouldEnableVoid();
     }
 }
