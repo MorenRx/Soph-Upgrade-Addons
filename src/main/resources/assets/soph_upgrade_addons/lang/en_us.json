@@ -4,12 +4,12 @@
   "item.soph_upgrade_addons.tooltip.disable": "Disabled",
 
   "item.soph_upgrade_addons.rs_magnet_upgrade": "RS Network Magnet Upgrade",
-  "item.soph_upgrade_addons.rs_magnet_upgrade.tooltip": "Right-click the RS controller to connect to the RS network, right-click elsewhere to unlink.",
+  "item.soph_upgrade_addons.rs_magnet_upgrade.tooltip": "Crouch down and right-click any RS component to connect to the RS network; right-click on an empty area to disconnect.",
   "item.soph_upgrade_addons.rs_magnet_upgrade.tooltip.unlinked": "UnLinked",
   "item.soph_upgrade_addons.rs_magnet_upgrade.tooltip.linked": "Linked: ",
 
   "item.soph_upgrade_addons.rs_pickup_upgrade": "RS Network Pickup Upgrade",
-  "item.soph_upgrade_addons.rs_pickup_upgrade.tooltip": "Right-click the RS controller to connect to the RS network, right-click elsewhere to unlink.",
+  "item.soph_upgrade_addons.rs_pickup_upgrade.tooltip": "Crouch down and right-click any RS component to connect to the RS network; right-click on an empty area to disconnect.",
   "item.soph_upgrade_addons.rs_pickup_upgrade.tooltip.unlinked": "UnLinked",
   "item.soph_upgrade_addons.rs_pickup_upgrade.tooltip.linked": "Linked: ",
 
@@ -17,7 +17,7 @@
   "item.soph_upgrade_addons.rs_deposit_upgrade.tooltip": "The Deposit Function can be used on RS.",
 
   "item.soph_upgrade_addons.ender_chest_upgrade": "Ender Upgrade",
-  "item.soph_upgrade_addons.ender_chest_upgrade.tooltip": "Makes the backpack effective inside the Ender Chest",
+  "item.soph_upgrade_addons.ender_chest_upgrade.tooltip": "The Sophisticated Backpack can be used inside an Ender Chest.",
 
   "item.soph_upgrade_addons.super_void_upgrade": "Void Upgrade",
   "item.soph_upgrade_addons.super_void_upgrade.tooltip": "Greater Void Upgrade",

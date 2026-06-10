@@ -10,12 +10,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import top.morenrx.sbua.upgrades.base.ISBUAItemConfig;
 
-@Mixin(value = StorageContainerMenuBase.StorageUpgradeSlot.class, remap = false)
+@Mixin(value = StorageContainerMenuBase.StorageUpgradeSlot.class)
 public class MixinStorageUpgradeSlot {
 
     @Redirect(
-            method = "mayPlace(Lnet/minecraft/world/item/ItemStack;)Z",
+            method = "mayPlace",
             at = @At(
+                    remap = false,
                     value = "INVOKE",
                     target = "Lnet/minecraftforge/items/IItemHandler;isItemValid(ILnet/minecraft/world/item/ItemStack;)Z"
             )

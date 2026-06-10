@@ -4,12 +4,12 @@
   "item.soph_upgrade_addons.tooltip.disable": "已禁用",
 
   "item.soph_upgrade_addons.rs_magnet_upgrade": "RS网络磁铁升级",
-  "item.soph_upgrade_addons.rs_magnet_upgrade.tooltip": "右键RS控制器链接RS网络, 右键其他位置解除链接",
+  "item.soph_upgrade_addons.rs_magnet_upgrade.tooltip": "蹲下右键RS任意部件链接RS网络, 右键空气断开链接",
   "item.soph_upgrade_addons.rs_magnet_upgrade.tooltip.unlinked": "未链接",
   "item.soph_upgrade_addons.rs_magnet_upgrade.tooltip.linked": "已链接: ",
 
   "item.soph_upgrade_addons.rs_pickup_upgrade": "RS网络拾取升级",
-  "item.soph_upgrade_addons.rs_pickup_upgrade.tooltip": "右键RS控制器链接RS网络, 右键其他位置解除链接",
+  "item.soph_upgrade_addons.rs_pickup_upgrade.tooltip": "蹲下右键RS任意部件链接RS网络, 右键空气断开链接",
   "item.soph_upgrade_addons.rs_pickup_upgrade.tooltip.unlinked": "未链接",
   "item.soph_upgrade_addons.rs_pickup_upgrade.tooltip.linked": "已链接: ",
 
@@ -17,7 +17,7 @@
   "item.soph_upgrade_addons.rs_deposit_upgrade.tooltip": "可对RS使用卸货功能",
 
   "item.soph_upgrade_addons.ender_chest_upgrade": "末影升级",
-  "item.soph_upgrade_addons.ender_chest_upgrade.tooltip": "使背包可以在末影箱内生效",
+  "item.soph_upgrade_addons.ender_chest_upgrade.tooltip": "精妙背包可以在末影箱内生效",
 
   "item.soph_upgrade_addons.super_void_upgrade": "超级虚空升级",
   "item.soph_upgrade_addons.super_void_upgrade.tooltip": "更大的虚空升级",
