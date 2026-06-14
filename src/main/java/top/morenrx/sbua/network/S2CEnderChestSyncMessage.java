@@ -26,7 +26,7 @@ public record S2CEnderChestSyncMessage(CompoundTag items) {
         ListTag listTag = player.getEnderChestInventory().createTag();
         nbt.put(EnderChestNbtKey, listTag);
 
-        SBUANetwork.NETWORK_HANDLER.sendToTrackingAndSelf(new S2CEnderChestSyncMessage(nbt), player);
+        SBUANetwork.NETWORK_HANDLER.sendToPlayer(new S2CEnderChestSyncMessage(nbt), player);
     }
 
     public static void handle(S2CEnderChestSyncMessage msg, Supplier<NetworkEvent.Context> contextSupplier) {
