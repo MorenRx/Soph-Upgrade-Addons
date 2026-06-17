@@ -1,0 +1,161 @@
+package top.morenrx.sua.upgrades.drink;
+
+import dev.ghen.thirst.api.ThirstHelper;
+import dev.ghen.thirst.foundation.common.capability.IThirst;
+import dev.ghen.thirst.foundation.common.capability.ModCapabilities;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.event.ForgeEventFactory;
+import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
+import net.p3pp3rf1y.sophisticatedcore.inventory.ITrackedContentsItemHandler;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.FilterLogic;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.IFilteredUpgrade;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.ITickableUpgrade;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeWrapperBase;
+import net.p3pp3rf1y.sophisticatedcore.util.InventoryHelper;
+import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
+
+public class DrinkUpgradeWrapper extends UpgradeWrapperBase<DrinkUpgradeWrapper, DrinkUpgrade> implements ITickableUpgrade, IFilteredUpgrade {
+
+    private static final int COOLDOWN = 100;
+    private static final int STILL_THIRST_COOLDOWN = 10;
+    private static final int RANGE = 3;
+    private final FilterLogic filterLogic;
+
+    public DrinkUpgradeWrapper(IStorageWrapper storageWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
+        super(storageWrapper, upgrade, upgradeSaveHandler);
+        filterLogic = new FilterLogic(upgrade, upgradeSaveHandler, upgradeItem.getFilterSlotCount(), ThirstHelper::isDrink);
+    }
+
+    @Override
+    public void tick(@Nullable Entity entity, @NotNull Level level, @NotNull BlockPos pos) {
+        if (isInCooldown(level) || (entity != null && !(entity instanceof Player))) {
+            return;
+        }
+
+        boolean thirstPlayer = false;
+        if (entity == null) {
+            AtomicBoolean stillThirstPlayer = new AtomicBoolean(false);
+            level.getEntities(EntityType.PLAYER, new AABB(pos).inflate(RANGE), p -> true).forEach(p -> stillThirstPlayer.set(stillThirstPlayer.get() || drinkPlayerAndGetThirst(p, level)));
+            thirstPlayer = stillThirstPlayer.get();
+        } else {
+            if (drinkPlayerAndGetThirst((Player) entity, level)) {
+                thirstPlayer = true;
+            }
+        }
+        if (thirstPlayer) {
+            setCooldown(level, STILL_THIRST_COOLDOWN);
+            return;
+        }
+
+        setCooldown(level, COOLDOWN);
+    }
+
+    private boolean drinkPlayerAndGetThirst(Player player, Level level) {
+        int hungerLevel = 20 - player.getCapability(ModCapabilities.PLAYER_THIRST).map(IThirst::getThirst).orElse(20);
+        if (hungerLevel == 0) {
+            return false;
+        }
+        return tryDrinkingFromStorage(level, hungerLevel, player) && player.getCapability(ModCapabilities.PLAYER_THIRST).map(IThirst::getThirst).orElse(20) < 20;
+    }
+
+    private boolean tryDrinkingFromStorage(Level level, int hungerLevel, Player player) {
+        ITrackedContentsItemHandler inventory = storageWrapper.getInventoryForUpgradeProcessing();
+        return InventoryHelper.iterate(inventory, (slot, stack) -> tryDrinkingStack(level, hungerLevel, player, slot, stack, inventory), () -> false, ret -> ret);
+    }
+
+    private boolean tryDrinkingStack(Level level, int hungerLevel, Player player, Integer slot, ItemStack stack, ITrackedContentsItemHandler inventory) {
+        boolean isHurt = player.getHealth() < player.getMaxHealth() - 0.1F;
+        if (isDrink(stack) && filterLogic.matchesFilter(stack) && (isThirstEnoughForDrink(hungerLevel, stack) || shouldDrinkForHurt() && hungerLevel > 0 && isHurt)) {
+            ItemStack mainHandItem = player.getMainHandItem();
+            player.getInventory().items.set(player.getInventory().selected, stack);
+
+            ItemStack singleItemCopy = stack.copy();
+            singleItemCopy.setCount(1);
+
+            if (singleItemCopy.use(level, player, InteractionHand.MAIN_HAND).getResult() == InteractionResult.CONSUME) {
+                stack.shrink(1);
+                inventory.setStackInSlot(slot, stack);
+
+                ItemStack resultItem = ForgeEventFactory.onItemUseFinish(player, singleItemCopy.copy(), 0, singleItemCopy.getItem().finishUsingItem(singleItemCopy, level, player));
+                if (!resultItem.isEmpty()) {
+                    ItemStack insertResult = inventory.insertItem(resultItem, false);
+                    if (!insertResult.isEmpty()) {
+                        player.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.UP).ifPresent(playerInventory ->
+                                InventoryHelper.insertOrDropItem(player, insertResult, playerInventory));
+                    }
+                }
+
+                player.getInventory().items.set(player.getInventory().selected, mainHandItem);
+                return true;
+            }
+            player.getInventory().items.set(player.getInventory().selected, mainHandItem);
+        }
+        return false;
+    }
+
+    private boolean isDrink(ItemStack stack) {
+        if (!ThirstHelper.isDrink(stack)) return false;
+        return ThirstHelper.getPurity(stack) >= shouldPurity();
+    }
+
+    private boolean isThirstEnoughForDrink(int hungerLevel, ItemStack stack) {
+        if (!ThirstHelper.isDrink(stack)) {
+            return false;
+        }
+
+        int drinkAtThirstLevel = getDrinkAtThirstLevel();
+        if (drinkAtThirstLevel == DrinkUpgrade.Data.THIRST_LEVEL_ANY) {
+            return true;
+        }
+
+        int thirst = ThirstHelper.getThirst(stack);
+        return (drinkAtThirstLevel == DrinkUpgrade.Data.THIRST_LEVEL_HALF ? (thirst / 2) : thirst) <= hungerLevel;
+    }
+
+    @Override
+    public @NotNull FilterLogic getFilterLogic() {
+        return filterLogic;
+    }
+
+    public int getDrinkAtThirstLevel() {
+        return NBTHelper.getInt(upgrade, DrinkUpgrade.Data.DATA_THIRST_LEVEL).orElse(DrinkUpgrade.Data.THIRST_LEVEL_HALF);
+    }
+
+    public void setDrinkAtThirstLevel(int thirstLevel) {
+        NBTHelper.setInteger(upgrade, DrinkUpgrade.Data.DATA_THIRST_LEVEL, thirstLevel);
+        save();
+    }
+
+    public boolean shouldDrinkForHurt() {
+        return NBTHelper.getBoolean(upgrade, DrinkUpgrade.Data.DATA_DRINK_FOR_HURT).orElse(false);
+    }
+
+    public void setDrinkForHurt(boolean drinkForHurt) {
+        NBTHelper.setBoolean(upgrade, DrinkUpgrade.Data.DATA_DRINK_FOR_HURT, drinkForHurt);
+        save();
+    }
+
+    public int shouldPurity() {
+        return NBTHelper.getInt(upgrade, DrinkUpgrade.Data.DATA_PURITY).orElse(DrinkUpgrade.Data.PURITY_DIRTY);
+    }
+
+    public void setPurity(int purity) {
+        NBTHelper.setInteger(upgrade, DrinkUpgrade.Data.DATA_PURITY, purity);
+        save();
+    }
+}

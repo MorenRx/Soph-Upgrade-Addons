@@ -1,5 +1,5 @@
 {
-  "tab.soph_upgrade_addons.main": "Soph Backpacks: Upgrade Addons",
+  "tab.soph_upgrade_addons.main": "Soph Upgrade Addons",
 
   "item.soph_upgrade_addons.tooltip.disable": "Disabled",
 
@@ -23,16 +23,16 @@
   "item.soph_upgrade_addons.super_void_upgrade.tooltip": "Greater Void Upgrade",
 
   "item.soph_upgrade_addons.potion_charm_upgrade": "Potion Charm Upgrade",
-  "item.soph_upgrade_addons.potion_charm_upgrade.tooltip": "Not yet made",
+  "item.soph_upgrade_addons.potion_charm_upgrade.tooltip": "Allows Potion Charms placed inside this upgrade to take effect",
 
   "item.soph_upgrade_addons.advanced_potion_charm_upgrade": "Advanced Potion Charm Upgrade",
-  "item.soph_upgrade_addons.advanced_potion_charm_upgrade.tooltip": "Not yet made",
+  "item.soph_upgrade_addons.advanced_potion_charm_upgrade.tooltip": "Allows Potion Charms placed inside this upgrade to take effect\nLarger capacity",
 
   "item.soph_upgrade_addons.drink_upgrade": "Drink Upgrade",
-  "item.soph_upgrade_addons.drink_upgrade.tooltip": "Not yet made",
+  "item.soph_upgrade_addons.drink_upgrade.tooltip": "Automatically drinks beverages from the backpack",
 
   "item.soph_upgrade_addons.advanced_drink_upgrade": "Advanced Drink Upgrade",
-  "item.soph_upgrade_addons.advanced_drink_upgrade.tooltip": "Not yet made",
+  "item.soph_upgrade_addons.advanced_drink_upgrade.tooltip": "Automatically drinks beverages from the backpack\nMore powerful filtration function",
 
   "message.soph_upgrade_addons.rs.clear": "RS network link disconnected",
   "message.soph_upgrade_addons.rs.linker": "Successfully connected to RS network",
@@ -49,8 +49,30 @@
   "gui.sophisticatedbackpacks.upgrades.super_void": "Super Void",
   "gui.sophisticatedbackpacks.upgrades.super_void.tooltip": "Super Void Setting",
 
+  "gui.sophisticatedbackpacks.upgrades.drink": "Drink",
+  "gui.sophisticatedbackpacks.upgrades.drink.tooltip": "Drink Setting",
+
+  "gui.sophisticatedbackpacks.upgrades.advanced_drink": "Advanced Drink",
+  "gui.sophisticatedbackpacks.upgrades.advanced_drink.tooltip": "Advanced Drink Setting",
+
+  "gui.sophisticatedbackpacks.upgrades.potion_charm": "Potion Charm",
+  "gui.sophisticatedbackpacks.upgrades.potion_charm.tooltip": "Potion Charm Setting",
+
+  "gui.sophisticatedbackpacks.upgrades.advanced_potion_charm": "Advanced Potion Charm",
+  "gui.sophisticatedbackpacks.upgrades.advanced_potion_charm.tooltip": "Advanced Potion Charm Setting",
+
   "gui.sophisticatedbackpacks.upgrades.buttons.enable_void": "Allow Void Upgrade to Destroy Items",
   "gui.sophisticatedbackpacks.upgrades.buttons.do_not_enable_void": "Void upgrades are not allowed to destroy items.",
+
+  "gui.sophisticatedbackpacks.upgrades.buttons.thirst_level_any": "Drink immediately when slightly thirsty\nWastes a large amount of thirst restored by drinks",
+  "gui.sophisticatedbackpacks.upgrades.buttons.thirst_level_half": "Drink only when thirsty enough\nWastes at most half of the thirst restored by drinks",
+  "gui.sophisticatedbackpacks.upgrades.buttons.thirst_level_full": "Drink only when thirsty enough\nDoes not waste any thirst restored by drinks",
+  "gui.sophisticatedbackpacks.upgrades.buttons.drink_for_hurt": "Drink immediately when hurt\nIgnores thirst levels until player reaches max health",
+  "gui.sophisticatedbackpacks.upgrades.buttons.drink_ignore_hurt": "Ignore Health\nIgnores player health and drinks automatically based only on thirst level",
+  "gui.sophisticatedbackpacks.upgrades.buttons.purity_dirty": "Automatically drink beverages of any purity",
+  "gui.sophisticatedbackpacks.upgrades.buttons.purity_slightly_dirst": "Automatically drink beverages of 'Slightly Dirty' purity and above",
+  "gui.sophisticatedbackpacks.upgrades.buttons.purity_acceptable": "Automatically drink beverages of 'Acceptable' purity and above",
+  "gui.sophisticatedbackpacks.upgrades.buttons.purity_purified": "Only automatically drink purified beverages",
 
   "gui.sophisticatedbackpacks.error.add.ender_chest_exists": "There's already EndChest Upgrade in another upgrade slot"
 }

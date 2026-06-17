@@ -1,0 +1,34 @@
+{
+  "type": "sophisticatedcore:upgrade_next_tier",
+  "conditions": [
+    {
+      "type": "soph_upgrade_addons:item_enabled",
+      "itemRegistryName": "soph_upgrade_addons:advanced_potion_charm_upgrade"
+    }
+  ],
+  "key": {
+    "D": {
+      "tag": "forge:gems/diamond"
+    },
+    "N": {
+      "tag": "forge:nether_stars"
+    },
+    "G": {
+      "tag": "forge:ingots/gold"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
+    },
+    "V": {
+      "item": "soph_upgrade_addons:potion_charm_upgrade"
+    }
+  },
+  "pattern": [
+    " N ",
+    "GVG",
+    "RDR"
+  ],
+  "result": {
+    "item": "soph_upgrade_addons:advanced_potion_charm_upgrade"
+  }
+}

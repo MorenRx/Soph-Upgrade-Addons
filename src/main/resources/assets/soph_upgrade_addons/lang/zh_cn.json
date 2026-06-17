@@ -1,5 +1,5 @@
 {
-  "tab.soph_upgrade_addons.main": "精妙背包: 升级扩展",
+  "tab.soph_upgrade_addons.main": "精妙升级扩展",
 
   "item.soph_upgrade_addons.tooltip.disable": "已禁用",
 
@@ -23,16 +23,16 @@
   "item.soph_upgrade_addons.super_void_upgrade.tooltip": "更大的虚空升级",
 
   "item.soph_upgrade_addons.potion_charm_upgrade": "药水护符升级",
-  "item.soph_upgrade_addons.potion_charm_upgrade.tooltip": "还没做",
+  "item.soph_upgrade_addons.potion_charm_upgrade.tooltip": "药水护符放在此升级内可以生效",
 
   "item.soph_upgrade_addons.advanced_potion_charm_upgrade": "高级药水护符升级",
-  "item.soph_upgrade_addons.advanced_potion_charm_upgrade.tooltip": "还没做",
+  "item.soph_upgrade_addons.advanced_potion_charm_upgrade.tooltip": "药水护符放在此升级内可以生效\n更大的容量",
 
   "item.soph_upgrade_addons.drink_upgrade": "饮水升级",
-  "item.soph_upgrade_addons.drink_upgrade.tooltip": "还没做",
+  "item.soph_upgrade_addons.drink_upgrade.tooltip": "自动饮用背包内的饮品",
 
   "item.soph_upgrade_addons.advanced_drink_upgrade": "高级饮水升级",
-  "item.soph_upgrade_addons.advanced_drink_upgrade.tooltip": "还没做",
+  "item.soph_upgrade_addons.advanced_drink_upgrade.tooltip": "自动饮用背包内的饮品\n更强大的过滤功能",
 
   "message.soph_upgrade_addons.rs.clear": "已断开RS网络链接",
   "message.soph_upgrade_addons.rs.linker": "成功链接RS网络",
@@ -49,8 +49,30 @@
   "gui.sophisticatedbackpacks.upgrades.super_void": "超级虚空",
   "gui.sophisticatedbackpacks.upgrades.super_void.tooltip": "超级虚空设置",
 
+  "gui.sophisticatedbackpacks.upgrades.drink": "饮水",
+  "gui.sophisticatedbackpacks.upgrades.drink.tooltip": "饮水设置",
+
+  "gui.sophisticatedbackpacks.upgrades.advanced_drink": "高级饮水",
+  "gui.sophisticatedbackpacks.upgrades.advanced_drink.tooltip": "高级饮水设置",
+
+  "gui.sophisticatedbackpacks.upgrades.potion_charm": "药水护符",
+  "gui.sophisticatedbackpacks.upgrades.potion_charm.tooltip": "药水护符设置",
+
+  "gui.sophisticatedbackpacks.upgrades.advanced_potion_charm": "高级药水护符",
+  "gui.sophisticatedbackpacks.upgrades.advanced_potion_charm.tooltip": "高级药水护符设置",
+
   "gui.sophisticatedbackpacks.upgrades.buttons.enable_void": "允许虚空升级销毁物品",
   "gui.sophisticatedbackpacks.upgrades.buttons.do_not_enable_void": "不允许虚空升级销毁物品",
+
+  "gui.sophisticatedbackpacks.upgrades.buttons.thirst_level_any": "当玩家稍微口渴时立即饮水\n浪费饮品提供的大量口渴值",
+  "gui.sophisticatedbackpacks.upgrades.buttons.thirst_level_half": "仅在玩家足够口渴时饮水\n最多浪费饮品提供的一半口渴值",
+  "gui.sophisticatedbackpacks.upgrades.buttons.thirst_level_full": "仅在玩家足够口渴时饮水\n不会浪费饮品提供的任何口渴值",
+  "gui.sophisticatedbackpacks.upgrades.buttons.drink_for_hurt": "当玩家受伤时立即饮水\n在玩家未达到最大生命值前忽略口渴值",
+  "gui.sophisticatedbackpacks.upgrades.buttons.drink_ignore_hurt": "忽略生命值\n忽略玩家的生命值，仅基于口渴值自动饮水",
+  "gui.sophisticatedbackpacks.upgrades.buttons.purity_dirty": "自动饮用任意纯净度的饮品",
+  "gui.sophisticatedbackpacks.upgrades.buttons.purity_slightly_dirst": "自动饮用纯净度在'有点脏'及以上的饮品",
+  "gui.sophisticatedbackpacks.upgrades.buttons.purity_acceptable": "自动饮用纯净度在'可接受的'及以上的饮品",
+  "gui.sophisticatedbackpacks.upgrades.buttons.purity_purified": "仅自动饮用纯净饮品",
 
   "gui.sophisticatedbackpacks.error.add.ender_chest_exists": "另一插槽中已存在末影箱升级"
 }

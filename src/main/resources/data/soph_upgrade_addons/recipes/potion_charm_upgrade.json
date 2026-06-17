@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "conditions": [
+    {
+      "type": "soph_upgrade_addons:item_enabled",
+      "itemRegistryName": "soph_upgrade_addons:potion_charm_upgrade"
+    }
+  ],
+  "pattern": [
+    " B ",
+    "CAC",
+    " B "
+  ],
+  "key": {
+    "A": {
+      "item": "sophisticatedbackpacks:upgrade_base"
+    },
+    "B": {
+      "item": "apotheosis:potion_charm"
+    },
+    "C": {
+      "item": "minecraft:brewing_stand"
+    }
+  },
+  "result": {
+    "item": "soph_upgrade_addons:potion_charm_upgrade",
+    "count": 1
+  }
+}

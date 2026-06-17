@@ -1,6 +1,6 @@
 {
   "pack": {
-    "description": "soph_upgrade_addons resources",
+    "description": "${mod_id} resources",
     "pack_format": 15
   }
 }
