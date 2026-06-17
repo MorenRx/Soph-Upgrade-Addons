@@ -39,7 +39,7 @@ public class RSPickupUpgradeWrapper extends UpgradeWrapperBase<RSPickupUpgradeWr
 
         if (networkCache == null || !networkCache.canRun()) {
             CompoundTag tag = upgrade.getOrCreateTag();
-            if ((networkCache = SUAUtils.RS.getRSNetwork(level, tag.getLong("pos"), tag.getString("dim"))) == null) {
+            if ((networkCache = SUAUtils.RS.getRSNetwork(level, tag.getLong(SUAUtils.Data.KEY_NBT_POS), tag.getString(SUAUtils.Data.KEY_NBT_DIM))) == null) {
                 return stack;
             }
         }

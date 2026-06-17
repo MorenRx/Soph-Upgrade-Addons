@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.morenrx.sua.init.SUACompat;
 import top.morenrx.sua.upgrades.base.ISUAItemConfig;
+import top.morenrx.sua.util.SUAUtils;
 
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -31,6 +32,15 @@ public class RSMagnetUpgrade extends UpgradeItemBase<RSMagnetUpgradeWrapper> imp
     public static final UpgradeType<RSMagnetUpgradeWrapper> TYPE = new UpgradeType<>(RSMagnetUpgradeWrapper::new);
     private final BooleanSupplier enable;
     private final IntSupplier radius, filterSlots;
+
+    public static class Data {
+        public static final String KEY_PICKUP_ITEMS = "pickupItems";
+        public static final String KEY_PICKUP_XP = "pickupXp";
+        public static final String KEY_ENABLE_VOID = "enableVoid";
+
+        public static final String KEY_PREVENT_REMOTE_MOVEMENT = "PreventRemoteMovement";
+        public static final String KEY_ALLOW_MACHINE_MOVEMENT = "AllowMachineRemoteMovement";
+    }
 
 
     public RSMagnetUpgrade(BooleanSupplier enable, IntSupplier filterSlots, IntSupplier radius) {
@@ -69,12 +79,11 @@ public class RSMagnetUpgrade extends UpgradeItemBase<RSMagnetUpgradeWrapper> imp
         if (!isEnable()) return InteractionResultHolder.pass(stack);
 
         CompoundTag tag = stack.getOrCreateTag();
-        if (!tag.contains("pos")) return InteractionResultHolder.pass(stack);
+        if (!tag.contains(SUAUtils.Data.KEY_NBT_POS)) return InteractionResultHolder.pass(stack);
 
         if (!level.isClientSide()) {
-            tag.remove("pos");
-            tag.remove("dim");
-            tag.remove("player");
+            tag.remove(SUAUtils.Data.KEY_NBT_POS);
+            tag.remove(SUAUtils.Data.KEY_NBT_DIM);
             player.sendSystemMessage(Component.translatable("message.soph_upgrade_addons.rs.clear"));
         }
 
@@ -97,9 +106,8 @@ public class RSMagnetUpgrade extends UpgradeItemBase<RSMagnetUpgradeWrapper> imp
             String dimensionKey = blockEntity.getLevel().dimension().location().toString();
 
             CompoundTag tag = context.getItemInHand().getOrCreateTag();
-            tag.putLong("pos", pos);
-            tag.putString("dim", dimensionKey);
-            tag.putUUID("player", player.getUUID());
+            tag.putLong(SUAUtils.Data.KEY_NBT_POS, pos);
+            tag.putString(SUAUtils.Data.KEY_NBT_DIM, dimensionKey);
             player.sendSystemMessage(Component.translatable("message.soph_upgrade_addons.rs.linker"));
         }
 
@@ -119,8 +127,8 @@ public class RSMagnetUpgrade extends UpgradeItemBase<RSMagnetUpgradeWrapper> imp
             return;
         }
 
-        long pos = tag.getLong("pos");
-        String dim = tag.getString("dim");
+        long pos = tag.getLong(SUAUtils.Data.KEY_NBT_POS);
+        String dim = tag.getString(SUAUtils.Data.KEY_NBT_DIM);
         if (pos == 0 || dim.isEmpty()) {
             tooltip.add(Component.translatable("item.soph_upgrade_addons.rs_magnet_upgrade.tooltip.unlinked").withStyle(ChatFormatting.DARK_AQUA));
             return;

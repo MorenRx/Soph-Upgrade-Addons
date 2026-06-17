@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.morenrx.sua.init.SUACompat;
 import top.morenrx.sua.upgrades.base.ISUAItemConfig;
+import top.morenrx.sua.util.SUAUtils;
 
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -63,12 +64,11 @@ public class RSPickupUpgrade extends UpgradeItemBase<RSPickupUpgradeWrapper> imp
         if (!isEnable()) return InteractionResultHolder.pass(stack);
 
         CompoundTag tag = stack.getOrCreateTag();
-        if (!tag.contains("pos")) return InteractionResultHolder.pass(stack);
+        if (!tag.contains(SUAUtils.Data.KEY_NBT_POS)) return InteractionResultHolder.pass(stack);
 
         if (!level.isClientSide()) {
-            tag.remove("pos");
-            tag.remove("dim");
-            tag.remove("player");
+            tag.remove(SUAUtils.Data.KEY_NBT_POS);
+            tag.remove(SUAUtils.Data.KEY_NBT_DIM);
             player.sendSystemMessage(Component.translatable("message.soph_upgrade_addons.rs.clear"));
         }
 
@@ -92,10 +92,8 @@ public class RSPickupUpgrade extends UpgradeItemBase<RSPickupUpgradeWrapper> imp
             String dimensionKey = blockEntity.getLevel().dimension().location().toString();
 
             CompoundTag tag = context.getItemInHand().getOrCreateTag();
-            tag.putLong("pos", pos);
-            tag.putString("dim", dimensionKey);
-            tag.putUUID("player", player.getUUID());
-
+            tag.putLong(SUAUtils.Data.KEY_NBT_POS, pos);
+            tag.putString(SUAUtils.Data.KEY_NBT_DIM, dimensionKey);
             player.sendSystemMessage(Component.translatable("message.soph_upgrade_addons.rs.linker"));
         }
 
@@ -115,8 +113,8 @@ public class RSPickupUpgrade extends UpgradeItemBase<RSPickupUpgradeWrapper> imp
             return;
         }
 
-        long pos = tag.getLong("pos");
-        String dim = tag.getString("dim");
+        long pos = tag.getLong(SUAUtils.Data.KEY_NBT_POS);
+        String dim = tag.getString(SUAUtils.Data.KEY_NBT_DIM);
         if (pos == 0 || dim.isEmpty()) {
             tooltip.add(Component.translatable("item.soph_upgrade_addons.rs_pickup_upgrade.tooltip.unlinked").withStyle(ChatFormatting.DARK_AQUA));
             return;

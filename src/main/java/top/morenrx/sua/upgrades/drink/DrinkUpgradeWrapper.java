@@ -66,21 +66,21 @@ public class DrinkUpgradeWrapper extends UpgradeWrapperBase<DrinkUpgradeWrapper,
     }
 
     private boolean drinkPlayerAndGetThirst(Player player, Level level) {
-        int hungerLevel = 20 - player.getCapability(ModCapabilities.PLAYER_THIRST).map(IThirst::getThirst).orElse(20);
-        if (hungerLevel == 0) {
+        int thirstLevel = 20 - player.getCapability(ModCapabilities.PLAYER_THIRST).map(IThirst::getThirst).orElse(20);
+        if (thirstLevel == 0) {
             return false;
         }
-        return tryDrinkingFromStorage(level, hungerLevel, player) && player.getCapability(ModCapabilities.PLAYER_THIRST).map(IThirst::getThirst).orElse(20) < 20;
+        return tryDrinkingFromStorage(level, thirstLevel, player) && player.getCapability(ModCapabilities.PLAYER_THIRST).map(IThirst::getThirst).orElse(20) < 20;
     }
 
-    private boolean tryDrinkingFromStorage(Level level, int hungerLevel, Player player) {
+    private boolean tryDrinkingFromStorage(Level level, int thirstLevel, Player player) {
         ITrackedContentsItemHandler inventory = storageWrapper.getInventoryForUpgradeProcessing();
-        return InventoryHelper.iterate(inventory, (slot, stack) -> tryDrinkingStack(level, hungerLevel, player, slot, stack, inventory), () -> false, ret -> ret);
+        return InventoryHelper.iterate(inventory, (slot, stack) -> tryDrinkingStack(level, thirstLevel, player, slot, stack, inventory), () -> false, ret -> ret);
     }
 
-    private boolean tryDrinkingStack(Level level, int hungerLevel, Player player, Integer slot, ItemStack stack, ITrackedContentsItemHandler inventory) {
+    private boolean tryDrinkingStack(Level level, int thirstLevel, Player player, Integer slot, ItemStack stack, ITrackedContentsItemHandler inventory) {
         boolean isHurt = player.getHealth() < player.getMaxHealth() - 0.1F;
-        if (isDrink(stack) && filterLogic.matchesFilter(stack) && (isThirstEnoughForDrink(hungerLevel, stack) || shouldDrinkForHurt() && hungerLevel > 0 && isHurt)) {
+        if (isDrink(stack) && filterLogic.matchesFilter(stack) && (isThirstEnoughForDrink(thirstLevel, stack) || shouldDrinkForHurt() && thirstLevel > 0 && isHurt)) {
             ItemStack mainHandItem = player.getMainHandItem();
             player.getInventory().items.set(player.getInventory().selected, stack);
 
@@ -113,7 +113,7 @@ public class DrinkUpgradeWrapper extends UpgradeWrapperBase<DrinkUpgradeWrapper,
         return ThirstHelper.getPurity(stack) >= shouldPurity();
     }
 
-    private boolean isThirstEnoughForDrink(int hungerLevel, ItemStack stack) {
+    private boolean isThirstEnoughForDrink(int thirstLevel, ItemStack stack) {
         if (!ThirstHelper.isDrink(stack)) {
             return false;
         }
@@ -124,7 +124,7 @@ public class DrinkUpgradeWrapper extends UpgradeWrapperBase<DrinkUpgradeWrapper,
         }
 
         int thirst = ThirstHelper.getThirst(stack);
-        return (drinkAtThirstLevel == DrinkUpgrade.Data.THIRST_LEVEL_HALF ? (thirst / 2) : thirst) <= hungerLevel;
+        return (drinkAtThirstLevel == DrinkUpgrade.Data.THIRST_LEVEL_HALF ? (thirst / 2) : thirst) <= thirstLevel;
     }
 
     @Override
@@ -133,29 +133,29 @@ public class DrinkUpgradeWrapper extends UpgradeWrapperBase<DrinkUpgradeWrapper,
     }
 
     public int getDrinkAtThirstLevel() {
-        return NBTHelper.getInt(upgrade, DrinkUpgrade.Data.DATA_THIRST_LEVEL).orElse(DrinkUpgrade.Data.THIRST_LEVEL_HALF);
+        return NBTHelper.getInt(upgrade, DrinkUpgrade.Data.KEY_THIRST_LEVEL).orElse(DrinkUpgrade.Data.THIRST_LEVEL_HALF);
     }
 
     public void setDrinkAtThirstLevel(int thirstLevel) {
-        NBTHelper.setInteger(upgrade, DrinkUpgrade.Data.DATA_THIRST_LEVEL, thirstLevel);
+        NBTHelper.setInteger(upgrade, DrinkUpgrade.Data.KEY_THIRST_LEVEL, thirstLevel);
         save();
     }
 
     public boolean shouldDrinkForHurt() {
-        return NBTHelper.getBoolean(upgrade, DrinkUpgrade.Data.DATA_DRINK_FOR_HURT).orElse(false);
+        return NBTHelper.getBoolean(upgrade, DrinkUpgrade.Data.KEY_DRINK_FOR_HURT).orElse(false);
     }
 
     public void setDrinkForHurt(boolean drinkForHurt) {
-        NBTHelper.setBoolean(upgrade, DrinkUpgrade.Data.DATA_DRINK_FOR_HURT, drinkForHurt);
+        NBTHelper.setBoolean(upgrade, DrinkUpgrade.Data.KEY_DRINK_FOR_HURT, drinkForHurt);
         save();
     }
 
     public int shouldPurity() {
-        return NBTHelper.getInt(upgrade, DrinkUpgrade.Data.DATA_PURITY).orElse(DrinkUpgrade.Data.PURITY_DIRTY);
+        return NBTHelper.getInt(upgrade, DrinkUpgrade.Data.KEY_PURITY).orElse(DrinkUpgrade.Data.PURITY_DIRTY);
     }
 
     public void setPurity(int purity) {
-        NBTHelper.setInteger(upgrade, DrinkUpgrade.Data.DATA_PURITY, purity);
+        NBTHelper.setInteger(upgrade, DrinkUpgrade.Data.KEY_PURITY, purity);
         save();
     }
 }

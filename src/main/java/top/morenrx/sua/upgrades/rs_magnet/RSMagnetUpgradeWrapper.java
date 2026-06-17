@@ -36,8 +36,6 @@ import java.util.function.Consumer;
 @Mod.EventBusSubscriber(modid = SophUpgradeAddons.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class RSMagnetUpgradeWrapper extends UpgradeWrapperBase<RSMagnetUpgradeWrapper, RSMagnetUpgrade>
         implements IContentsFilteredUpgrade, ITickableUpgrade, IPickupResponseUpgrade {
-    private static final String PREVENT_REMOTE_MOVEMENT = "PreventRemoteMovement";
-    private static final String ALLOW_MACHINE_MOVEMENT = "AllowMachineRemoteMovement";
     private static final int COOLDOWN_TICKS = 10;
     private static long nextTickTime = Long.MIN_VALUE;
 
@@ -93,7 +91,7 @@ public class RSMagnetUpgradeWrapper extends UpgradeWrapperBase<RSMagnetUpgradeWr
 
         if (networkCache == null || !networkCache.canRun()) {
             CompoundTag tag = upgrade.getOrCreateTag();
-            if ((networkCache = SUAUtils.RS.getRSNetwork(level, tag.getLong("pos"), tag.getString("dim"))) == null) {
+            if ((networkCache = SUAUtils.RS.getRSNetwork(level, tag.getLong(SUAUtils.Data.KEY_NBT_POS), tag.getString(SUAUtils.Data.KEY_NBT_DIM))) == null) {
                 return stack;
             }
         }
@@ -199,7 +197,7 @@ public class RSMagnetUpgradeWrapper extends UpgradeWrapperBase<RSMagnetUpgradeWr
 
     private boolean canNotPickup(Entity pickedUpEntity, @Nullable Entity entity) {
         CompoundTag data = pickedUpEntity.getPersistentData();
-        return entity instanceof Player ? data.contains(PREVENT_REMOTE_MOVEMENT) : data.contains(PREVENT_REMOTE_MOVEMENT) && !data.contains(ALLOW_MACHINE_MOVEMENT);
+        return entity instanceof Player ? data.contains(RSMagnetUpgrade.Data.KEY_PREVENT_REMOTE_MOVEMENT) : data.contains(RSMagnetUpgrade.Data.KEY_PREVENT_REMOTE_MOVEMENT) && !data.contains(RSMagnetUpgrade.Data.KEY_ALLOW_MACHINE_MOVEMENT);
     }
 
     private boolean tryToInsertItem(ItemEntity itemEntity) {
@@ -212,7 +210,7 @@ public class RSMagnetUpgradeWrapper extends UpgradeWrapperBase<RSMagnetUpgradeWr
 
         if (networkCache == null || !networkCache.canRun()) {
             CompoundTag tag = upgrade.getOrCreateTag();
-            if ((networkCache = SUAUtils.RS.getRSNetwork(itemEntity.level(), tag.getLong("pos"), tag.getString("dim"))) == null) {
+            if ((networkCache = SUAUtils.RS.getRSNetwork(itemEntity.level(), tag.getLong(SUAUtils.Data.KEY_NBT_POS), tag.getString(SUAUtils.Data.KEY_NBT_DIM))) == null) {
                 return false;
             }
         }
@@ -226,29 +224,29 @@ public class RSMagnetUpgradeWrapper extends UpgradeWrapperBase<RSMagnetUpgradeWr
     }
 
     public void setPickupItems(boolean pickupItems) {
-        NBTHelper.setBoolean(upgrade, "pickupItems", pickupItems);
+        NBTHelper.setBoolean(upgrade, RSMagnetUpgrade.Data.KEY_PICKUP_ITEMS, pickupItems);
         save();
     }
 
     public boolean shouldPickupItems() {
-        return NBTHelper.getBoolean(upgrade, "pickupItems").orElse(true);
+        return NBTHelper.getBoolean(upgrade, RSMagnetUpgrade.Data.KEY_PICKUP_ITEMS).orElse(true);
     }
 
     public void setPickupXp(boolean pickupXp) {
-        NBTHelper.setBoolean(upgrade, "pickupXp", pickupXp);
+        NBTHelper.setBoolean(upgrade, RSMagnetUpgrade.Data.KEY_PICKUP_XP, pickupXp);
         save();
     }
 
     public boolean shouldPickupXp() {
-        return NBTHelper.getBoolean(upgrade, "pickupXp").orElse(true);
+        return NBTHelper.getBoolean(upgrade, RSMagnetUpgrade.Data.KEY_PICKUP_XP).orElse(true);
     }
 
     public void setEnableVoid(boolean enableVoid) {
-        NBTHelper.setBoolean(upgrade, "enableVoid", enableVoid);
+        NBTHelper.setBoolean(upgrade, RSMagnetUpgrade.Data.KEY_ENABLE_VOID, enableVoid);
         save();
     }
 
     public boolean shouldEnableVoid() {
-        return NBTHelper.getBoolean(upgrade, "enableVoid").orElse(true);
+        return NBTHelper.getBoolean(upgrade, RSMagnetUpgrade.Data.KEY_ENABLE_VOID).orElse(true);
     }
 }

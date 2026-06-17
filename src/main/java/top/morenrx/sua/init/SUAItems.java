@@ -42,6 +42,10 @@ import top.morenrx.sua.upgrades.rs_magnet.RSMagnetUpgradeWrapper;
 import top.morenrx.sua.upgrades.rs_pickup.RSPickupUpgrade;
 import top.morenrx.sua.upgrades.rs_pickup.RSPickupUpgradeTab;
 import top.morenrx.sua.upgrades.rs_pickup.RSPickupUpgradeWrapper;
+import top.morenrx.sua.upgrades.salvaging.SalvagingUpgrade;
+import top.morenrx.sua.upgrades.salvaging.SalvagingUpgradeContainer;
+import top.morenrx.sua.upgrades.salvaging.SalvagingUpgradeTab;
+import top.morenrx.sua.upgrades.salvaging.SalvagingUpgradeWrapper;
 import top.morenrx.sua.upgrades.voiding.SuperVoidUpgrade;
 import top.morenrx.sua.upgrades.voiding.SuperVoidUpgradeTab;
 
@@ -78,6 +82,13 @@ public class SUAItems {
     public static final RegistryObject<Item> ADVANCED_DRINK_UPGRADE = ITEMS.register("advanced_drink_upgrade", () -> new DrinkUpgrade(
             SUAConfig.INSTANCE.advancedDrinkUpgrade.enable::get,
             SUAConfig.INSTANCE.advancedDrinkUpgrade.filterSlots::get));
+    public static final RegistryObject<Item> SALVAGING_UPGRADE = ITEMS.register("salvaging_upgrade", () -> new SalvagingUpgrade(
+            SUAConfig.INSTANCE.salvagingUpgradeConfig.enable::get,
+            SUAConfig.INSTANCE.salvagingUpgradeConfig.filterSlots::get));
+    public static final RegistryObject<Item> ADVANCED_SALVAGING_UPGRADE = ITEMS.register("advanced_salvaging_upgrade", () -> new SalvagingUpgrade(
+            SUAConfig.INSTANCE.advancedSalvagingUpgradeConfig.enable::get,
+            SUAConfig.INSTANCE.advancedSalvagingUpgradeConfig.filterSlots::get));
+
 
 
     public static final RegistryObject<CreativeModeTab> CREATIVE_TAB = CREATIVE_MODE_TABS.register("main", () ->
@@ -114,6 +125,8 @@ public class SUAItems {
     private static final UpgradeContainerType<DrinkUpgradeWrapper, DrinkUpgradeContainer> ADVANCED_DRINK_TYPE = new UpgradeContainerType<>(DrinkUpgradeContainer::new);
     private static final UpgradeContainerType<PotionCharmUpgradeWrapper, PotionCharmUpgradeContainer> BASIC_POTION_CHARM_TYPE = new UpgradeContainerType<>(PotionCharmUpgradeContainer::new);
     private static final UpgradeContainerType<PotionCharmUpgradeWrapper, PotionCharmUpgradeContainer> ADVANCED_POTION_CHARM_TYPE = new UpgradeContainerType<>(PotionCharmUpgradeContainer::new);
+    private static final UpgradeContainerType<SalvagingUpgradeWrapper, SalvagingUpgradeContainer> BASIC_SALVAGING_UPGRADE_TYPE = new UpgradeContainerType<>(SalvagingUpgradeContainer::new);
+    private static final UpgradeContainerType<SalvagingUpgradeWrapper, SalvagingUpgradeContainer> ADVANCED_SALVAGING_UPGRADE_TYPE = new UpgradeContainerType<>(SalvagingUpgradeContainer::new);
 
 
     @SuppressWarnings("DataFlowIssue")
@@ -127,6 +140,8 @@ public class SUAItems {
         UpgradeContainerRegistry.register(ADVANCED_DRINK_UPGRADE.getId(), ADVANCED_DRINK_TYPE);
         UpgradeContainerRegistry.register(POTION_CHARM_UPGRADE.getId(), BASIC_POTION_CHARM_TYPE);
         UpgradeContainerRegistry.register(ADVANCED_POTION_CHARM_UPGRADE.getId(), ADVANCED_POTION_CHARM_TYPE);
+        UpgradeContainerRegistry.register(SALVAGING_UPGRADE.getId(), BASIC_SALVAGING_UPGRADE_TYPE);
+        UpgradeContainerRegistry.register(ADVANCED_SALVAGING_UPGRADE.getId(), ADVANCED_SALVAGING_UPGRADE_TYPE);
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
             UpgradeGuiManager.registerTab(BASIC_RS_MAGNET_TYPE, (RSMagnetUpgradeContainer container, Position position, StorageScreenBase<?> base) -> new RSMagnetUpgradeTab.Basic(container, position, base, SUAConfig.INSTANCE.rsMagnetUpgrade.slotsInRow.get(), SBPButtonDefinitions.BACKPACK_CONTENTS_FILTER_TYPE));
@@ -137,6 +152,8 @@ public class SUAItems {
             UpgradeGuiManager.registerTab(ADVANCED_DRINK_TYPE, (DrinkUpgradeContainer container, Position position, StorageScreenBase<?> base) -> new DrinkUpgradeTab.Advanced(container, position, base, SUAConfig.INSTANCE.advancedDrinkUpgrade.slotsInRow.get()));
             UpgradeGuiManager.registerTab(BASIC_POTION_CHARM_TYPE, (PotionCharmUpgradeContainer container, Position position, StorageScreenBase<?> base) -> new PotionCharmUpgradeTab.Basic(container, position, base, SUAConfig.INSTANCE.potionCharmUpgradeConfig.slotsInRow.get()));
             UpgradeGuiManager.registerTab(ADVANCED_POTION_CHARM_TYPE, (PotionCharmUpgradeContainer container, Position position, StorageScreenBase<?> base) -> new PotionCharmUpgradeTab.Advanced(container, position, base, SUAConfig.INSTANCE.advancedPotionCharmUpgradeConfig.slotsInRow.get()));
+            UpgradeGuiManager.registerTab(BASIC_SALVAGING_UPGRADE_TYPE, (SalvagingUpgradeContainer container, Position position, StorageScreenBase<?> base) -> new SalvagingUpgradeTab.Basic(container, position, base, SUAConfig.INSTANCE.salvagingUpgradeConfig.slotsInRow.get()));
+            UpgradeGuiManager.registerTab(ADVANCED_SALVAGING_UPGRADE_TYPE, (SalvagingUpgradeContainer container, Position position, StorageScreenBase<?> base) -> new SalvagingUpgradeTab.Advanced(container, position, base, SUAConfig.INSTANCE.advancedSalvagingUpgradeConfig.slotsInRow.get()));
 
         });
     }

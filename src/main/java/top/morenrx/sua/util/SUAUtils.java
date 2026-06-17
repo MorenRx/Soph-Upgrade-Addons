@@ -16,7 +16,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.fml.common.Mod;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.AccessLogRecord;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackStorage;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
@@ -34,8 +33,12 @@ import top.morenrx.sua.SophUpgradeAddons;
 import java.util.List;
 import java.util.UUID;
 
-@Mod.EventBusSubscriber(modid = SophUpgradeAddons.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+
 public class SUAUtils {
+    public static class Data {
+        public static final String KEY_NBT_DIM = "dim";
+        public static final String KEY_NBT_POS = "pos";
+    }
 
     public static class Backpack {
         private final static UUID FAKE_PLAYER_UUID = UUID.fromString("61664b79-57e6-4174-b4c1-7e1b8e4486da");

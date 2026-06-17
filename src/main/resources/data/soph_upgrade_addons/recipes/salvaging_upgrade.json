@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "conditions": [
+    {
+      "type": "soph_upgrade_addons:item_enabled",
+      "itemRegistryName": "soph_upgrade_addons:salvaging_upgrade"
+    }
+  ],
+  "pattern": [
+    "CCC",
+    "BAB",
+    "CCC"
+  ],
+  "key": {
+    "A": {
+      "item": "sophisticatedbackpacks:upgrade_base"
+    },
+    "B": {
+      "item": "apotheosis:salvaging_table"
+    },
+    "C": {
+      "item": "apotheosis:gem_fused_slate"
+    }
+  },
+  "result": {
+    "item": "soph_upgrade_addons:salvaging_upgrade",
+    "count": 1
+  }
+}

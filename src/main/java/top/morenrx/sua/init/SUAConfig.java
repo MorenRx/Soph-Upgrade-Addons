@@ -9,6 +9,7 @@ import top.morenrx.sua.upgrades.potion_charm.PotionCharmUpgradeConfig;
 import top.morenrx.sua.upgrades.rs_deposit.RSDepositUpgradeConfig;
 import top.morenrx.sua.upgrades.rs_magnet.RSMagnetUpgradeConfig;
 import top.morenrx.sua.upgrades.rs_pickup.RSPickupUpgradeConfig;
+import top.morenrx.sua.upgrades.salvaging.SalvagingUpgradeConfig;
 import top.morenrx.sua.upgrades.voiding.SuperVoidUpgradeConfig;
 
 public class SUAConfig {
@@ -24,6 +25,8 @@ public class SUAConfig {
     public final DrinkUpgradeConfig advancedDrinkUpgrade;
     public final PotionCharmUpgradeConfig potionCharmUpgradeConfig;
     public final PotionCharmUpgradeConfig advancedPotionCharmUpgradeConfig;
+    public final SalvagingUpgradeConfig salvagingUpgradeConfig;
+    public final SalvagingUpgradeConfig advancedSalvagingUpgradeConfig;
 
 
     public SUAConfig() {
@@ -39,6 +42,8 @@ public class SUAConfig {
         advancedDrinkUpgrade = new DrinkUpgradeConfig(builder, "高级饮水升级", "AdvancedDrinkUpgrade", 16, 4);
         potionCharmUpgradeConfig = new PotionCharmUpgradeConfig(builder, "药水护符升级", "PotionCharmUpgrade", 4, 2);
         advancedPotionCharmUpgradeConfig = new PotionCharmUpgradeConfig(builder, "高级药水护符升级", "AdvancedPotionCharmUpgrade", 9, 3);
+        salvagingUpgradeConfig = new SalvagingUpgradeConfig(builder, "神化回收升级", "SalvagingUpgrade", 9, 3);
+        advancedSalvagingUpgradeConfig = new SalvagingUpgradeConfig(builder, "高级神化回收升级", "AdvancedSalvagingUpgrade", 16, 4);
 
         SPEC = builder.build();
     }

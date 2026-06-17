@@ -1,0 +1,31 @@
+{
+  "type": "sophisticatedcore:upgrade_next_tier",
+  "conditions": [
+    {
+      "type": "soph_upgrade_addons:item_enabled",
+      "itemRegistryName": "soph_upgrade_addons:advanced_salvaging_upgrade"
+    }
+  ],
+  "key": {
+    "D": {
+      "tag": "forge:gems/diamond"
+    },
+    "G": {
+      "item": "apotheosis:salvaging_table"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
+    },
+    "V": {
+      "item": "soph_upgrade_addons:salvaging_upgrade"
+    }
+  },
+  "pattern": [
+    " D ",
+    "GVG",
+    "RRR"
+  ],
+  "result": {
+    "item": "soph_upgrade_addons:advanced_salvaging_upgrade"
+  }
+}

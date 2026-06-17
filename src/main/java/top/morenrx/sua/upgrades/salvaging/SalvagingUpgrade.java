@@ -1,4 +1,4 @@
-package top.morenrx.sua.upgrades.drink;
+package top.morenrx.sua.upgrades.salvaging;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -17,28 +17,20 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.IntSupplier;
 
-public class DrinkUpgrade extends UpgradeItemBase<DrinkUpgradeWrapper> implements ISUAItemConfig {
+public class SalvagingUpgrade extends UpgradeItemBase<SalvagingUpgradeWrapper> implements ISUAItemConfig {
 
     public static class Data {
-        public static final String KEY_THIRST_LEVEL = "thirstLevel";
-        public static final String KEY_DRINK_FOR_HURT = "drinkForHurt";
-        public static final String KEY_PURITY = "purity";
-
-        public static final int PURITY_DIRTY = 0;
-        public static final int PURITY_SLIGHTLY_DIRTY = 1;
-        public static final int PURITY_ACCEPTABLE = 2;
-        public static final int PURITY_PURIFIED = 3;
-
-        public static final int THIRST_LEVEL_ANY = 0;
-        public static final int THIRST_LEVEL_HALF = 1;
-        public static final int THIRST_LEVEL_FULL = 2;
+        public static final String KEY_WORK_IN_GUI = "workInGUI";
+        public static final String KEY_EQUIPMENT_RARITY = "equipmentRarity";
+        public static final String KEY_GEM_RARITY = "gemRarity";
+        public static final String KEY_SALVAGING_OTHER = "salvagingOther";
     }
 
-    public static final UpgradeType<DrinkUpgradeWrapper> TYPE = new UpgradeType<>(DrinkUpgradeWrapper::new);
+    public static final UpgradeType<SalvagingUpgradeWrapper> TYPE = new UpgradeType<>(SalvagingUpgradeWrapper::new);
     private final BooleanSupplier enable;
     private final IntSupplier filterSlots;
 
-    public DrinkUpgrade(BooleanSupplier enable, IntSupplier filterSlots) {
+    public SalvagingUpgrade(BooleanSupplier enable, IntSupplier filterSlots) {
         super(Config.SERVER.maxUpgradesPerStorage);
         this.enable = enable;
         this.filterSlots = filterSlots;
@@ -48,17 +40,20 @@ public class DrinkUpgrade extends UpgradeItemBase<DrinkUpgradeWrapper> implement
         return filterSlots.getAsInt();
     }
 
-    public @NotNull UpgradeType<DrinkUpgradeWrapper> getType() {
+    @Override
+    public @NotNull UpgradeType<SalvagingUpgradeWrapper> getType() {
         return TYPE;
     }
 
+    @Override
     public @NotNull List<UpgradeConflictDefinition> getUpgradeConflicts() {
         return List.of();
     }
 
     @Override
     public boolean isEnable() {
-        return SUACompat.THIRST && enable.getAsBoolean();
+        return false;
+        // return SUACompat.APOTHEOSIS && enable.getAsBoolean();
     }
 
     @Override

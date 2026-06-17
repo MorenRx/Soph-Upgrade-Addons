@@ -19,12 +19,12 @@ public class DrinkUpgradeContainer extends UpgradeContainerBase<DrinkUpgradeWrap
 
     @Override
     public void handleMessage(CompoundTag data) {
-        if (data.contains(DrinkUpgrade.Data.DATA_THIRST_LEVEL)) {
-            setDrinkAtThirstLevel(data.getInt(DrinkUpgrade.Data.DATA_THIRST_LEVEL));
-        } else if (data.contains(DrinkUpgrade.Data.DATA_DRINK_FOR_HURT)) {
-            setDrinkForHurt(data.getBoolean(DrinkUpgrade.Data.DATA_DRINK_FOR_HURT));
-        } else if (data.contains(DrinkUpgrade.Data.DATA_PURITY)) {
-            setPurity(data.getInt(DrinkUpgrade.Data.DATA_PURITY));
+        if (data.contains(DrinkUpgrade.Data.KEY_THIRST_LEVEL)) {
+            setDrinkAtThirstLevel(data.getInt(DrinkUpgrade.Data.KEY_THIRST_LEVEL));
+        } else if (data.contains(DrinkUpgrade.Data.KEY_DRINK_FOR_HURT)) {
+            setDrinkForHurt(data.getBoolean(DrinkUpgrade.Data.KEY_DRINK_FOR_HURT));
+        } else if (data.contains(DrinkUpgrade.Data.KEY_PURITY)) {
+            setPurity(data.getInt(DrinkUpgrade.Data.KEY_PURITY));
         }
         filterLogicContainer.handleMessage(data);
     }
@@ -35,7 +35,7 @@ public class DrinkUpgradeContainer extends UpgradeContainerBase<DrinkUpgradeWrap
 
     public void setDrinkAtThirstLevel(int thirstLevel) {
         upgradeWrapper.setDrinkAtThirstLevel(thirstLevel);
-        sendDataToServer(() -> NBTHelper.putInt(new CompoundTag(), DrinkUpgrade.Data.DATA_THIRST_LEVEL, thirstLevel));
+        sendDataToServer(() -> NBTHelper.putInt(new CompoundTag(), DrinkUpgrade.Data.KEY_THIRST_LEVEL, thirstLevel));
     }
 
     public int getDrinkAtThirstLevel() {
@@ -44,7 +44,7 @@ public class DrinkUpgradeContainer extends UpgradeContainerBase<DrinkUpgradeWrap
 
     public void setDrinkForHurt(boolean drinkForHurt) {
         upgradeWrapper.setDrinkForHurt(drinkForHurt);
-        sendBooleanToServer(DrinkUpgrade.Data.DATA_DRINK_FOR_HURT, drinkForHurt);
+        sendBooleanToServer(DrinkUpgrade.Data.KEY_DRINK_FOR_HURT, drinkForHurt);
     }
 
     public boolean shouldDrinkForHurt() {
@@ -53,7 +53,7 @@ public class DrinkUpgradeContainer extends UpgradeContainerBase<DrinkUpgradeWrap
 
     public void setPurity(int purity) {
         upgradeWrapper.setPurity(purity);
-        sendDataToServer(() -> NBTHelper.putInt(new CompoundTag(), DrinkUpgrade.Data.DATA_PURITY, purity));
+        sendDataToServer(() -> NBTHelper.putInt(new CompoundTag(), DrinkUpgrade.Data.KEY_PURITY, purity));
     }
 
     public int shouldPurity() {

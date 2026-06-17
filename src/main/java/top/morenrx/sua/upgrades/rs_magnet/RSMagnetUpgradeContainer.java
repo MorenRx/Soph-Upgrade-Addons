@@ -7,10 +7,6 @@ import net.p3pp3rf1y.sophisticatedcore.common.gui.UpgradeContainerType;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.ContentsFilterLogicContainer;
 
 public class RSMagnetUpgradeContainer extends UpgradeContainerBase<RSMagnetUpgradeWrapper, RSMagnetUpgradeContainer> {
-    private static final String DATA_PICKUP_ITEMS = "pickupItems";
-    private static final String DATA_PICKUP_XP = "pickupXp";
-    private static final String DATA_ENABLE_VOID = "enableVoid";
-
     private final ContentsFilterLogicContainer filterLogicContainer;
 
     public RSMagnetUpgradeContainer(Player player, int containerId, RSMagnetUpgradeWrapper wrapper, UpgradeContainerType<RSMagnetUpgradeWrapper, RSMagnetUpgradeContainer> type) {
@@ -21,12 +17,12 @@ public class RSMagnetUpgradeContainer extends UpgradeContainerBase<RSMagnetUpgra
 
     @Override
     public void handleMessage(CompoundTag data) {
-        if (data.contains(DATA_PICKUP_ITEMS)) {
-            setPickupItems(data.getBoolean(DATA_PICKUP_ITEMS));
-        } else if (data.contains(DATA_PICKUP_XP)) {
-            setPickupXp(data.getBoolean(DATA_PICKUP_XP));
-        } else if (data.contains(DATA_ENABLE_VOID)) {
-            setEnableVoid(data.getBoolean(DATA_ENABLE_VOID));
+        if (data.contains(RSMagnetUpgrade.Data.KEY_PICKUP_ITEMS)) {
+            setPickupItems(data.getBoolean(RSMagnetUpgrade.Data.KEY_PICKUP_ITEMS));
+        } else if (data.contains(RSMagnetUpgrade.Data.KEY_PICKUP_XP)) {
+            setPickupXp(data.getBoolean(RSMagnetUpgrade.Data.KEY_PICKUP_XP));
+        } else if (data.contains(RSMagnetUpgrade.Data.KEY_ENABLE_VOID)) {
+            setEnableVoid(data.getBoolean(RSMagnetUpgrade.Data.KEY_ENABLE_VOID));
         }
         filterLogicContainer.handleMessage(data);
     }
@@ -37,7 +33,7 @@ public class RSMagnetUpgradeContainer extends UpgradeContainerBase<RSMagnetUpgra
 
     public void setPickupItems(boolean pickupItems) {
         upgradeWrapper.setPickupItems(pickupItems);
-        sendBooleanToServer(DATA_PICKUP_ITEMS, pickupItems);
+        sendBooleanToServer(RSMagnetUpgrade.Data.KEY_PICKUP_ITEMS, pickupItems);
     }
 
     public boolean shouldPickupItems() {
@@ -46,7 +42,7 @@ public class RSMagnetUpgradeContainer extends UpgradeContainerBase<RSMagnetUpgra
 
     public void setPickupXp(boolean pickupXp) {
         upgradeWrapper.setPickupXp(pickupXp);
-        sendBooleanToServer(DATA_PICKUP_XP, pickupXp);
+        sendBooleanToServer(RSMagnetUpgrade.Data.KEY_PICKUP_XP, pickupXp);
     }
 
     public boolean shouldPickupXp() {
@@ -55,7 +51,7 @@ public class RSMagnetUpgradeContainer extends UpgradeContainerBase<RSMagnetUpgra
 
     public void setEnableVoid(boolean enableVoid) {
         upgradeWrapper.setEnableVoid(enableVoid);
-        sendBooleanToServer(DATA_ENABLE_VOID, enableVoid);
+        sendBooleanToServer(RSMagnetUpgrade.Data.KEY_ENABLE_VOID, enableVoid);
     }
 
     public boolean shouldEnableVoid() {

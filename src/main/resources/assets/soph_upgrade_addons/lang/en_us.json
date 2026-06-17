@@ -34,6 +34,12 @@
   "item.soph_upgrade_addons.advanced_drink_upgrade": "Advanced Drink Upgrade",
   "item.soph_upgrade_addons.advanced_drink_upgrade.tooltip": "Automatically drinks beverages from the backpack\nMore powerful filtration function",
 
+  "item.soph_upgrade_addons.salvaging_upgrade": "Apotheosis Salvaging Upgrade",
+  "item.soph_upgrade_addons.salvaging_upgrade.tooltip": "Salvaging items from the filter",
+
+  "item.soph_upgrade_addons.advanced_salvaging_upgrade": "Advanced  Apotheosis Salvaging Upgrade",
+  "item.soph_upgrade_addons.advanced_salvaging_upgrade.tooltip": "Salvaging items from the filter\nMore powerful filtration function",
+
   "message.soph_upgrade_addons.rs.clear": "RS network link disconnected",
   "message.soph_upgrade_addons.rs.linker": "Successfully connected to RS network",
 
@@ -60,6 +66,12 @@
 
   "gui.sophisticatedbackpacks.upgrades.advanced_potion_charm": "Advanced Potion Charm",
   "gui.sophisticatedbackpacks.upgrades.advanced_potion_charm.tooltip": "Advanced Potion Charm Setting",
+
+  "gui.sophisticatedbackpacks.upgrades.salvaging_upgrade": "Apotheosis Salvaging",
+  "gui.sophisticatedbackpacks.upgrades.salvaging_upgrade.tooltip": "Apotheosis Salvaging Setting",
+
+  "gui.sophisticatedbackpacks.upgrades.advanced_salvaging_upgrade": "Advanced Apotheosis Salvaging",
+  "gui.sophisticatedbackpacks.upgrades.advanced_salvaging_upgrade.tooltip": "Advanced Apotheosis Salvaging Setting",
 
   "gui.sophisticatedbackpacks.upgrades.buttons.enable_void": "Allow Void Upgrade to Destroy Items",
   "gui.sophisticatedbackpacks.upgrades.buttons.do_not_enable_void": "Void upgrades are not allowed to destroy items.",
