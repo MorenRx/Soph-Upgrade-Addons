@@ -19,20 +19,19 @@ import top.morenrx.sua.util.SUAUtils;
 import java.util.Map;
 
 public class DrinkUpgradeTab extends UpgradeSettingsTab<DrinkUpgradeContainer> {
-    private static final int THIRST_LEVEL_SIZE = 3;
     private static final ButtonDefinition.Toggle<Integer> THIRST_LEVEL = ButtonDefinitions.createToggleButtonDefinition(
             Map.of(
                     DrinkUpgrade.Data.THIRST_LEVEL_ANY, SUAUtils.Gui.getButtonStateData(new UV(64, 0), SBPTranslationHelper.INSTANCE.translUpgradeButton("thirst_level_any"), Dimension.SQUARE_16, new Position(1, 1)),
                     DrinkUpgrade.Data.THIRST_LEVEL_HALF, SUAUtils.Gui.getButtonStateData(new UV(48, 0), SBPTranslationHelper.INSTANCE.translUpgradeButton("thirst_level_half"), Dimension.SQUARE_16, new Position(1, 1)),
                     DrinkUpgrade.Data.THIRST_LEVEL_FULL, SUAUtils.Gui.getButtonStateData(new UV(32, 0), SBPTranslationHelper.INSTANCE.translUpgradeButton("thirst_level_full"), Dimension.SQUARE_16, new Position(1, 1))
             ));
+    private static final int THIRST_LEVEL_SIZE = THIRST_LEVEL.getStateData().size();
 
     private static final ButtonDefinition.Toggle<Boolean> DRINK_FOR_HURT = ButtonDefinitions.createToggleButtonDefinition(
             ButtonDefinitions.getBooleanStateData(
                     GuiHelper.getButtonStateData(new UV(96, 16), SBPTranslationHelper.INSTANCE.translUpgradeButton("drink_for_hurt"), Dimension.SQUARE_16, new Position(1, 1)),
                     GuiHelper.getButtonStateData(new UV(112, 16), SBPTranslationHelper.INSTANCE.translUpgradeButton("drink_ignore_hurt"), Dimension.SQUARE_16, new Position(1, 1))
             ));
-    private static final int PURITY_SIZE = 4;
     private static final ButtonDefinition.Toggle<Integer> PURITY = ButtonDefinitions.createToggleButtonDefinition(
             Map.of(
                     DrinkUpgrade.Data.PURITY_DIRTY, SUAUtils.Gui.getButtonStateData(new UV(128, 0), SBPTranslationHelper.INSTANCE.translUpgradeButton("purity_dirty"), Dimension.SQUARE_16, new Position(1, 1)),
@@ -40,6 +39,7 @@ public class DrinkUpgradeTab extends UpgradeSettingsTab<DrinkUpgradeContainer> {
                     DrinkUpgrade.Data.PURITY_ACCEPTABLE, SUAUtils.Gui.getButtonStateData(new UV(96, 0), SBPTranslationHelper.INSTANCE.translUpgradeButton("purity_acceptable"), Dimension.SQUARE_16, new Position(1, 1)),
                     DrinkUpgrade.Data.PURITY_PURIFIED, SUAUtils.Gui.getButtonStateData(new UV(80, 0), SBPTranslationHelper.INSTANCE.translUpgradeButton("purity_purified"), Dimension.SQUARE_16, new Position(1, 1))
             ));
+    private static final int PURITY_SIZE = PURITY.getStateData().size();
 
 
     protected FilterLogicControl<FilterLogic, FilterLogicContainer<FilterLogic>> filterLogicControl;

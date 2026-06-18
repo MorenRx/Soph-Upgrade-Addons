@@ -29,10 +29,10 @@
   "item.soph_upgrade_addons.advanced_potion_charm_upgrade.tooltip": "药水护符放在此升级内可以生效\n更大的容量",
 
   "item.soph_upgrade_addons.drink_upgrade": "饮水升级",
-  "item.soph_upgrade_addons.drink_upgrade.tooltip": "自动饮用背包内的饮品",
+  "item.soph_upgrade_addons.drink_upgrade.tooltip": "自动饮用背包内的饮品\n饥饿值满时不会自动食用解渴的食物",
 
   "item.soph_upgrade_addons.advanced_drink_upgrade": "高级饮水升级",
-  "item.soph_upgrade_addons.advanced_drink_upgrade.tooltip": "自动饮用背包内的饮品\n更强大的过滤功能",
+  "item.soph_upgrade_addons.advanced_drink_upgrade.tooltip": "自动饮用背包内的饮品\n饥饿值满时不会自动食用解渴的食物\n更强大的过滤功能",
 
   "item.soph_upgrade_addons.salvaging_upgrade": "神化回收升级",
   "item.soph_upgrade_addons.salvaging_upgrade.tooltip": "回收过滤器中的物品",

@@ -38,7 +38,7 @@ public class DrinkUpgradeWrapper extends UpgradeWrapperBase<DrinkUpgradeWrapper,
 
     public DrinkUpgradeWrapper(IStorageWrapper storageWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
         super(storageWrapper, upgrade, upgradeSaveHandler);
-        filterLogic = new FilterLogic(upgrade, upgradeSaveHandler, upgradeItem.getFilterSlotCount(), ThirstHelper::isDrink);
+        filterLogic = new FilterLogic(upgrade, upgradeSaveHandler, upgradeItem.getFilterSlotCount(), ThirstHelper::itemRestoresThirst);
     }
 
     @Override
@@ -86,7 +86,6 @@ public class DrinkUpgradeWrapper extends UpgradeWrapperBase<DrinkUpgradeWrapper,
 
             ItemStack singleItemCopy = stack.copy();
             singleItemCopy.setCount(1);
-
             if (singleItemCopy.use(level, player, InteractionHand.MAIN_HAND).getResult() == InteractionResult.CONSUME) {
                 stack.shrink(1);
                 inventory.setStackInSlot(slot, stack);
@@ -109,15 +108,12 @@ public class DrinkUpgradeWrapper extends UpgradeWrapperBase<DrinkUpgradeWrapper,
     }
 
     private boolean isDrink(ItemStack stack) {
-        if (!ThirstHelper.isDrink(stack)) return false;
+        if (!ThirstHelper.itemRestoresThirst(stack)) return false;
+        if (!ThirstHelper.isDrink(stack)) return true;
         return ThirstHelper.getPurity(stack) >= shouldPurity();
     }
 
     private boolean isThirstEnoughForDrink(int thirstLevel, ItemStack stack) {
-        if (!ThirstHelper.isDrink(stack)) {
-            return false;
-        }
-
         int drinkAtThirstLevel = getDrinkAtThirstLevel();
         if (drinkAtThirstLevel == DrinkUpgrade.Data.THIRST_LEVEL_ANY) {
             return true;
