@@ -1,6 +1,7 @@
 package top.morenrx.sua.upgrades.rs_pickup;
 
 import com.refinedmods.refinedstorage.api.network.INetwork;
+import com.refinedmods.refinedstorage.api.network.node.INetworkNode;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
@@ -13,6 +14,7 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.IContentsFilteredUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.IPickupResponseUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeWrapperBase;
 import org.jetbrains.annotations.NotNull;
+import top.morenrx.sua.data.RSLocation;
 import top.morenrx.sua.util.SUAUtils;
 
 import java.util.function.Consumer;
@@ -20,7 +22,7 @@ import java.util.function.Consumer;
 public class RSPickupUpgradeWrapper extends UpgradeWrapperBase<RSPickupUpgradeWrapper, RSPickupUpgrade>
         implements IPickupResponseUpgrade, IContentsFilteredUpgrade {
     private final ContentsFilterLogic filterLogic;
-    private INetwork networkCache = null;
+    private RSLocation rsLocationCache = null;
     private Player playerCache = null;
 
     public RSPickupUpgradeWrapper(IStorageWrapper storageWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
@@ -37,14 +39,17 @@ public class RSPickupUpgradeWrapper extends UpgradeWrapperBase<RSPickupUpgradeWr
 
         if (this.playerCache == null) this.playerCache = SUAUtils.Backpack.getBackpackOwner(level, storageWrapper.getContentsUuid().orElse(null));
 
-        if (networkCache == null || !networkCache.canRun()) {
+        if (rsLocationCache == null) {
             CompoundTag tag = upgrade.getOrCreateTag();
-            if ((networkCache = SUAUtils.RS.getRSNetwork(level, tag.getLong(SUAUtils.Data.KEY_NBT_POS), tag.getString(SUAUtils.Data.KEY_NBT_DIM))) == null) {
+            if ((rsLocationCache = RSLocation.create(level, tag.getLong(SUAUtils.Data.KEY_NBT_POS), tag.getString(SUAUtils.Data.KEY_NBT_DIM))) == null) {
                 return stack;
             }
         }
 
-        return SUAUtils.RS.insertItemToRS(networkCache, stack, playerCache, simulate);
+        INetwork network = SUAUtils.RS.getRSNetwork(rsLocationCache);
+        if (network == null || !network.canRun()) return stack;
+
+        return SUAUtils.RS.insertItemToRS(network, stack, playerCache, simulate);
     }
 
     @Override

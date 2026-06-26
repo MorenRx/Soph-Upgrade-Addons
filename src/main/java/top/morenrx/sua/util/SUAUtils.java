@@ -2,6 +2,7 @@ package top.morenrx.sua.util;
 
 import com.mojang.authlib.GameProfile;
 import com.refinedmods.refinedstorage.api.network.INetwork;
+import com.refinedmods.refinedstorage.api.network.node.INetworkNode;
 import com.refinedmods.refinedstorage.api.network.node.INetworkNodeProxy;
 import com.refinedmods.refinedstorage.api.util.Action;
 import net.minecraft.core.BlockPos;
@@ -29,6 +30,7 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.voiding.VoidUpgradeWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.morenrx.sua.SophUpgradeAddons;
+import top.morenrx.sua.data.RSLocation;
 
 import java.util.List;
 import java.util.UUID;
@@ -56,8 +58,12 @@ public class SUAUtils {
             AccessLogRecord accessLogRecord = BackpackStorage.get().getAccessLogs().get(backpackUUID);
             if (accessLogRecord == null) return getFakePlayer(level);
 
-            ServerPlayer serverPlayer = level.getServer().getPlayerList().getPlayerByName(accessLogRecord.getPlayerName());
-            return serverPlayer == null ? getFakePlayer(level) : serverPlayer;
+            for(ServerPlayer serverplayer : level.getServer().getPlayerList().getPlayers()) {
+                if (serverplayer.getDisplayName().getString().equalsIgnoreCase(accessLogRecord.getPlayerName())) {
+                    return serverplayer;
+                }
+            }
+            return getFakePlayer(level);
         }
 
         public static boolean shouldDestroy(IStorageWrapper storageWrapper, ItemStack stack) {
@@ -73,18 +79,9 @@ public class SUAUtils {
 
 
     public static class RS {
-        public static INetwork getRSNetwork(Level level, long pos, String dim) {
-            if (pos == 0 || dim.isEmpty()) return null;
-            if (!(level instanceof ServerLevel serverLevel)) return null;
-            ResourceKey<Level> dimensionKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(dim));
-
-            BlockPos rsPos = BlockPos.of(pos);
-            ServerLevel rsLevel = serverLevel.getServer().getLevel(dimensionKey);
-            if (rsLevel == null) return null;
-
-            BlockEntity blockEntity = rsLevel.getBlockEntity(rsPos);
+        public static INetwork getRSNetwork(RSLocation rsLocation) {
+            BlockEntity blockEntity = rsLocation.dim().getBlockEntity(rsLocation.pos());
             if (!(blockEntity instanceof INetworkNodeProxy<?> networkNode)) return null;
-
             return networkNode.getNode().getNetwork();
         }
 

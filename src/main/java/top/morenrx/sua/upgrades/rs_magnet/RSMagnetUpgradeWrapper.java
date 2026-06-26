@@ -28,6 +28,7 @@ import net.p3pp3rf1y.sophisticatedcore.util.XpHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.morenrx.sua.SophUpgradeAddons;
+import top.morenrx.sua.data.RSLocation;
 import top.morenrx.sua.util.SUAUtils;
 
 import java.util.List;
@@ -58,7 +59,7 @@ public class RSMagnetUpgradeWrapper extends UpgradeWrapperBase<RSMagnetUpgradeWr
 
     private static final int FULL_COOLDOWN_TICKS = 40;
     private final ContentsFilterLogic filterLogic;
-    private INetwork networkCache = null;
+    private RSLocation rsLocationCache = null;
     private Player playerCache = null;
 
 
@@ -89,14 +90,17 @@ public class RSMagnetUpgradeWrapper extends UpgradeWrapperBase<RSMagnetUpgradeWr
 
         if (this.playerCache == null) playerCache = SUAUtils.Backpack.getBackpackOwner(level, storageWrapper.getContentsUuid().orElse(null));
 
-        if (networkCache == null || !networkCache.canRun()) {
+        if (rsLocationCache == null) {
             CompoundTag tag = upgrade.getOrCreateTag();
-            if ((networkCache = SUAUtils.RS.getRSNetwork(level, tag.getLong(SUAUtils.Data.KEY_NBT_POS), tag.getString(SUAUtils.Data.KEY_NBT_DIM))) == null) {
+            if ((rsLocationCache = RSLocation.create(level, tag.getLong(SUAUtils.Data.KEY_NBT_POS), tag.getString(SUAUtils.Data.KEY_NBT_DIM))) == null) {
                 return stack;
             }
         }
 
-        return SUAUtils.RS.insertItemToRS(networkCache, stack, playerCache, simulate);
+        INetwork network = SUAUtils.RS.getRSNetwork(rsLocationCache);
+        if (network == null || !network.canRun()) return stack;
+
+        return SUAUtils.RS.insertItemToRS(network, stack, playerCache, simulate);
     }
 
     @Override
@@ -208,16 +212,19 @@ public class RSMagnetUpgradeWrapper extends UpgradeWrapperBase<RSMagnetUpgradeWr
             return true;
         }
 
-        if (networkCache == null || !networkCache.canRun()) {
+        if (rsLocationCache == null) {
             CompoundTag tag = upgrade.getOrCreateTag();
-            if ((networkCache = SUAUtils.RS.getRSNetwork(itemEntity.level(), tag.getLong(SUAUtils.Data.KEY_NBT_POS), tag.getString(SUAUtils.Data.KEY_NBT_DIM))) == null) {
+            if ((rsLocationCache = RSLocation.create(itemEntity.level(), tag.getLong(SUAUtils.Data.KEY_NBT_POS), tag.getString(SUAUtils.Data.KEY_NBT_DIM))) == null) {
                 return false;
             }
         }
 
-        ItemStack remainingStack = SUAUtils.RS.insertItemToRS(networkCache, stack, playerCache, true);
+        INetwork network = SUAUtils.RS.getRSNetwork(rsLocationCache);
+        if (network == null || !network.canRun()) return false;
+
+        ItemStack remainingStack = SUAUtils.RS.insertItemToRS(network, stack, playerCache, true);
         if (remainingStack.getCount() >= stack.getCount()) return false;
-        remainingStack = SUAUtils.RS.insertItemToRS(networkCache, stack, playerCache, false);
+        remainingStack = SUAUtils.RS.insertItemToRS(network, stack, playerCache, false);
 
         itemEntity.setItem(remainingStack);
         return true;

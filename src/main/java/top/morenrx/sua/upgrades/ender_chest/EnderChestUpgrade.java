@@ -92,8 +92,10 @@ public class EnderChestUpgrade extends UpgradeItemBase<EnderChestUpgrade.Wrapper
         IEventBus eventBus = MinecraftForge.EVENT_BUS;
         eventBus.addListener(EnderChestUpgrade::onEnderChestTick);
         eventBus.addListener(EnderChestUpgrade::onPlayerJoin);
-        eventBus.addListener(EnderChestUpgrade::onContainerClose);
+        eventBus.addListener(EnderChestUpgrade::onPlayerChangedDimension);
+        eventBus.addListener(EnderChestUpgrade::onPlayerRespawn);
         eventBus.addListener(EnderChestUpgrade::onPlayerClone);
+        eventBus.addListener(EnderChestUpgrade::onContainerClose);
         initEnderChestCompat();
 
     }
@@ -173,6 +175,18 @@ public class EnderChestUpgrade extends UpgradeItemBase<EnderChestUpgrade.Wrapper
         if (!(event.getContainer() instanceof ChestMenu menu)) return;
         if (!(menu.getContainer() instanceof PlayerEnderChestContainer)) return;
         S2CEnderChestSyncMessage.sync(player);
+    }
+
+    public static void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            S2CEnderChestSyncMessage.sync(player);
+        }
+    }
+
+    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            S2CEnderChestSyncMessage.sync(player);
+        }
     }
 
     public static void onPlayerClone(PlayerEvent.Clone event) {
