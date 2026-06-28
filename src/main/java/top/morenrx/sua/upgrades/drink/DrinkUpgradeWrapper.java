@@ -1,8 +1,5 @@
 package top.morenrx.sua.upgrades.drink;
 
-import dev.ghen.thirst.api.ThirstHelper;
-import dev.ghen.thirst.foundation.common.capability.IThirst;
-import dev.ghen.thirst.foundation.common.capability.ModCapabilities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -25,20 +22,35 @@ import net.p3pp3rf1y.sophisticatedcore.util.InventoryHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import top.morenrx.sua.upgrades.drink.compat.GhenThirstCompat;
+import top.morenrx.sua.upgrades.drink.compat.MlusThirstCompat;
+import top.morenrx.sua.upgrades.drink.compat.ThirstCompat;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 public class DrinkUpgradeWrapper extends UpgradeWrapperBase<DrinkUpgradeWrapper, DrinkUpgrade> implements ITickableUpgrade, IFilteredUpgrade {
 
+    private static final ThirstCompat THIRST;
     private static final int COOLDOWN = 100;
     private static final int STILL_THIRST_COOLDOWN = 10;
     private static final int RANGE = 3;
     private final FilterLogic filterLogic;
 
+    static {
+        ThirstCompat compat;
+        try {
+            Class.forName("cn.mlus.thirst.api.ThirstHelper");
+            compat = new MlusThirstCompat();
+        } catch (ClassNotFoundException ignored) {
+            compat = new GhenThirstCompat();
+        }
+        THIRST = compat;
+    }
+
     public DrinkUpgradeWrapper(IStorageWrapper storageWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
         super(storageWrapper, upgrade, upgradeSaveHandler);
-        filterLogic = new FilterLogic(upgrade, upgradeSaveHandler, upgradeItem.getFilterSlotCount(), ThirstHelper::itemRestoresThirst);
+        filterLogic = new FilterLogic(upgrade, upgradeSaveHandler, upgradeItem.getFilterSlotCount(), THIRST::itemRestoresThirst);
     }
 
     @Override
@@ -66,11 +78,11 @@ public class DrinkUpgradeWrapper extends UpgradeWrapperBase<DrinkUpgradeWrapper,
     }
 
     private boolean drinkPlayerAndGetThirst(Player player, Level level) {
-        int thirstLevel = 20 - player.getCapability(ModCapabilities.PLAYER_THIRST).map(IThirst::getThirst).orElse(20);
+        int thirstLevel = 20 - THIRST.getPlayerThirst(player, 20);
         if (thirstLevel == 0) {
             return false;
         }
-        return tryDrinkingFromStorage(level, thirstLevel, player) && player.getCapability(ModCapabilities.PLAYER_THIRST).map(IThirst::getThirst).orElse(20) < 20;
+        return tryDrinkingFromStorage(level, thirstLevel, player) && THIRST.getPlayerThirst(player, 20) < 20;
     }
 
     private boolean tryDrinkingFromStorage(Level level, int thirstLevel, Player player) {
@@ -108,9 +120,9 @@ public class DrinkUpgradeWrapper extends UpgradeWrapperBase<DrinkUpgradeWrapper,
     }
 
     private boolean isDrink(ItemStack stack) {
-        if (!ThirstHelper.itemRestoresThirst(stack)) return false;
-        if (!ThirstHelper.isDrink(stack)) return true;
-        return ThirstHelper.getPurity(stack) >= shouldPurity();
+        if (!THIRST.itemRestoresThirst(stack)) return false;
+        if (!THIRST.isDrink(stack)) return true;
+        return THIRST.getPurity(stack) >= shouldPurity();
     }
 
     private boolean isThirstEnoughForDrink(int thirstLevel, ItemStack stack) {
@@ -119,7 +131,7 @@ public class DrinkUpgradeWrapper extends UpgradeWrapperBase<DrinkUpgradeWrapper,
             return true;
         }
 
-        int thirst = ThirstHelper.getThirst(stack);
+        int thirst = THIRST.getThirst(stack);
         return (drinkAtThirstLevel == DrinkUpgrade.Data.THIRST_LEVEL_HALF ? (thirst / 2) : thirst) <= thirstLevel;
     }
 

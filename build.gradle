@@ -17,7 +17,8 @@ dependencies {
     implementation fg.deobf("curse.maven:sophisticated-backpacks-422301:8199776")
     implementation fg.deobf("curse.maven:sophisticated-core-618298:8201810")
     // 口渴
-    implementation fg.deobf("curse.maven:thirst-was-taken-679270:6660408")
+    implementation fg.deobf("curse.maven:thirst-was-reclaimed-884742:8216518")
+    compileOnly fg.deobf("curse.maven:thirst-was-taken-679270:6660408")
     // RS
     implementation fg.deobf("curse.maven:refined-storage-243076:4844585")
     // 神化
@@ -35,6 +36,10 @@ dependencies {
 }
 
 repositories {
+    maven {
+        name = "LocalRepo"
+        url = layout.projectDirectory.dir("repo")
+    }
     maven {
         name = "ModMaven"
         url = "https://modmaven.dev"
@@ -105,18 +110,18 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 processResources {
     var replaceProperties = [
-            minecraft_version          : minecraft_version,
-            minecraft_version_range    : minecraft_version_range,
-            forge_version              : forge_version,
-            forge_version_range        : forge_version_range,
-            loader_version_range       : loader_version_range,
-            mod_id                     : mod_id,
-            mod_name                   : mod_name,
-            mod_license                : mod_license,
-            mod_version                : mod_version,
-            mod_authors                : mod_authors,
-            mod_description            : mod_description,
-            soph_version_range         : soph_version_range
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            forge_version          : forge_version,
+            forge_version_range    : forge_version_range,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            mod_authors            : mod_authors,
+            mod_description        : mod_description,
+            soph_version_range     : soph_version_range
     ]
 
     inputs.properties replaceProperties

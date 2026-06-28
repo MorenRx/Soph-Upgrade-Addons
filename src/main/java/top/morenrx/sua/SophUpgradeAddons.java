@@ -1,6 +1,7 @@
 package top.morenrx.sua;
 
 import com.mojang.logging.LogUtils;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -24,4 +25,16 @@ public class SophUpgradeAddons {
         SUANetwork.init();
     }
 
+    // 用于适配 Forge 47.4 以下
+    public static ResourceLocation id(String path) {
+        return new ResourceLocation(MODID, path);
+    }
+
+    public static ResourceLocation id(String namespace, String path) {
+        return new ResourceLocation(namespace, path);
+    }
+
+    public static ResourceLocation parse(String location) {
+        return new ResourceLocation(location);
+    }
 }

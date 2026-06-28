@@ -11,7 +11,7 @@ import top.morenrx.sua.network.S2CEnderChestSyncMessage;
 public class SUANetwork {
     public static final SUANetwork NETWORK_HANDLER = new SUANetwork();
     private final String protocolVersion = Integer.toString(1);
-    private final ResourceLocation channel = ResourceLocation.fromNamespaceAndPath(SophUpgradeAddons.MODID, "main_channel");
+    private final ResourceLocation channel = SophUpgradeAddons.id("main_channel");
     private final SimpleChannel handler = NetworkRegistry.ChannelBuilder
             .named(channel)
             .clientAcceptedVersions(protocolVersion::equals)

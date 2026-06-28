@@ -11,7 +11,7 @@ import top.morenrx.sua.SophUpgradeAddons;
 import top.morenrx.sua.upgrades.base.ISUAItemConfig;
 
 public class ItemEnabledCondition implements ICondition {
-    private static final ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath(SophUpgradeAddons.MODID, "item_enabled");
+    private static final ResourceLocation NAME = SophUpgradeAddons.id("item_enabled");
     private final ResourceLocation itemRegistryName;
 
     public ItemEnabledCondition(ResourceLocation itemRegistryName) {
@@ -38,7 +38,7 @@ public class ItemEnabledCondition implements ICondition {
         }
 
         public ItemEnabledCondition read(JsonObject json) {
-            return new ItemEnabledCondition(ResourceLocation.parse(GsonHelper.getAsString(json, "itemRegistryName")));
+            return new ItemEnabledCondition(SophUpgradeAddons.parse(GsonHelper.getAsString(json, "itemRegistryName")));
         }
 
         public ResourceLocation getID() {

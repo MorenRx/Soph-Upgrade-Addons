@@ -2,19 +2,14 @@ package top.morenrx.sua.util;
 
 import com.mojang.authlib.GameProfile;
 import com.refinedmods.refinedstorage.api.network.INetwork;
-import com.refinedmods.refinedstorage.api.network.node.INetworkNode;
 import com.refinedmods.refinedstorage.api.network.node.INetworkNodeProxy;
 import com.refinedmods.refinedstorage.api.util.Action;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.FakePlayer;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.AccessLogRecord;
@@ -93,7 +88,7 @@ public class SUAUtils {
     }
 
     public static class Gui {
-        private final static ResourceLocation ICONS = ResourceLocation.fromNamespaceAndPath(SophUpgradeAddons.MODID, "textures/gui/icons.png");
+        private final static ResourceLocation ICONS = SophUpgradeAddons.id("textures/gui/icons.png");
 
         public static ToggleButton.StateData getButtonStateData(UV uv, String tooltip, Dimension dimension, Position offset) {
             return new ToggleButton.StateData(new TextureBlitData(ICONS, offset, Dimension.SQUARE_256, uv, dimension), Component.translatable(tooltip));
