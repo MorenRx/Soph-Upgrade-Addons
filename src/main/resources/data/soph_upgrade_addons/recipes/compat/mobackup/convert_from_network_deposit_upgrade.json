@@ -1,0 +1,23 @@
+{
+  "conditions": [
+    {
+      "type": "forge:and",
+      "values": [
+        {
+          "type": "forge:mod_loaded",
+          "modid": "mobackup"
+        },
+        {
+          "type": "soph_upgrade_addons:item_enabled",
+          "itemRegistryName": "soph_upgrade_addons:network_deposit_upgrade"
+        }
+      ]
+    }
+  ],
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "mobackup:dimensional_deposit_upgrade"
+  },
+  "result": "soph_upgrade_addons:network_deposit_upgrade",
+  "count": 1
+}

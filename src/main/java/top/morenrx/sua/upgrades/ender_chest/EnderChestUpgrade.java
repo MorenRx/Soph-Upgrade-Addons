@@ -97,7 +97,6 @@ public class EnderChestUpgrade extends UpgradeItemBase<EnderChestUpgrade.Wrapper
         eventBus.addListener(EnderChestUpgrade::onPlayerClone);
         eventBus.addListener(EnderChestUpgrade::onContainerClose);
         initEnderChestCompat();
-
     }
 
     private static void initEnderChestCompat() {

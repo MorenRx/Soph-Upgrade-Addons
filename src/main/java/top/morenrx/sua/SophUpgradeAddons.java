@@ -10,6 +10,7 @@ import top.morenrx.sua.init.SUAConfig;
 import top.morenrx.sua.init.SUAItems;
 import top.morenrx.sua.init.SUANetwork;
 import top.morenrx.sua.init.SUARecipes;
+import top.morenrx.sua.util.SUAUtils;
 
 @Mod(SophUpgradeAddons.MODID)
 public class SophUpgradeAddons {
@@ -23,7 +24,9 @@ public class SophUpgradeAddons {
         SUAItems.init(modEventBus);
         SUARecipes.init(modEventBus);
         SUANetwork.init();
+        SUAUtils.init();
     }
+
 
     // 用于适配 Forge 47.4 以下
     public static ResourceLocation id(String path) {

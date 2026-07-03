@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import top.morenrx.sua.upgrades.rs_deposit.RSDepositUpgrade;
+import top.morenrx.sua.upgrades.network_deposit.NetworkDepositUpgrade;
 import top.morenrx.sua.util.SUAUtils;
 
 import java.util.List;
@@ -28,7 +28,7 @@ public class MixinInventoryInteractionHelper {
         if (!(te instanceof INetworkNodeProxy<?> networkNode)) return;
         cir.setReturnValue(backpack.getCapability(CapabilityBackpackWrapper.getCapabilityInstance())
                 .map(wrapper -> {
-                    List<DepositUpgradeWrapper> upgradeWrappers = wrapper.getUpgradeHandler().getTypeWrappers(RSDepositUpgrade.TYPE);
+                    List<DepositUpgradeWrapper> upgradeWrappers = wrapper.getUpgradeHandler().getTypeWrappers(NetworkDepositUpgrade.TYPE);
                     if (upgradeWrappers.isEmpty()) return false;
                     if (player.level().isClientSide()) return true;
 
@@ -42,10 +42,10 @@ public class MixinInventoryInteractionHelper {
                             ItemStack slotStack = inventoryHandler.getSlotStack(i);
                             if (slotStack.isEmpty() || !upgradeWrapper.getFilterLogic().matchesFilter(slotStack)) continue;
 
-                            ItemStack remainingStack = SUAUtils.RS.insertItemToRS(network, slotStack, player, true);
+                            ItemStack remainingStack = SUAUtils.RS.insertItem(network, slotStack, player, true);
                             if (remainingStack.getCount() >= slotStack.getCount()) continue;
 
-                            remainingStack = SUAUtils.RS.insertItemToRS(network, slotStack, player, false);
+                            remainingStack = SUAUtils.RS.insertItem(network, slotStack, player, false);
                             inventoryHandler.extractItem(i, slotStack.getCount() - remainingStack.getCount(), false);
                             index++;
                         }

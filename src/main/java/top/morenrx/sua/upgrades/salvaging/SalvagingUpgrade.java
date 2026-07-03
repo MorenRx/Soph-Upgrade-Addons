@@ -10,6 +10,7 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeItemBase;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import top.morenrx.sua.init.SUACompat;
 import top.morenrx.sua.upgrades.base.ISUAItemConfig;
 
 import java.util.List;
@@ -20,8 +21,10 @@ public class SalvagingUpgrade extends UpgradeItemBase<SalvagingUpgradeWrapper> i
 
     public static class Data {
         public static final String KEY_WORK_IN_GUI = "workInGUI";
-        public static final String KEY_EQUIPMENT_RARITY = "equipmentRarity";
-        public static final String KEY_GEM_RARITY = "gemRarity";
+        public static final String KEY_EQUIPMENT_RARITY_MASK = "equipmentRarityMask";
+        public static final String KEY_GEM_RARITY_MASK = "gemRarityMask";
+        public static final String KEY_SALVAGING_EQUIPMENT = "salvagingEquipment";
+        public static final String KEY_SALVAGING_GEM = "salvagingGem";
         public static final String KEY_SALVAGING_OTHER = "salvagingOther";
     }
 
@@ -51,9 +54,9 @@ public class SalvagingUpgrade extends UpgradeItemBase<SalvagingUpgradeWrapper> i
 
     @Override
     public boolean isEnable() {
-        return false;
-        // return SUACompat.APOTHEOSIS && enable.getAsBoolean();
+         return SUACompat.APOTHEOSIS.getAsBoolean() && enable.getAsBoolean();
     }
+
 
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @Nullable Level worldIn, @NotNull List<Component> tooltip, @NotNull TooltipFlag flagIn) {

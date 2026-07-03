@@ -58,7 +58,7 @@ public class DrinkUpgrade extends UpgradeItemBase<DrinkUpgradeWrapper> implement
 
     @Override
     public boolean isEnable() {
-        return SUACompat.THIRST && enable.getAsBoolean();
+        return SUACompat.THIRST.getAsBoolean() && enable.getAsBoolean();
     }
 
     @Override

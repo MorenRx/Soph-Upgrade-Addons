@@ -22,23 +22,23 @@ import net.p3pp3rf1y.sophisticatedcore.util.InventoryHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import top.morenrx.sua.upgrades.drink.compat.GhenThirstCompat;
-import top.morenrx.sua.upgrades.drink.compat.MlusThirstCompat;
-import top.morenrx.sua.upgrades.drink.compat.ThirstCompat;
+import top.morenrx.sua.upgrades.compat.drink.GhenThirstCompat;
+import top.morenrx.sua.upgrades.compat.drink.IThirstCompat;
+import top.morenrx.sua.upgrades.compat.drink.MlusThirstCompat;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 public class DrinkUpgradeWrapper extends UpgradeWrapperBase<DrinkUpgradeWrapper, DrinkUpgrade> implements ITickableUpgrade, IFilteredUpgrade {
 
-    private static final ThirstCompat THIRST;
+    private static final IThirstCompat THIRST;
     private static final int COOLDOWN = 100;
     private static final int STILL_THIRST_COOLDOWN = 10;
     private static final int RANGE = 3;
     private final FilterLogic filterLogic;
 
     static {
-        ThirstCompat compat;
+        IThirstCompat compat;
         try {
             Class.forName("cn.mlus.thirst.api.ThirstHelper");
             compat = new MlusThirstCompat();

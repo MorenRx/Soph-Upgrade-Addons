@@ -43,7 +43,7 @@ public class PotionCharmUpgrade extends UpgradeItemBase<PotionCharmUpgradeWrappe
 
     @Override
     public boolean isEnable() {
-        return SUACompat.APOTHEOSIS && enable.getAsBoolean();
+        return SUACompat.APOTHEOSIS.getAsBoolean() && enable.getAsBoolean();
     }
 
     @Override

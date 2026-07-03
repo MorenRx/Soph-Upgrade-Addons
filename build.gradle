@@ -16,11 +16,18 @@ dependencies {
     // 精妙背包
     implementation fg.deobf("curse.maven:sophisticated-backpacks-422301:8199776")
     implementation fg.deobf("curse.maven:sophisticated-core-618298:8201810")
+    // AE2
+    implementation fg.deobf("curse.maven:applied-energistics-2-223794:7148487")
+    implementation fg.deobf("curse.maven:guideme-1173950:8204776")
+    // RS 1.12.4
+    implementation fg.deobf("curse.maven:refined-storage-243076:4844585")
+    // 超越维度 0.7.24
+    implementation fg.deobf("curse.maven:beyond-dimensions-1222890:8340189")
+    // Tom存储 1.7.1
+    implementation fg.deobf("curse.maven:toms-storage-378609:6418133")
     // 口渴
     implementation fg.deobf("curse.maven:thirst-was-reclaimed-884742:8216518")
     compileOnly fg.deobf("curse.maven:thirst-was-taken-679270:6660408")
-    // RS
-    implementation fg.deobf("curse.maven:refined-storage-243076:4844585")
     // 神化
     implementation fg.deobf("curse.maven:apotheosis-313970:6461960")
     implementation fg.deobf("curse.maven:apothic-attributes-898963:5634071")
@@ -28,11 +35,14 @@ dependencies {
 
     // Embeddium
     runtimeOnly fg.deobf("curse.maven:embeddium-908741:5681725")
+    // 神化附加
+    // runtimeOnly fg.deobf("curse.maven:apotheotic-additions-924640:6393313")
     // 农夫乐事
     runtimeOnly fg.deobf("curse.maven:farmers-delight-398521:8083474")
     // AppleSkin
     runtimeOnly fg.deobf("curse.maven:appleskin-248787:4770828")
-
+    // MBU
+    // runtimeOnly fg.deobf("test:mobackup:1.0.2")
 }
 
 repositories {

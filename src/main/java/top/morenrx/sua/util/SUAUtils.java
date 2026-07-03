@@ -4,14 +4,18 @@ import com.mojang.authlib.GameProfile;
 import com.refinedmods.refinedstorage.api.network.INetwork;
 import com.refinedmods.refinedstorage.api.network.node.INetworkNodeProxy;
 import com.refinedmods.refinedstorage.api.util.Action;
+import dev.shadowsoffire.apotheosis.adventure.affix.salvaging.SalvagingMenu;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.event.level.LevelEvent;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.AccessLogRecord;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackStorage;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
@@ -25,16 +29,25 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.voiding.VoidUpgradeWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.morenrx.sua.SophUpgradeAddons;
-import top.morenrx.sua.data.RSLocation;
+import top.morenrx.sua.data.NetworkLocation;
+import top.morenrx.sua.upgrades.salvaging.SalvagingUpgrade;
+import top.morenrx.sua.upgrades.salvaging.SalvagingUpgradeWrapper;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 
 public class SUAUtils {
-    public static class Data {
-        public static final String KEY_NBT_DIM = "dim";
-        public static final String KEY_NBT_POS = "pos";
+    public static void init() {
+        MinecraftForge.EVENT_BUS.addListener(SUAUtils::overworldLoaded);
+    }
+
+    public static void overworldLoaded(LevelEvent.Load event) {
+        if (event.getLevel() instanceof ServerLevel level && level.dimension().equals(Level.OVERWORLD)) {
+            Recipe.level = new WeakReference<>(level);
+        }
     }
 
     public static class Backpack {
@@ -70,17 +83,33 @@ public class SUAUtils {
             }
             return false;
         }
+
+        @Nullable
+        public static SalvagingUpgradeWrapper shouldSalvaging(IStorageWrapper storageWrapper, ItemStack stack) {
+            List<SalvagingUpgradeWrapper> wrappers = storageWrapper.getUpgradeHandler().getTypeWrappers(SalvagingUpgrade.TYPE);
+            for (SalvagingUpgradeWrapper upgradeWrapper : wrappers) {
+                if (upgradeWrapper.getFilterLogic().matchesFilter(stack) && upgradeWrapper.canSalvaging(stack)) {
+                    return upgradeWrapper;
+                }
+            }
+            return null;
+        }
     }
 
 
     public static class RS {
-        public static INetwork getRSNetwork(RSLocation rsLocation) {
-            BlockEntity blockEntity = rsLocation.dim().getBlockEntity(rsLocation.pos());
+        public static class Data {
+            public static final String KEY_NBT_DIM = "rs_dim";
+            public static final String KEY_NBT_POS = "rs_pos";
+        }
+
+        public static INetwork getNetwork(NetworkLocation networkLocation) {
+            BlockEntity blockEntity = networkLocation.dim().getBlockEntity(networkLocation.pos());
             if (!(blockEntity instanceof INetworkNodeProxy<?> networkNode)) return null;
             return networkNode.getNode().getNetwork();
         }
 
-        public static ItemStack insertItemToRS(INetwork network, ItemStack stack, Player player, boolean simulate) {
+        public static ItemStack insertItem(INetwork network, ItemStack stack, Player player, boolean simulate) {
             ItemStack remaining = network.insertItem(stack, stack.getCount(), simulate ? Action.SIMULATE : Action.PERFORM);
             if (!simulate) network.getItemStorageTracker().changed(player, stack.copy());
             return remaining;
@@ -91,7 +120,32 @@ public class SUAUtils {
         private final static ResourceLocation ICONS = SophUpgradeAddons.id("textures/gui/icons.png");
 
         public static ToggleButton.StateData getButtonStateData(UV uv, String tooltip, Dimension dimension, Position offset) {
-            return new ToggleButton.StateData(new TextureBlitData(ICONS, offset, Dimension.SQUARE_256, uv, dimension), Component.translatable(tooltip));
+            return getButtonStateData(uv, Component.translatable(tooltip), dimension, offset);
+        }
+        public static ToggleButton.StateData getButtonStateData(UV uv, Component tooltip, Dimension dimension, Position offset) {
+            return new ToggleButton.StateData(getTextureBlitData(uv, dimension, offset), tooltip);
+        }
+
+        public static TextureBlitData getTextureBlitData(UV uv, Dimension dimension, Position offset) {
+            return new TextureBlitData(ICONS, offset, Dimension.SQUARE_256, uv, dimension);
+        }
+    }
+
+    public static class Recipe {
+        public static WeakReference<Level> level;
+
+        public static List<ItemStack> getSalvagingResult(ItemStack stack) {
+            Level l = level.get();
+            List<ItemStack> stacks = new ArrayList<>();
+            if (l == null) return stacks;
+            stacks.addAll(SalvagingMenu.salvageItem(l, stack));
+            return stacks;
+        }
+
+        public static boolean findMatchSalvaging(ItemStack stack) {
+            Level l = level.get();
+            if (l == null) return false;
+            return SalvagingMenu.findMatch(l, stack) != null;
         }
     }
 }

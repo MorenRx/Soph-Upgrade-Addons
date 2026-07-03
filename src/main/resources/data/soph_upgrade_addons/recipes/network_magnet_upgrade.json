@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "conditions": [
+    {
+      "type": "soph_upgrade_addons:item_enabled",
+      "itemRegistryName": "soph_upgrade_addons:network_magnet_upgrade"
+    }
+  ],
+  "pattern": [
+    " A ",
+    "CBC",
+    " C "
+  ],
+  "key": {
+    "A": {
+      "item": "refinedstorage:network_card"
+    },
+    "B": {
+      "item": "sophisticatedbackpacks:advanced_magnet_upgrade"
+    },
+    "C": {
+      "tag": "forge:ender_pearls"
+    }
+  },
+  "result": {
+    "item": "soph_upgrade_addons:network_magnet_upgrade",
+    "count": 1
+  }
+}

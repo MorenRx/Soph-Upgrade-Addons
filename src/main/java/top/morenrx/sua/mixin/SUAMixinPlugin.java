@@ -15,7 +15,7 @@ public class SUAMixinPlugin implements IMixinConfigPlugin {
         String simpleName = mixinClassName.substring(mixinClassName.lastIndexOf('.') + 1);
 
         return switch (simpleName) {
-            case "MixinInventoryInteractionHelper", "MixinStorageUpgradeSlot" -> SUACompat.SOPHISTICATED_BACKPACKS;
+            case "MixinInventoryInteractionHelper", "MixinStorageUpgradeSlot" -> SUACompat.SOPHISTICATED_BACKPACKS.getAsBoolean();
             default -> true;
         };
     }

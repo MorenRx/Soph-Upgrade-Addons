@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "conditions": [
+    {
+      "type": "soph_upgrade_addons:item_enabled",
+      "itemRegistryName": "soph_upgrade_addons:network_deposit_upgrade"
+    }
+  ],
+  "pattern": [
+    " A ",
+    "ABA",
+    " A "
+  ],
+  "key": {
+    "A": {
+      "tag": "forge:ender_pearls"
+    },
+    "B": {
+      "item": "sophisticatedbackpacks:advanced_deposit_upgrade"
+    }
+  },
+  "result": {
+    "item": "soph_upgrade_addons:network_deposit_upgrade",
+    "count": 1
+  }
+}

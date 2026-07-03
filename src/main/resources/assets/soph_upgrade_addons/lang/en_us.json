@@ -3,24 +3,34 @@
 
   "item.soph_upgrade_addons.tooltip.disable": "Disabled",
 
-  "item.soph_upgrade_addons.rs_magnet_upgrade": "RS Network Magnet Upgrade",
-  "item.soph_upgrade_addons.rs_magnet_upgrade.tooltip": "Crouch down and right-click any RS component to connect to the RS network; right-click on an empty area to disconnect.",
-  "item.soph_upgrade_addons.rs_magnet_upgrade.tooltip.unlinked": "UnLinked",
-  "item.soph_upgrade_addons.rs_magnet_upgrade.tooltip.linked": "Linked: ",
+  "item.soph_upgrade_addons.rs_magnet_upgrade": "Obsolete RS Network Magnet Upgrade (please craft the new version instead)",
+  "item.soph_upgrade_addons.rs_pickup_upgrade": "Obsolete RS Network Pickup Upgrade (please craft the new version instead)",
+  "item.soph_upgrade_addons.rs_deposit_upgrade": "Obsolete RS Network Deposit Upgrade (please craft the new version instead)",
 
-  "item.soph_upgrade_addons.rs_pickup_upgrade": "RS Network Pickup Upgrade",
-  "item.soph_upgrade_addons.rs_pickup_upgrade.tooltip": "Crouch down and right-click any RS component to connect to the RS network; right-click on an empty area to disconnect.",
-  "item.soph_upgrade_addons.rs_pickup_upgrade.tooltip.unlinked": "UnLinked",
-  "item.soph_upgrade_addons.rs_pickup_upgrade.tooltip.linked": "Linked: ",
+  "item.soph_upgrade_addons.network_magnet_upgrade": "Network Magnet Upgrade",
+  "item.soph_upgrade_addons.network_magnet_upgrade.tooltip": "Crouch down and right-click any RS component to connect to the RS network; right-click on an empty area to disconnect.",
+  "item.soph_upgrade_addons.network_magnet_upgrade.tooltip.unlinked": "UnLinked",
+  "item.soph_upgrade_addons.network_magnet_upgrade.tooltip.linked.rs": "Linked RS: ",
+  "item.soph_upgrade_addons.network_magnet_upgrade.tooltip.linked.ae": "Linked AE: ",
+  "item.soph_upgrade_addons.network_magnet_upgrade.tooltip.linked.tom": "Linked TOM: ",
+  "item.soph_upgrade_addons.network_magnet_upgrade.tooltip.linked.bd": "Linked Beyond Dimensions: ",
 
-  "item.soph_upgrade_addons.rs_deposit_upgrade": "RS Deposit Upgrade",
-  "item.soph_upgrade_addons.rs_deposit_upgrade.tooltip": "The Deposit Function can be used on RS.",
+  "item.soph_upgrade_addons.network_pickup_upgrade": "Network Pickup Upgrade",
+  "item.soph_upgrade_addons.network_pickup_upgrade.tooltip": "Crouch down and right-click any RS component to connect to the RS network; right-click on an empty area to disconnect.",
+  "item.soph_upgrade_addons.network_pickup_upgrade.tooltip.unlinked": "UnLinked",
+  "item.soph_upgrade_addons.network_pickup_upgrade.tooltip.linked.rs": "Linked RS: ",
+  "item.soph_upgrade_addons.network_pickup_upgrade.tooltip.linked.ae": "Linked AE: ",
+  "item.soph_upgrade_addons.network_pickup_upgrade.tooltip.linked.tom": "Linked TOM: ",
+  "item.soph_upgrade_addons.network_pickup_upgrade.tooltip.linked.bd": "Linked Beyond Dimensions: ",
+
+  "item.soph_upgrade_addons.network_deposit_upgrade": "Network Deposit Upgrade",
+  "item.soph_upgrade_addons.network_deposit_upgrade.tooltip": "The Deposit Function can be used on RS.",
 
   "item.soph_upgrade_addons.ender_chest_upgrade": "Ender Upgrade",
   "item.soph_upgrade_addons.ender_chest_upgrade.tooltip": "The Sophisticated Backpack can be used inside an Ender Chest.",
 
   "item.soph_upgrade_addons.super_void_upgrade": "Void Upgrade",
-  "item.soph_upgrade_addons.super_void_upgrade.tooltip": "Greater Void Upgrade",
+  "item.soph_upgrade_addons.super_void_upgrade.tooltip": "Features a vast number of filter slots.",
 
   "item.soph_upgrade_addons.potion_charm_upgrade": "Potion Charm Upgrade",
   "item.soph_upgrade_addons.potion_charm_upgrade.tooltip": "Allows Potion Charms placed inside this upgrade to take effect",
@@ -40,17 +50,20 @@
   "item.soph_upgrade_addons.advanced_salvaging_upgrade": "Advanced  Apotheosis Salvaging Upgrade",
   "item.soph_upgrade_addons.advanced_salvaging_upgrade.tooltip": "Salvaging items from the filter\nMore powerful filtration function",
 
-  "message.soph_upgrade_addons.rs.clear": "RS network link disconnected",
-  "message.soph_upgrade_addons.rs.linker": "Successfully connected to RS network",
+  "message.soph_upgrade_addons.network.clear": "All network link disconnected",
+  "message.soph_upgrade_addons.network.rs.linker": "Successfully connected to RS network",
+  "message.soph_upgrade_addons.network.ae.linker": "Successfully connected to AE network",
+  "message.soph_upgrade_addons.network.tom.linker": "Successfully connected to TOM network",
+  "message.soph_upgrade_addons.network.bd.linker": "Successfully connected to Beyond Dimensions network",
 
-  "gui.sophisticatedbackpacks.upgrades.rs_magnet": "RS Network Magnet",
-  "gui.sophisticatedbackpacks.upgrades.rs_magnet.tooltip": "RS Network Magnet Setting",
+  "gui.sophisticatedbackpacks.upgrades.network_magnet": "Network Magnet",
+  "gui.sophisticatedbackpacks.upgrades.network_magnet.tooltip": "Network Magnet Setting",
 
-  "gui.sophisticatedbackpacks.upgrades.rs_pickup": "RS Network Pickup",
-  "gui.sophisticatedbackpacks.upgrades.rs_pickup.tooltip": "RS Network Pickup Setting",
+  "gui.sophisticatedbackpacks.upgrades.network_pickup": "Network Pickup",
+  "gui.sophisticatedbackpacks.upgrades.network_pickup.tooltip": "Network Pickup Setting",
 
-  "gui.sophisticatedbackpacks.upgrades.rs_deposit": "RS Deposit",
-  "gui.sophisticatedbackpacks.upgrades.rs_deposit.tooltip": "RS Deposit Setting",
+  "gui.sophisticatedbackpacks.upgrades.network_deposit": "Network Deposit",
+  "gui.sophisticatedbackpacks.upgrades.network_deposit.tooltip": "Network Deposit Setting",
 
   "gui.sophisticatedbackpacks.upgrades.super_void": "Super Void",
   "gui.sophisticatedbackpacks.upgrades.super_void.tooltip": "Super Void Setting",
@@ -67,11 +80,11 @@
   "gui.sophisticatedbackpacks.upgrades.advanced_potion_charm": "Advanced Potion Charm",
   "gui.sophisticatedbackpacks.upgrades.advanced_potion_charm.tooltip": "Advanced Potion Charm Setting",
 
-  "gui.sophisticatedbackpacks.upgrades.salvaging_upgrade": "Apotheosis Salvaging",
-  "gui.sophisticatedbackpacks.upgrades.salvaging_upgrade.tooltip": "Apotheosis Salvaging Setting",
+  "gui.sophisticatedbackpacks.upgrades.salvaging": "Apotheosis Salvaging",
+  "gui.sophisticatedbackpacks.upgrades.salvaging.tooltip": "Apotheosis Salvaging Setting",
 
-  "gui.sophisticatedbackpacks.upgrades.advanced_salvaging_upgrade": "Advanced Apotheosis Salvaging",
-  "gui.sophisticatedbackpacks.upgrades.advanced_salvaging_upgrade.tooltip": "Advanced Apotheosis Salvaging Setting",
+  "gui.sophisticatedbackpacks.upgrades.advanced_salvaging": "Advanced Apotheosis Salvaging",
+  "gui.sophisticatedbackpacks.upgrades.advanced_salvaging.tooltip": "Advanced Apotheosis Salvaging Setting",
 
   "gui.sophisticatedbackpacks.upgrades.buttons.enable_void": "Allow Void Upgrade to Destroy Items",
   "gui.sophisticatedbackpacks.upgrades.buttons.do_not_enable_void": "Void upgrades are not allowed to destroy items.",
@@ -85,6 +98,19 @@
   "gui.sophisticatedbackpacks.upgrades.buttons.purity_slightly_dirst": "Automatically drink beverages of 'Slightly Dirty' purity and above",
   "gui.sophisticatedbackpacks.upgrades.buttons.purity_acceptable": "Automatically drink beverages of 'Acceptable' purity and above",
   "gui.sophisticatedbackpacks.upgrades.buttons.purity_purified": "Only automatically drink purified beverages",
+
+  "gui.sophisticatedbackpacks.upgrades.buttons.gem": "Gems",
+  "gui.sophisticatedbackpacks.upgrades.buttons.equipment": " %s Equipment",
+  "gui.sophisticatedbackpacks.upgrades.buttons.salvaging_equipment_enable": "Allow salvaging rarity equipment",
+  "gui.sophisticatedbackpacks.upgrades.buttons.salvaging_equipment_disable": "Disallow salvaging rarity equipment",
+  "gui.sophisticatedbackpacks.upgrades.buttons.salvaging_gem_enable": "Allow salvaging gems",
+  "gui.sophisticatedbackpacks.upgrades.buttons.salvaging_gem_disable": "Disallow salvaging gems",
+  "gui.sophisticatedbackpacks.upgrades.buttons.salvaging_other_enable": "Allow salvaging non-rarity items",
+  "gui.sophisticatedbackpacks.upgrades.buttons.salvaging_other_disable": "Disallow salvaging non-rarity items",
+  "gui.sophisticatedbackpacks.upgrades.buttons.equipment_rarity_enable": "Allow Salvaging",
+  "gui.sophisticatedbackpacks.upgrades.buttons.equipment_rarity_disable": "Disallow Salvaging",
+  "gui.sophisticatedbackpacks.upgrades.buttons.gem_rarity_enable": "Allow Salvaging",
+  "gui.sophisticatedbackpacks.upgrades.buttons.gem_rarity_disable": "Disallow Salvaging",
 
   "gui.sophisticatedbackpacks.error.add.ender_chest_exists": "There's already EndChest Upgrade in another upgrade slot"
 }

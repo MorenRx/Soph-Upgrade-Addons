@@ -23,10 +23,14 @@ public class SalvagingUpgradeContainer extends UpgradeContainerBase<SalvagingUpg
     public void handleMessage(@NotNull CompoundTag data) {
         if (data.contains(SalvagingUpgrade.Data.KEY_WORK_IN_GUI)) {
             setWorkInGUI(data.getBoolean(SalvagingUpgrade.Data.KEY_WORK_IN_GUI));
-        } else if (data.contains(SalvagingUpgrade.Data.KEY_EQUIPMENT_RARITY)) {
-            setEquipmentRarity(data.getInt(SalvagingUpgrade.Data.KEY_EQUIPMENT_RARITY));
-        } else if (data.contains(SalvagingUpgrade.Data.KEY_GEM_RARITY)) {
-            setGemRarity(data.getInt(SalvagingUpgrade.Data.KEY_GEM_RARITY));
+        } else if (data.contains(SalvagingUpgrade.Data.KEY_EQUIPMENT_RARITY_MASK)) {
+            setEquipmentRarityMask(data.getInt(SalvagingUpgrade.Data.KEY_EQUIPMENT_RARITY_MASK));
+        } else if (data.contains(SalvagingUpgrade.Data.KEY_GEM_RARITY_MASK)) {
+            setGemRarityMask(data.getInt(SalvagingUpgrade.Data.KEY_GEM_RARITY_MASK));
+        } else if (data.contains(SalvagingUpgrade.Data.KEY_SALVAGING_EQUIPMENT)) {
+            setSalvagingEquipment(data.getBoolean(SalvagingUpgrade.Data.KEY_SALVAGING_EQUIPMENT));
+        } else if (data.contains(SalvagingUpgrade.Data.KEY_SALVAGING_GEM)) {
+            setSalvagingGem(data.getBoolean(SalvagingUpgrade.Data.KEY_SALVAGING_GEM));
         } else if (data.contains(SalvagingUpgrade.Data.KEY_SALVAGING_OTHER)) {
             setSalvagingOther(data.getBoolean(SalvagingUpgrade.Data.KEY_SALVAGING_OTHER));
         }
@@ -46,22 +50,40 @@ public class SalvagingUpgradeContainer extends UpgradeContainerBase<SalvagingUpg
         return upgradeWrapper.shouldWorkInGUI();
     }
 
-    public void setEquipmentRarity(int equipmentRarity) {
-        upgradeWrapper.setEquipmentRarity(equipmentRarity);
-        sendDataToServer(() -> NBTHelper.putInt(new CompoundTag(), SalvagingUpgrade.Data.KEY_EQUIPMENT_RARITY, equipmentRarity));
+    public void setEquipmentRarityMask(int equipmentRarityMask) {
+        upgradeWrapper.setEquipmentRarityMask(equipmentRarityMask);
+        sendDataToServer(() -> NBTHelper.putInt(new CompoundTag(), SalvagingUpgrade.Data.KEY_EQUIPMENT_RARITY_MASK, equipmentRarityMask));
     }
 
-    public int shouldEquipmentRarity() {
-        return upgradeWrapper.shouldEquipmentRarity();
+    public int shouldEquipmentRarityMask() {
+        return upgradeWrapper.shouldEquipmentRarityMask();
     }
 
-    public void setGemRarity(int gemRarity) {
-        upgradeWrapper.setGemRarity(gemRarity);
-        sendDataToServer(() -> NBTHelper.putInt(new CompoundTag(), SalvagingUpgrade.Data.KEY_GEM_RARITY, gemRarity));
+    public void setGemRarityMask(int gemRarityMask) {
+        upgradeWrapper.setGemRarityMask(gemRarityMask);
+        sendDataToServer(() -> NBTHelper.putInt(new CompoundTag(), SalvagingUpgrade.Data.KEY_GEM_RARITY_MASK, gemRarityMask));
     }
 
-    public int shouldGemRarity() {
-        return upgradeWrapper.shouldGemRarity();
+    public int shouldGemRarityMask() {
+        return upgradeWrapper.shouldGemRarityMask();
+    }
+
+    public void setSalvagingEquipment(boolean salvagingEquipment) {
+        upgradeWrapper.setSalvagingEquipment(salvagingEquipment);
+        sendBooleanToServer(SalvagingUpgrade.Data.KEY_SALVAGING_EQUIPMENT, salvagingEquipment);
+    }
+
+    public boolean shouldSalvagingEquipment() {
+        return upgradeWrapper.shouldSalvagingEquipment();
+    }
+
+    public void setSalvagingGem(boolean salvagingGem) {
+        upgradeWrapper.setSalvagingGem(salvagingGem);
+        sendBooleanToServer(SalvagingUpgrade.Data.KEY_SALVAGING_GEM, salvagingGem);
+    }
+
+    public boolean shouldSalvagingGem() {
+        return upgradeWrapper.shouldSalvagingGem();
     }
 
     public void setSalvagingOther(boolean salvagingOther) {
