@@ -1,6 +1,0 @@
-{
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "soph_upgrade_addons:item/network_magnet_upgrade"
-  }
-}

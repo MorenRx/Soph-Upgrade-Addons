@@ -5,6 +5,7 @@ import net.minecraft.world.entity.player.Player;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.UpgradeContainerBase;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.UpgradeContainerType;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.ContentsFilterLogicContainer;
+import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
 
 public class NetworkMagnetUpgradeContainer extends UpgradeContainerBase<NetworkMagnetUpgradeWrapper, NetworkMagnetUpgradeContainer> {
     private final ContentsFilterLogicContainer filterLogicContainer;
@@ -23,6 +24,8 @@ public class NetworkMagnetUpgradeContainer extends UpgradeContainerBase<NetworkM
             setPickupXp(data.getBoolean(NetworkMagnetUpgrade.Data.KEY_PICKUP_XP));
         } else if (data.contains(NetworkMagnetUpgrade.Data.KEY_ENABLE_VOID)) {
             setEnableVoid(data.getBoolean(NetworkMagnetUpgrade.Data.KEY_ENABLE_VOID));
+        } else if (data.contains(NetworkMagnetUpgrade.Data.KEY_NETWORK_TYPE)) {
+            setNetworkType(data.getString(NetworkMagnetUpgrade.Data.KEY_NETWORK_TYPE));
         }
         filterLogicContainer.handleMessage(data);
     }
@@ -56,5 +59,14 @@ public class NetworkMagnetUpgradeContainer extends UpgradeContainerBase<NetworkM
 
     public boolean shouldEnableVoid() {
         return upgradeWrapper.shouldEnableVoid();
+    }
+
+    public void setNetworkType(String networkType) {
+        upgradeWrapper.setNetworkType(networkType);
+        sendDataToServer(() -> NBTHelper.putString(new CompoundTag(), NetworkMagnetUpgrade.Data.KEY_NETWORK_TYPE, networkType));
+    }
+
+    public String shouldNetworkType() {
+        return upgradeWrapper.shouldNetworkType();
     }
 }

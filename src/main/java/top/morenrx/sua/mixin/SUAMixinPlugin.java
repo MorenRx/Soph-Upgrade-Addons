@@ -16,6 +16,7 @@ public class SUAMixinPlugin implements IMixinConfigPlugin {
 
         return switch (simpleName) {
             case "MixinInventoryInteractionHelper", "MixinStorageUpgradeSlot" -> SUACompat.SOPHISTICATED_BACKPACKS.getAsBoolean();
+            case "MixinStorageTerminalBlockEntity" -> SUACompat.TOMS_STORAGE.getAsBoolean();
             default -> true;
         };
     }

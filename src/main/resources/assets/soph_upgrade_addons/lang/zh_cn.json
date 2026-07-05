@@ -3,12 +3,8 @@
 
   "item.soph_upgrade_addons.tooltip.disable": "已禁用",
 
-  "item.soph_upgrade_addons.rs_magnet_upgrade": "无法使用的RS网络磁铁升级(请合成为新版的网络磁铁升级)",
-  "item.soph_upgrade_addons.rs_pickup_upgrade": "无法使用的RS网络拾取升级(请合成为新版的网络拾取升级)",
-  "item.soph_upgrade_addons.rs_deposit_upgrade": "无法使用的RS卸货升级(请合成为新版的网络卸货升级)",
-
   "item.soph_upgrade_addons.network_magnet_upgrade": "网络磁铁升级",
-  "item.soph_upgrade_addons.network_magnet_upgrade.tooltip": "蹲下右键RS任意部件链接RS网络, 右键空气断开链接",
+  "item.soph_upgrade_addons.network_magnet_upgrade.tooltip": "蹲下右键 'RS/AE/TOM/超越维度' 的终端链接网络, \n右键空气断开链接",
   "item.soph_upgrade_addons.network_magnet_upgrade.tooltip.unlinked": "未链接",
   "item.soph_upgrade_addons.network_magnet_upgrade.tooltip.linked.rs": "已链接的RS: ",
   "item.soph_upgrade_addons.network_magnet_upgrade.tooltip.linked.ae": "已链接的AE: ",
@@ -16,7 +12,7 @@
   "item.soph_upgrade_addons.network_magnet_upgrade.tooltip.linked.bd": "已链接的超越维度: ",
 
   "item.soph_upgrade_addons.network_pickup_upgrade": "网络拾取升级",
-  "item.soph_upgrade_addons.network_pickup_upgrade.tooltip": "蹲下右键RS任意部件链接RS网络, 右键空气断开链接",
+  "item.soph_upgrade_addons.network_pickup_upgrade.tooltip": "蹲下右键 'RS/AE/TOM/超越维度' 的终端链接网络, \n右键空气断开链接",
   "item.soph_upgrade_addons.network_pickup_upgrade.tooltip.unlinked": "未链接",
   "item.soph_upgrade_addons.network_pickup_upgrade.tooltip.linked.rs": "已链接的RS: ",
   "item.soph_upgrade_addons.network_pickup_upgrade.tooltip.linked.ae": "已链接的AE: ",
@@ -24,7 +20,7 @@
   "item.soph_upgrade_addons.network_pickup_upgrade.tooltip.linked.bd": "已链接的超越维度: ",
 
   "item.soph_upgrade_addons.network_deposit_upgrade": "网络卸货升级",
-  "item.soph_upgrade_addons.network_deposit_upgrade.tooltip": "可对RS使用卸货功能",
+  "item.soph_upgrade_addons.network_deposit_upgrade.tooltip": "可对 'RS/AE/TOM/超越维度' 的终端使用卸货功能",
 
   "item.soph_upgrade_addons.ender_chest_upgrade": "末影升级",
   "item.soph_upgrade_addons.ender_chest_upgrade.tooltip": "精妙背包可以在末影箱内生效",
@@ -88,6 +84,11 @@
 
   "gui.sophisticatedbackpacks.upgrades.buttons.enable_void": "允许虚空升级销毁物品",
   "gui.sophisticatedbackpacks.upgrades.buttons.do_not_enable_void": "不允许虚空升级销毁物品",
+
+  "gui.sophisticatedbackpacks.upgrades.buttons.use_rs": "将物品吸入RS网络",
+  "gui.sophisticatedbackpacks.upgrades.buttons.use_ae": "将物品吸入AE网络",
+  "gui.sophisticatedbackpacks.upgrades.buttons.use_tom": "将物品吸入TOM存储",
+  "gui.sophisticatedbackpacks.upgrades.buttons.use_bd": "将物品吸入超越维度",
 
   "gui.sophisticatedbackpacks.upgrades.buttons.thirst_level_any": "当玩家稍微口渴时立即饮水\n浪费饮品提供的大量口渴值",
   "gui.sophisticatedbackpacks.upgrades.buttons.thirst_level_half": "仅在玩家足够口渴时饮水\n最多浪费饮品提供的一半口渴值",

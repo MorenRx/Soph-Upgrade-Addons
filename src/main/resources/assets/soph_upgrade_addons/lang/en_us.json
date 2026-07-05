@@ -3,12 +3,8 @@
 
   "item.soph_upgrade_addons.tooltip.disable": "Disabled",
 
-  "item.soph_upgrade_addons.rs_magnet_upgrade": "Obsolete RS Network Magnet Upgrade (please craft the new version instead)",
-  "item.soph_upgrade_addons.rs_pickup_upgrade": "Obsolete RS Network Pickup Upgrade (please craft the new version instead)",
-  "item.soph_upgrade_addons.rs_deposit_upgrade": "Obsolete RS Network Deposit Upgrade (please craft the new version instead)",
-
   "item.soph_upgrade_addons.network_magnet_upgrade": "Network Magnet Upgrade",
-  "item.soph_upgrade_addons.network_magnet_upgrade.tooltip": "Crouch down and right-click any RS component to connect to the RS network; right-click on an empty area to disconnect.",
+  "item.soph_upgrade_addons.network_magnet_upgrade.tooltip": "Sneak-right-click an 'RS/AE/TOM/Beyond Dimensions' terminal to link to its network.\nRight-click in the air to unlink.",
   "item.soph_upgrade_addons.network_magnet_upgrade.tooltip.unlinked": "UnLinked",
   "item.soph_upgrade_addons.network_magnet_upgrade.tooltip.linked.rs": "Linked RS: ",
   "item.soph_upgrade_addons.network_magnet_upgrade.tooltip.linked.ae": "Linked AE: ",
@@ -16,7 +12,7 @@
   "item.soph_upgrade_addons.network_magnet_upgrade.tooltip.linked.bd": "Linked Beyond Dimensions: ",
 
   "item.soph_upgrade_addons.network_pickup_upgrade": "Network Pickup Upgrade",
-  "item.soph_upgrade_addons.network_pickup_upgrade.tooltip": "Crouch down and right-click any RS component to connect to the RS network; right-click on an empty area to disconnect.",
+  "item.soph_upgrade_addons.network_pickup_upgrade.tooltip": "Sneak-right-click an 'RS/AE/TOM/Beyond Dimensions' terminal to link to its network.\nRight-click in the air to unlink.",
   "item.soph_upgrade_addons.network_pickup_upgrade.tooltip.unlinked": "UnLinked",
   "item.soph_upgrade_addons.network_pickup_upgrade.tooltip.linked.rs": "Linked RS: ",
   "item.soph_upgrade_addons.network_pickup_upgrade.tooltip.linked.ae": "Linked AE: ",
@@ -24,12 +20,12 @@
   "item.soph_upgrade_addons.network_pickup_upgrade.tooltip.linked.bd": "Linked Beyond Dimensions: ",
 
   "item.soph_upgrade_addons.network_deposit_upgrade": "Network Deposit Upgrade",
-  "item.soph_upgrade_addons.network_deposit_upgrade.tooltip": "The Deposit Function can be used on RS.",
+  "item.soph_upgrade_addons.network_deposit_upgrade.tooltip": "Allows depositing items into linked 'RS/AE/TOM/Beyond Dimensions' terminals.",
 
   "item.soph_upgrade_addons.ender_chest_upgrade": "Ender Upgrade",
   "item.soph_upgrade_addons.ender_chest_upgrade.tooltip": "The Sophisticated Backpack can be used inside an Ender Chest.",
 
-  "item.soph_upgrade_addons.super_void_upgrade": "Void Upgrade",
+  "item.soph_upgrade_addons.super_void_upgrade": "Super Void Upgrade",
   "item.soph_upgrade_addons.super_void_upgrade.tooltip": "Features a vast number of filter slots.",
 
   "item.soph_upgrade_addons.potion_charm_upgrade": "Potion Charm Upgrade",
@@ -47,7 +43,7 @@
   "item.soph_upgrade_addons.salvaging_upgrade": "Apotheosis Salvaging Upgrade",
   "item.soph_upgrade_addons.salvaging_upgrade.tooltip": "Salvaging items from the filter",
 
-  "item.soph_upgrade_addons.advanced_salvaging_upgrade": "Advanced  Apotheosis Salvaging Upgrade",
+  "item.soph_upgrade_addons.advanced_salvaging_upgrade": "Advanced Apotheosis Salvaging Upgrade",
   "item.soph_upgrade_addons.advanced_salvaging_upgrade.tooltip": "Salvaging items from the filter\nMore powerful filtration function",
 
   "message.soph_upgrade_addons.network.clear": "All network link disconnected",
@@ -88,6 +84,11 @@
 
   "gui.sophisticatedbackpacks.upgrades.buttons.enable_void": "Allow Void Upgrade to Destroy Items",
   "gui.sophisticatedbackpacks.upgrades.buttons.do_not_enable_void": "Void upgrades are not allowed to destroy items.",
+
+  "gui.sophisticatedbackpacks.upgrades.buttons.use_rs": "Pull items into RS network",
+  "gui.sophisticatedbackpacks.upgrades.buttons.use_ae": "Pull items into AE network",
+  "gui.sophisticatedbackpacks.upgrades.buttons.use_tom": "Pull items into TOM storage",
+  "gui.sophisticatedbackpacks.upgrades.buttons.use_bd": "Pull items into Beyond Dimensions",
 
   "gui.sophisticatedbackpacks.upgrades.buttons.thirst_level_any": "Drink immediately when slightly thirsty\nWastes a large amount of thirst restored by drinks",
   "gui.sophisticatedbackpacks.upgrades.buttons.thirst_level_half": "Drink only when thirsty enough\nWastes at most half of the thirst restored by drinks",

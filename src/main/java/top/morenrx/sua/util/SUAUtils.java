@@ -1,18 +1,13 @@
 package top.morenrx.sua.util;
 
 import com.mojang.authlib.GameProfile;
-import com.refinedmods.refinedstorage.api.network.INetwork;
-import com.refinedmods.refinedstorage.api.network.node.INetworkNodeProxy;
-import com.refinedmods.refinedstorage.api.util.Action;
 import dev.shadowsoffire.apotheosis.adventure.affix.salvaging.SalvagingMenu;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.level.LevelEvent;
@@ -29,7 +24,6 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.voiding.VoidUpgradeWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.morenrx.sua.SophUpgradeAddons;
-import top.morenrx.sua.data.NetworkLocation;
 import top.morenrx.sua.upgrades.salvaging.SalvagingUpgrade;
 import top.morenrx.sua.upgrades.salvaging.SalvagingUpgradeWrapper;
 
@@ -93,26 +87,6 @@ public class SUAUtils {
                 }
             }
             return null;
-        }
-    }
-
-
-    public static class RS {
-        public static class Data {
-            public static final String KEY_NBT_DIM = "rs_dim";
-            public static final String KEY_NBT_POS = "rs_pos";
-        }
-
-        public static INetwork getNetwork(NetworkLocation networkLocation) {
-            BlockEntity blockEntity = networkLocation.dim().getBlockEntity(networkLocation.pos());
-            if (!(blockEntity instanceof INetworkNodeProxy<?> networkNode)) return null;
-            return networkNode.getNode().getNetwork();
-        }
-
-        public static ItemStack insertItem(INetwork network, ItemStack stack, Player player, boolean simulate) {
-            ItemStack remaining = network.insertItem(stack, stack.getCount(), simulate ? Action.SIMULATE : Action.PERFORM);
-            if (!simulate) network.getItemStorageTracker().changed(player, stack.copy());
-            return remaining;
         }
     }
 

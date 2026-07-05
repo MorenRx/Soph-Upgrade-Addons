@@ -13,6 +13,8 @@ public class SUACompat {
     public static final BooleanSupplier BEYOND_DIMENSIONS = isModLoaded("beyonddimensions");
     public static final BooleanSupplier TOMS_STORAGE = isModLoaded("toms_storage");
     public static final BooleanSupplier THIRST = isModLoaded("thirst");
+    public static final BooleanSupplier TOUGH_AS_NAILS = isModLoaded("toughasnails");
+    public static final BooleanSupplier LEGENDARY_SURVIVAL = isModLoaded("legendarysurvivaloverhaul");
 
 
     private static BooleanSupplier isModLoaded(String modId) {

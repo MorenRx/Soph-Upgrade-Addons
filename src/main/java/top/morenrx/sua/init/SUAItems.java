@@ -19,7 +19,6 @@ import net.p3pp3rf1y.sophisticatedcore.client.gui.UpgradeGuiManager;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.utils.Position;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.UpgradeContainerRegistry;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.UpgradeContainerType;
-import net.p3pp3rf1y.sophisticatedcore.upgrades.ContentsFilteredUpgradeContainer;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.voiding.VoidUpgradeContainer;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.voiding.VoidUpgradeWrapper;
 import top.morenrx.sua.SophUpgradeAddons;
@@ -35,6 +34,7 @@ import top.morenrx.sua.upgrades.network_magnet.NetworkMagnetUpgradeContainer;
 import top.morenrx.sua.upgrades.network_magnet.NetworkMagnetUpgradeTab;
 import top.morenrx.sua.upgrades.network_magnet.NetworkMagnetUpgradeWrapper;
 import top.morenrx.sua.upgrades.network_pickup.NetworkPickupUpgrade;
+import top.morenrx.sua.upgrades.network_pickup.NetworkPickupUpgradeContainer;
 import top.morenrx.sua.upgrades.network_pickup.NetworkPickupUpgradeTab;
 import top.morenrx.sua.upgrades.network_pickup.NetworkPickupUpgradeWrapper;
 import top.morenrx.sua.upgrades.potion_charm.PotionCharmUpgrade;
@@ -88,11 +88,6 @@ public class SUAItems {
             SUAConfig.INSTANCE.advancedSalvagingUpgradeConfig.enable::get,
             SUAConfig.INSTANCE.advancedSalvagingUpgradeConfig.filterSlots::get));
 
-    public static final RegistryObject<Item> RS_MAGNET_UPGRADE = ITEMS.register("rs_magnet_upgrade", () -> new Item(new Item.Properties()));
-    public static final RegistryObject<Item> RS_PICKUP_UPGRADE = ITEMS.register("rs_pickup_upgrade", () -> new Item(new Item.Properties()));
-    public static final RegistryObject<Item> RS_DEPOSIT_UPGRADE = ITEMS.register("rs_deposit_upgrade", () -> new Item(new Item.Properties()));
-
-
     public static final RegistryObject<CreativeModeTab> CREATIVE_TAB = CREATIVE_MODE_TABS.register("main", () ->
             CreativeModeTab.builder()
                     .icon(() -> MOD_ICON.get().getDefaultInstance())
@@ -113,7 +108,7 @@ public class SUAItems {
     }
 
     private static final UpgradeContainerType<NetworkMagnetUpgradeWrapper, NetworkMagnetUpgradeContainer> BASIC_NETWORK_MAGNET_TYPE = new UpgradeContainerType<>(NetworkMagnetUpgradeContainer::new);
-    private static final UpgradeContainerType<NetworkPickupUpgradeWrapper, ContentsFilteredUpgradeContainer<NetworkPickupUpgradeWrapper>> BASIC_NETWORK_PICKUP_TYPE = new UpgradeContainerType<>(ContentsFilteredUpgradeContainer::new);
+    private static final UpgradeContainerType<NetworkPickupUpgradeWrapper, NetworkPickupUpgradeContainer> BASIC_NETWORK_PICKUP_TYPE = new UpgradeContainerType<>(NetworkPickupUpgradeContainer::new);
     private static final UpgradeContainerType<DepositUpgradeWrapper, DepositUpgradeContainer> BASIC_NETWORK_DEPOSIT_TYPE = new UpgradeContainerType<>(DepositUpgradeContainer::new);
     private static final UpgradeContainerType<VoidUpgradeWrapper, VoidUpgradeContainer> SUPER_VOID_TYPE = new UpgradeContainerType<>(VoidUpgradeContainer::new);
     private static final UpgradeContainerType<DrinkUpgradeWrapper, DrinkUpgradeContainer> BASIC_DRINK_TYPE = new UpgradeContainerType<>(DrinkUpgradeContainer::new);
@@ -140,7 +135,7 @@ public class SUAItems {
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
             UpgradeGuiManager.registerTab(BASIC_NETWORK_MAGNET_TYPE, (NetworkMagnetUpgradeContainer container, Position position, StorageScreenBase<?> base) -> new NetworkMagnetUpgradeTab.Basic(container, position, base, SUAConfig.INSTANCE.networkMagnetUpgrade.slotsInRow.get(), SBPButtonDefinitions.BACKPACK_CONTENTS_FILTER_TYPE));
-            UpgradeGuiManager.registerTab(BASIC_NETWORK_PICKUP_TYPE, (ContentsFilteredUpgradeContainer<NetworkPickupUpgradeWrapper> container, Position position, StorageScreenBase<?> base) -> new NetworkPickupUpgradeTab.Basic(container, position, base, SUAConfig.INSTANCE.networkPickupUpgrade.slotsInRow.get(), SBPButtonDefinitions.BACKPACK_CONTENTS_FILTER_TYPE));
+            UpgradeGuiManager.registerTab(BASIC_NETWORK_PICKUP_TYPE, (NetworkPickupUpgradeContainer container, Position position, StorageScreenBase<?> base) -> new NetworkPickupUpgradeTab.Basic(container, position, base, SUAConfig.INSTANCE.networkPickupUpgrade.slotsInRow.get(), SBPButtonDefinitions.BACKPACK_CONTENTS_FILTER_TYPE));
             UpgradeGuiManager.registerTab(BASIC_NETWORK_DEPOSIT_TYPE, NetworkDepositUpgradeTab.Basic::new);
             UpgradeGuiManager.registerTab(SUPER_VOID_TYPE, (VoidUpgradeContainer container, Position position, StorageScreenBase<?> base) -> new SuperVoidUpgradeTab(container, position, base, SUAConfig.INSTANCE.superVoidUpgrade.slotsInRow.get()));
             UpgradeGuiManager.registerTab(BASIC_DRINK_TYPE, (DrinkUpgradeContainer container, Position position, StorageScreenBase<?> base) -> new DrinkUpgradeTab.Basic(container, position, base, SUAConfig.INSTANCE.drinkUpgrade.slotsInRow.get()));
