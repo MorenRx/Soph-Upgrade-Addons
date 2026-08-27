@@ -14,8 +14,8 @@ dependencies {
     runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
 
     // 精妙背包
-    implementation fg.deobf("curse.maven:sophisticated-backpacks-422301:8199776")
-    implementation fg.deobf("curse.maven:sophisticated-core-618298:8201810")
+    implementation fg.deobf("curse.maven:sophisticated-backpacks-422301:8687830")
+    implementation fg.deobf("curse.maven:sophisticated-core-618298:8705513")
     // AE2
     compileOnly fg.deobf("curse.maven:applied-energistics-2-223794:7148487")
     compileOnly fg.deobf("curse.maven:guideme-1173950:8204776")

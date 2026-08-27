@@ -5,6 +5,7 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -71,11 +72,7 @@ public class NetworkPickupUpgrade extends UpgradeItemBase<NetworkPickupUpgradeWr
         if (player.isCrouching() || !isEnable()) return InteractionResultHolder.pass(stack);
 
         if (!level.isClientSide()) {
-            CompoundTag tag = stack.getOrCreateTag();
-            NetworkStorageProvider.get().getNetworkStorageHandlers().forEach((name, handler) -> {
-                tag.remove(name + NetworkStorageHandler.Data.KEY_NBT_POS);
-                tag.remove(name + NetworkStorageHandler.Data.KEY_NBT_DIM);
-            });
+            NetworkStorageProvider.get().getNetworkStorageHandlers().forEach((name, handler) -> handler.removeNetworkLocation(stack));
             player.sendSystemMessage(Component.translatable("message.soph_upgrade_addons.network.clear"));
         }
 
@@ -127,17 +124,27 @@ public class NetworkPickupUpgrade extends UpgradeItemBase<NetworkPickupUpgradeWr
 
         List<Component> components = new ArrayList<>();
         NetworkStorageProvider.get().getNetworkStorageHandlers().forEach((name, handler) -> {
+            int netId = tag.getInt(name + NetworkStorageHandler.Data.KEY_NBT_ID);
             String dim = tag.getString(name + NetworkStorageHandler.Data.KEY_NBT_DIM);
             long pos = tag.getLong(name + NetworkStorageHandler.Data.KEY_NBT_POS);
             if (pos != 0 && !dim.isEmpty()) {
                 BlockPos blockPos = BlockPos.of(pos);
                 String[] split = dim.split(":");
                 String dimKey = "dimension." + split[0] + "." + split[1];
-                components.add(Component.translatable("item.soph_upgrade_addons.network_pickup_upgrade.tooltip.linked." + name)
-                        .append(I18n.exists(dimKey) ? Component.translatable(dimKey) : Component.literal(split[1]))
-                        .append(String.format(" %d, %d, %d", blockPos.getX(), blockPos.getY(), blockPos.getZ()))
-                        .withStyle(ChatFormatting.AQUA)
-                );
+                MutableComponent linkedComponent = Component
+                        .translatable("item.soph_upgrade_addons.network_pickup_upgrade.tooltip.linked." + name)
+                        .withStyle(ChatFormatting.AQUA);
+
+                if (netId != 0) {
+                    linkedComponent
+                            .append(String.valueOf(netId));
+                } else {
+                    linkedComponent
+                            .append(I18n.exists(dimKey) ? Component.translatable(dimKey) : Component.literal(split[1]))
+                            .append(String.format(" %d, %d, %d", blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+                }
+
+                components.add(linkedComponent);
             }
         });
 

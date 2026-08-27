@@ -139,7 +139,6 @@ public class NetworkStorageProvider {
                 DimensionsNet net = networkBlock.getNet();
                 if (net == null) return null;
                 return (stack, player, simulate) -> {
-                    net.getUnifiedStorage().setSlotCapacity(64);
                     KeyAmount remaining = net.getUnifiedStorage().insert(new ItemStackKey(stack), stack.getCount(), simulate);
                     if (remaining.isEmpty()) return ItemStack.EMPTY;
                     ItemStack copy = stack.copy();

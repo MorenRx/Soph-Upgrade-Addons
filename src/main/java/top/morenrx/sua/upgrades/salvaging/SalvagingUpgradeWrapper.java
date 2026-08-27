@@ -33,7 +33,7 @@ public class SalvagingUpgradeWrapper extends UpgradeWrapperBase<SalvagingUpgrade
 
     public SalvagingUpgradeWrapper(IStorageWrapper storageWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
         super(storageWrapper, upgrade, upgradeSaveHandler);
-        this.filterLogic = new FilterLogic(upgrade, upgradeSaveHandler, this.upgradeItem.getFilterSlotCount(), SUAUtils.Recipe::findMatchSalvaging);
+        this.filterLogic = new FilterLogic(upgrade, upgradeSaveHandler, this.upgradeItem.getFilterSlotCount());
     }
 
     @Override
