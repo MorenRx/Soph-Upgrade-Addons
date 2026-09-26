@@ -11,7 +11,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
@@ -28,14 +27,13 @@ import net.p3pp3rf1y.sophisticatedcore.util.XpHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.morenrx.sua.SophUpgradeAddons;
-import top.morenrx.sua.data.NetworkLocation;
-import top.morenrx.sua.upgrades.compat.network.NetworkStorageHandler;
+import top.morenrx.sua.helper.SalvagingHelper;
+import top.morenrx.sua.upgrades.compat.network.INetworkStorage;
 import top.morenrx.sua.upgrades.compat.network.NetworkStorageProvider;
 import top.morenrx.sua.upgrades.salvaging.SalvagingUpgradeWrapper;
 import top.morenrx.sua.util.SUAUtils;
 
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 @Mod.EventBusSubscriber(modid = SophUpgradeAddons.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -63,9 +61,7 @@ public class NetworkMagnetUpgradeWrapper extends UpgradeWrapperBase<NetworkMagne
 
     private static final int FULL_COOLDOWN_TICKS = 40;
     private final ContentsFilterLogic filterLogic;
-    private NetworkLocation networkLocationCache = null;
     private Player playerCache = null;
-
 
     public NetworkMagnetUpgradeWrapper(IStorageWrapper storageWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
         super(storageWrapper, upgrade, upgradeSaveHandler);
@@ -93,20 +89,15 @@ public class NetworkMagnetUpgradeWrapper extends UpgradeWrapperBase<NetworkMagne
         if (playerCache == null) playerCache = SUAUtils.Backpack.getBackpackOwner(level, storageWrapper.getContentsUuid().orElse(null));
 
         String typeName = shouldNetworkType();
-        NetworkStorageHandler networkStorageHandler = NetworkStorageProvider.get().getNetworkStorageHandlers().get(typeName);
-
-        if (networkLocationCache == null && (networkLocationCache = networkStorageHandler.getNetworkLocation(level, upgrade)) == null) {
+        INetworkStorage storage = NetworkStorageProvider.get().getStorage(typeName);
+        if (storage == null || !storage.hasBinding(upgrade)) {
             return stack;
         }
 
-        BlockEntity blockEntity = NetworkLocation.getBlockEntity(networkLocationCache);
-        NetworkStorageHandler.InsertHandler insertHandler = networkStorageHandler.insertHandlerGetter().apply(blockEntity);
-        if (insertHandler == null) return stack;
-
         SalvagingUpgradeWrapper wrapper;
-        if (!simulate && (wrapper = SUAUtils.Backpack.shouldSalvaging(storageWrapper, stack)) != null) {
+        if (!simulate && (wrapper = SalvagingHelper.shouldSalvaging(storageWrapper, stack)) != null) {
             int consumeCount = wrapper.trySalvagingAndInsertItem(stack, (tempStack, tempSimulate) ->
-                    insertHandler.insert(tempStack, playerCache, tempSimulate));
+                    storage.insert(storageWrapper, upgrade, level, playerCache, tempStack, tempSimulate));
             if (consumeCount <= 0) return stack;
             if (consumeCount == stack.getCount()) {
                 return ItemStack.EMPTY;
@@ -119,7 +110,7 @@ public class NetworkMagnetUpgradeWrapper extends UpgradeWrapperBase<NetworkMagne
 
         if (shouldEnableVoid() && SUAUtils.Backpack.shouldDestroy(storageWrapper, stack)) return ItemStack.EMPTY;
 
-        return insertHandler.insert(stack, playerCache, simulate);
+        return storage.insert(storageWrapper, upgrade, level, playerCache, stack, simulate);
     }
 
     @Override
@@ -227,22 +218,17 @@ public class NetworkMagnetUpgradeWrapper extends UpgradeWrapperBase<NetworkMagne
         if (!(itemEntity.level() instanceof ServerLevel level)) return false;
 
         String typeName = shouldNetworkType();
-        NetworkStorageHandler networkStorageHandler = NetworkStorageProvider.get().getNetworkStorageHandlers().get(typeName);
-
-        if (networkLocationCache == null && (networkLocationCache = networkStorageHandler.getNetworkLocation(level, upgrade)) == null) {
+        INetworkStorage storage = NetworkStorageProvider.get().getStorage(typeName);
+        if (storage == null || !storage.hasBinding(upgrade)) {
             return false;
         }
-
-        BlockEntity blockEntity = NetworkLocation.getBlockEntity(networkLocationCache);
-        NetworkStorageHandler.InsertHandler insertHandler = networkStorageHandler.insertHandlerGetter().apply(blockEntity);
-        if (insertHandler == null) return false;
 
         ItemStack stack = itemEntity.getItem();
 
         SalvagingUpgradeWrapper wrapper;
-        if ((wrapper = SUAUtils.Backpack.shouldSalvaging(storageWrapper, stack)) != null) {
+        if ((wrapper = SalvagingHelper.shouldSalvaging(storageWrapper, stack)) != null) {
             int consumeCount = wrapper.trySalvagingAndInsertItem(stack, (tempStack, tempSimulate) ->
-                    insertHandler.insert(tempStack, playerCache, tempSimulate));
+                    storage.insert(storageWrapper, upgrade, level, playerCache, tempStack, tempSimulate));
             if (consumeCount <= 0) return false;
             if (consumeCount == stack.getCount()) {
                 itemEntity.setItem(ItemStack.EMPTY);
@@ -259,9 +245,9 @@ public class NetworkMagnetUpgradeWrapper extends UpgradeWrapperBase<NetworkMagne
             return true;
         }
 
-        ItemStack remainingStack = insertHandler.insert(stack, playerCache, true);
+        ItemStack remainingStack = storage.insert(storageWrapper, upgrade, level, playerCache, stack, true);
         if (remainingStack.getCount() >= stack.getCount()) return false;
-        remainingStack = insertHandler.insert(stack, playerCache, false);
+        remainingStack = storage.insert(storageWrapper, upgrade, level, playerCache, stack, false);
 
         itemEntity.setItem(remainingStack);
         return true;
@@ -300,11 +286,9 @@ public class NetworkMagnetUpgradeWrapper extends UpgradeWrapperBase<NetworkMagne
     }
 
     public String shouldNetworkType() {
-        String type = NBTHelper.getString(upgrade, NetworkMagnetUpgrade.Data.KEY_NETWORK_TYPE).orElse(NetworkStorageProvider.Type.RS);
-        Map<String, NetworkStorageHandler> networkStorageHandlers = NetworkStorageProvider.get().getNetworkStorageHandlers();
-        NetworkStorageHandler networkStorageHandler = networkStorageHandlers.get(type);
-        if (networkStorageHandler == null) {
-            type = networkStorageHandlers.keySet().iterator().next();
+        String type = NBTHelper.getString(upgrade, NetworkMagnetUpgrade.Data.KEY_NETWORK_TYPE).orElse(NetworkStorageProvider.Data.BACKPACK);
+        if (!NetworkStorageProvider.get().hasStorage(type)) {
+            type = NetworkStorageProvider.get().getDefaultStorageType();
             setNetworkType(type);
         }
         return type;

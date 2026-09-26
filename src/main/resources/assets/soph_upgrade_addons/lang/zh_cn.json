@@ -4,7 +4,7 @@
   "item.soph_upgrade_addons.tooltip.disable": "已禁用",
 
   "item.soph_upgrade_addons.network_magnet_upgrade": "网络磁铁升级",
-  "item.soph_upgrade_addons.network_magnet_upgrade.tooltip": "蹲下右键 'RS/AE/TOM/超越维度' 的终端链接网络, \n右键空气断开链接",
+  "item.soph_upgrade_addons.network_magnet_upgrade.tooltip": "蹲下右键存储网络的终端链接, 蹲下右键空气链接个人超越维度网络, \n右键空气断开链接",
   "item.soph_upgrade_addons.network_magnet_upgrade.tooltip.unlinked": "未链接",
   "item.soph_upgrade_addons.network_magnet_upgrade.tooltip.linked.rs": "已链接的RS: ",
   "item.soph_upgrade_addons.network_magnet_upgrade.tooltip.linked.ae": "已链接的AE: ",
@@ -12,7 +12,7 @@
   "item.soph_upgrade_addons.network_magnet_upgrade.tooltip.linked.bd": "已链接的超越维度: ",
 
   "item.soph_upgrade_addons.network_pickup_upgrade": "网络拾取升级",
-  "item.soph_upgrade_addons.network_pickup_upgrade.tooltip": "蹲下右键 'RS/AE/TOM/超越维度' 的终端链接网络, \n右键空气断开链接",
+  "item.soph_upgrade_addons.network_pickup_upgrade.tooltip": "蹲下右键存储网络的终端链接, 蹲下右键空气链接个人超越维度网络, \n右键空气断开链接",
   "item.soph_upgrade_addons.network_pickup_upgrade.tooltip.unlinked": "未链接",
   "item.soph_upgrade_addons.network_pickup_upgrade.tooltip.linked.rs": "已链接的RS: ",
   "item.soph_upgrade_addons.network_pickup_upgrade.tooltip.linked.ae": "已链接的AE: ",
@@ -50,7 +50,8 @@
   "message.soph_upgrade_addons.network.rs.linker": "成功链接RS网络",
   "message.soph_upgrade_addons.network.ae.linker": "成功链接AE网络",
   "message.soph_upgrade_addons.network.tom.linker": "成功链接TOM网络",
-  "message.soph_upgrade_addons.network.bd.linker": "成功链接超越维度网络",
+  "message.soph_upgrade_addons.network.bd.linker": "成功链接超越维度网络: %s (ID: %d)",
+  "message.soph_upgrade_addons.network.bd.linker_fail": "未找到个人超越维度网络 (请先创建或加入网络)",
 
   "gui.sophisticatedbackpacks.upgrades.network_magnet": "网络磁铁",
   "gui.sophisticatedbackpacks.upgrades.network_magnet.tooltip": "网络磁铁设置",
@@ -85,6 +86,7 @@
   "gui.sophisticatedbackpacks.upgrades.buttons.enable_void": "允许虚空升级销毁物品",
   "gui.sophisticatedbackpacks.upgrades.buttons.do_not_enable_void": "不允许虚空升级销毁物品",
 
+  "gui.sophisticatedbackpacks.upgrades.buttons.use_backpack": "将物品存入背包",
   "gui.sophisticatedbackpacks.upgrades.buttons.use_rs": "将物品吸入RS网络",
   "gui.sophisticatedbackpacks.upgrades.buttons.use_ae": "将物品吸入AE网络",
   "gui.sophisticatedbackpacks.upgrades.buttons.use_tom": "将物品吸入TOM存储",

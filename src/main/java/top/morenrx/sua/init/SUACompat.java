@@ -6,7 +6,6 @@ import java.util.function.BooleanSupplier;
 
 public class SUACompat {
     public static final BooleanSupplier SOPHISTICATED_BACKPACKS = isModLoaded("sophisticatedbackpacks");
-    public static final BooleanSupplier BACKPACK_SIDE_GUI = isModLoaded("backpack_side_gui");
     public static final BooleanSupplier APOTHEOSIS = isModLoaded("apotheosis");
     public static final BooleanSupplier REFINED_STORAGE = isModLoaded("refinedstorage");
     public static final BooleanSupplier APPLIED_ENERGISTICS = isModLoaded("ae2");

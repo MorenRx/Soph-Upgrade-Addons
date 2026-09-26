@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import top.morenrx.sua.upgrades.compat.network.NetworkStorageHandler;
+import top.morenrx.sua.upgrades.compat.network.INetworkStorage;
 import top.morenrx.sua.upgrades.compat.network.NetworkStorageProvider;
 import top.morenrx.sua.upgrades.network_deposit.NetworkDepositUpgrade;
 
@@ -24,15 +24,16 @@ public class MixinInventoryInteractionHelper {
 
     @Inject(method = "lambda$tryInventoryInteraction$2", at = @At("HEAD"), cancellable = true)
     private static void onTeLambdaHead(Direction face, Player player, ItemStack backpack, BlockEntity te, CallbackInfoReturnable<Boolean> cir) {
-        NetworkStorageProvider.get().getNetworkStorageHandlers().forEach((name, handler) -> {
-            if (!handler.blockValidGetter().apply(te)) return;
-            cir.setReturnValue(backpack.getCapability(CapabilityBackpackWrapper.getCapabilityInstance())
+        for (INetworkStorage storage : NetworkStorageProvider.get().getStorages().values()) {
+            if (!storage.isValidDepositBlock(te)) continue;
+            INetworkStorage.NetworkInsertHandler insertHandler = storage.getDepositInsertHandler(te);
+            if (insertHandler == null) continue;
+
+            Boolean result = backpack.getCapability(CapabilityBackpackWrapper.getCapabilityInstance())
                     .map(wrapper -> {
                         List<DepositUpgradeWrapper> upgradeWrappers = wrapper.getUpgradeHandler().getTypeWrappers(NetworkDepositUpgrade.TYPE);
-                        if (upgradeWrappers.isEmpty()) return false;
+                        if (upgradeWrappers.isEmpty()) return null;
                         if (player.level().isClientSide()) return true;
-                        NetworkStorageHandler.InsertHandler insertHandler = handler.insertHandlerGetter().apply(te);
-                        if (insertHandler == null) return false;
 
                         for (DepositUpgradeWrapper upgradeWrapper : upgradeWrappers) {
                             InventoryHandler inventoryHandler = wrapper.getInventoryHandler();
@@ -53,7 +54,12 @@ public class MixinInventoryInteractionHelper {
                             player.displayClientMessage(Component.translatable(translKey, index), true);
                         }
                         return true;
-                    }).orElse(false));
-        });
+                    }).orElse(null);
+
+            if (result != null) {
+                cir.setReturnValue(result);
+                return;
+            }
+        }
     }
 }

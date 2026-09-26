@@ -6,11 +6,11 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
+import top.morenrx.sua.helper.SalvagingHelper;
 import top.morenrx.sua.init.SUAConfig;
 import top.morenrx.sua.init.SUAItems;
 import top.morenrx.sua.init.SUANetwork;
 import top.morenrx.sua.init.SUARecipes;
-import top.morenrx.sua.util.SUAUtils;
 
 @Mod(SophUpgradeAddons.MODID)
 public class SophUpgradeAddons {
@@ -24,7 +24,8 @@ public class SophUpgradeAddons {
         SUAItems.init(modEventBus);
         SUARecipes.init(modEventBus);
         SUANetwork.init();
-        SUAUtils.init();
+
+        SalvagingHelper.init();
     }
 
 

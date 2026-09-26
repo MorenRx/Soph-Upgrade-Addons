@@ -12,7 +12,6 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.morenrx.sua.upgrades.base.ISUAItemConfig;
-import top.morenrx.sua.upgrades.compat.network.NetworkStorageProvider;
 
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -28,7 +27,7 @@ public class NetworkRestockUpgrade extends RestockUpgradeItem implements ISUAIte
 
     @Override
     public boolean isEnable() {
-        return enable.getAsBoolean() && !NetworkStorageProvider.get().getNetworkStorageHandlers().isEmpty();
+        return enable.getAsBoolean();
     }
 
     @Override

@@ -14,20 +14,29 @@ dependencies {
     runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
 
     // 精妙背包
-    implementation fg.deobf("curse.maven:sophisticated-backpacks-422301:8687830")
-    implementation fg.deobf("curse.maven:sophisticated-core-618298:8705513")
+    implementation fg.deobf("curse.maven:sophisticated-backpacks-422301:8845923")
+    // implementation fg.deobf("curse.maven:sophisticated-backpacks-422301:8687830")
+    implementation fg.deobf("curse.maven:sophisticated-core-618298:8839328")
+    // implementation fg.deobf("curse.maven:sophisticated-core-618298:8705513")
+
     // AE2
-    compileOnly fg.deobf("curse.maven:applied-energistics-2-223794:7148487")
-    compileOnly fg.deobf("curse.maven:guideme-1173950:8204776")
+    implementation fg.deobf("curse.maven:applied-energistics-2-223794:7148487")
+    implementation fg.deobf("curse.maven:guideme-1173950:8204776")
     // RS 1.12.4
     implementation fg.deobf("curse.maven:refined-storage-243076:4844585")
-    // 超越维度 0.7.24
-    compileOnly fg.deobf("curse.maven:beyond-dimensions-1222890:8340189")
+    // 超越维度 0.7.30
+    implementation fg.deobf("curse.maven:beyond-dimensions-1222890:8812498")
     // Tom存储 1.7.1
-    compileOnly fg.deobf("curse.maven:toms-storage-378609:6418133")
+    implementation fg.deobf("curse.maven:toms-storage-378609:6418133")
+    // 口渴重置 3.0.5
+    implementation fg.deobf("curse.maven:thirst-was-reclaimed-884742:8852255")
     // 口渴
-    implementation fg.deobf("curse.maven:thirst-was-reclaimed-884742:8216518")
     compileOnly fg.deobf("curse.maven:thirst-was-taken-679270:6660408")
+    // 传说生存 2.4.7
+    implementation fg.deobf("curse.maven:legendary-survival-overhaul-840254:8591693")
+    // 意志坚定 9.2.0.171
+    implementation fg.deobf("curse.maven:tough-as-nails-246391:5815863")
+
     // 神化
     implementation fg.deobf("curse.maven:apotheosis-313970:6461960")
     implementation fg.deobf("curse.maven:apothic-attributes-898963:5634071")
@@ -43,14 +52,16 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:appleskin-248787:4770828")
     // IBE编辑器
     runtimeOnly fg.deobf("curse.maven:ibe-editor-256822:4994072")
-    // MBU
-    // runtimeOnly fg.deobf("test:mobackup:1.0.2")
+    // 鼠标手势
+    runtimeOnly fg.deobf("curse.maven:mouse-tweaks-60089:5338457")
+    // 拼音搜索
+    runtimeOnly fg.deobf("curse.maven:just-enough-characters-250702:8771525")
 }
 
 repositories {
     maven {
         name = "LocalRepo"
-        url = layout.projectDirectory.dir("repo")
+        url = layout.projectDirectory.dir(".local=repo")
     }
     maven {
         name = "ModMaven"
@@ -70,16 +81,11 @@ mixin {
     config "${mod_id}.mixins.json"
 }
 
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
 group = mod_group_id
 version = mod_version
-
-base {
-    archivesName = archives_name
-}
-
-java {
-    toolchain.languageVersion = JavaLanguageVersion.of(17)
-}
+base.archivesName = archives_name
 
 minecraft {
     mappings channel: mapping_channel, version: mapping_version
@@ -122,23 +128,24 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 processResources {
     var replaceProperties = [
-            minecraft_version      : minecraft_version,
-            minecraft_version_range: minecraft_version_range,
-            forge_version          : forge_version,
-            forge_version_range    : forge_version_range,
-            loader_version_range   : loader_version_range,
-            mod_id                 : mod_id,
-            mod_name               : mod_name,
-            mod_license            : mod_license,
-            mod_version            : mod_version,
-            mod_authors            : mod_authors,
-            mod_description        : mod_description,
-            soph_version_range     : soph_version_range
+            minecraft_version           : minecraft_version,
+            minecraft_version_range     : minecraft_version_range,
+            forge_version               : forge_version,
+            forge_version_range         : forge_version_range,
+            loader_version_range        : loader_version_range,
+            mod_id                      : mod_id,
+            mod_name                    : mod_name,
+            mod_license                 : mod_license,
+            mod_version                 : mod_version,
+            mod_authors                 : mod_authors,
+            mod_description             : mod_description,
+            soph_backpack_version_range : soph_backpack_version_range,
+            soph_core_version_range     : soph_core_version_range,
     ]
 
     inputs.properties replaceProperties
 
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta', mod_id + '.mixins.json']) {
         expand replaceProperties + [project: project]
     }
 }

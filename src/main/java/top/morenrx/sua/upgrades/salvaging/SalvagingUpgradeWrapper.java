@@ -17,7 +17,7 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.*;
 import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import top.morenrx.sua.util.SUAUtils;
+import top.morenrx.sua.helper.SalvagingHelper;
 
 import java.util.HashSet;
 import java.util.List;
@@ -66,7 +66,7 @@ public class SalvagingUpgradeWrapper extends UpgradeWrapperBase<SalvagingUpgrade
     }
 
     public boolean canSalvaging(ItemStack stack) {
-        if (!SUAUtils.Recipe.findMatchSalvaging(stack)) return false;
+        if (!SalvagingHelper.findMatchSalvaging(stack)) return false;
 
         DynamicHolder<LootRarity> rarityDynamicHolder = AffixHelper.getRarity(stack);
         if (!rarityDynamicHolder.isBound()) {
@@ -85,7 +85,7 @@ public class SalvagingUpgradeWrapper extends UpgradeWrapperBase<SalvagingUpgrade
         int consumeCount = 0;
         int count = stack.getCount();
         for (int i = 0; i < count; i++, consumeCount++) {
-            List<ItemStack> salvagingResult = SUAUtils.Recipe.getSalvagingResult(stack);
+            List<ItemStack> salvagingResult = SalvagingHelper.getSalvagingResult(stack);
             if (salvagingResult.isEmpty()) return consumeCount;
 
             for (int j = 0; j < salvagingResult.size(); j++) {

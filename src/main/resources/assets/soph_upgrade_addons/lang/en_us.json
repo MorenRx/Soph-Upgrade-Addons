@@ -4,7 +4,7 @@
   "item.soph_upgrade_addons.tooltip.disable": "Disabled",
 
   "item.soph_upgrade_addons.network_magnet_upgrade": "Network Magnet Upgrade",
-  "item.soph_upgrade_addons.network_magnet_upgrade.tooltip": "Sneak-right-click an 'RS/AE/TOM/Beyond Dimensions' terminal to link to its network.\nRight-click in the air to unlink.",
+  "item.soph_upgrade_addons.network_magnet_upgrade.tooltip": "Sneak-right-click a network storage terminal to link, sneak-right-click air to link player's Beyond Dimensions network.\nRight-click in the air to unlink.",
   "item.soph_upgrade_addons.network_magnet_upgrade.tooltip.unlinked": "UnLinked",
   "item.soph_upgrade_addons.network_magnet_upgrade.tooltip.linked.rs": "Linked RS: ",
   "item.soph_upgrade_addons.network_magnet_upgrade.tooltip.linked.ae": "Linked AE: ",
@@ -12,7 +12,7 @@
   "item.soph_upgrade_addons.network_magnet_upgrade.tooltip.linked.bd": "Linked Beyond Dimensions: ",
 
   "item.soph_upgrade_addons.network_pickup_upgrade": "Network Pickup Upgrade",
-  "item.soph_upgrade_addons.network_pickup_upgrade.tooltip": "Sneak-right-click an 'RS/AE/TOM/Beyond Dimensions' terminal to link to its network.\nRight-click in the air to unlink.",
+  "item.soph_upgrade_addons.network_pickup_upgrade.tooltip": "Sneak-right-click a network storage terminal to link, sneak-right-click air to link player's Beyond Dimensions network.\nRight-click in the air to unlink.",
   "item.soph_upgrade_addons.network_pickup_upgrade.tooltip.unlinked": "UnLinked",
   "item.soph_upgrade_addons.network_pickup_upgrade.tooltip.linked.rs": "Linked RS: ",
   "item.soph_upgrade_addons.network_pickup_upgrade.tooltip.linked.ae": "Linked AE: ",
@@ -50,7 +50,8 @@
   "message.soph_upgrade_addons.network.rs.linker": "Successfully connected to RS network",
   "message.soph_upgrade_addons.network.ae.linker": "Successfully connected to AE network",
   "message.soph_upgrade_addons.network.tom.linker": "Successfully connected to TOM network",
-  "message.soph_upgrade_addons.network.bd.linker": "Successfully connected to Beyond Dimensions network",
+  "message.soph_upgrade_addons.network.bd.linker": "Successfully linked Beyond Dimensions network: %s (ID: %d)",
+  "message.soph_upgrade_addons.network.bd.linker_fail": "No personal Beyond Dimensions network found (create or join a network first)",
 
   "gui.sophisticatedbackpacks.upgrades.network_magnet": "Network Magnet",
   "gui.sophisticatedbackpacks.upgrades.network_magnet.tooltip": "Network Magnet Setting",
@@ -85,6 +86,7 @@
   "gui.sophisticatedbackpacks.upgrades.buttons.enable_void": "Allow Void Upgrade to Destroy Items",
   "gui.sophisticatedbackpacks.upgrades.buttons.do_not_enable_void": "Void upgrades are not allowed to destroy items.",
 
+  "gui.sophisticatedbackpacks.upgrades.buttons.use_backpack": "Store items into backpack",
   "gui.sophisticatedbackpacks.upgrades.buttons.use_rs": "Pull items into RS network",
   "gui.sophisticatedbackpacks.upgrades.buttons.use_ae": "Pull items into AE network",
   "gui.sophisticatedbackpacks.upgrades.buttons.use_tom": "Pull items into TOM storage",

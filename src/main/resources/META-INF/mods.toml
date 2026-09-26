@@ -27,6 +27,13 @@ side = "BOTH"
 [[dependencies."${mod_id}"]]
 modId="sophisticatedbackpacks"
 mandatory=true
-versionRange="${soph_version_range}"
+versionRange="${soph_backpack_version_range}"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies."${mod_id}"]]
+modId="sophisticatedcore"
+mandatory=true
+versionRange="${soph_core_version_range}"
 ordering="NONE"
 side="BOTH"

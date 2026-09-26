@@ -4,7 +4,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.settings.memory.MemorySettingsCategory;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.ContentsFilterLogic;
@@ -13,19 +12,17 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.IPickupResponseUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeWrapperBase;
 import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
 import org.jetbrains.annotations.NotNull;
-import top.morenrx.sua.data.NetworkLocation;
-import top.morenrx.sua.upgrades.compat.network.NetworkStorageHandler;
+import top.morenrx.sua.helper.SalvagingHelper;
+import top.morenrx.sua.upgrades.compat.network.INetworkStorage;
 import top.morenrx.sua.upgrades.compat.network.NetworkStorageProvider;
 import top.morenrx.sua.upgrades.salvaging.SalvagingUpgradeWrapper;
 import top.morenrx.sua.util.SUAUtils;
 
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class NetworkPickupUpgradeWrapper extends UpgradeWrapperBase<NetworkPickupUpgradeWrapper, NetworkPickupUpgrade>
         implements IPickupResponseUpgrade, IContentsFilteredUpgrade {
     private final ContentsFilterLogic filterLogic;
-    private NetworkLocation networkLocationCache = null;
     private Player playerCache = null;
 
     public NetworkPickupUpgradeWrapper(IStorageWrapper storageWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
@@ -46,20 +43,15 @@ public class NetworkPickupUpgradeWrapper extends UpgradeWrapperBase<NetworkPicku
         if (playerCache == null) playerCache = SUAUtils.Backpack.getBackpackOwner(level, storageWrapper.getContentsUuid().orElse(null));
 
         String typeName = shouldNetworkType();
-        NetworkStorageHandler networkStorageHandler = NetworkStorageProvider.get().getNetworkStorageHandlers().get(typeName);
-
-        if (networkLocationCache == null && (networkLocationCache = networkStorageHandler.getNetworkLocation(level, upgrade)) == null) {
+        INetworkStorage storage = NetworkStorageProvider.get().getStorage(typeName);
+        if (storage == null || !storage.hasBinding(upgrade)) {
             return stack;
         }
 
-        BlockEntity blockEntity = NetworkLocation.getBlockEntity(networkLocationCache);
-        NetworkStorageHandler.InsertHandler insertHandler = networkStorageHandler.insertHandlerGetter().apply(blockEntity);
-        if (insertHandler == null) return stack;
-
         SalvagingUpgradeWrapper wrapper;
-        if (!simulate && (wrapper = SUAUtils.Backpack.shouldSalvaging(storageWrapper, stack)) != null) {
+        if (!simulate && (wrapper = SalvagingHelper.shouldSalvaging(storageWrapper, stack)) != null) {
             int consumeCount = wrapper.trySalvagingAndInsertItem(stack, (tempStack, tempSimulate) ->
-                    insertHandler.insert(tempStack, playerCache, tempSimulate));
+                    storage.insert(storageWrapper, upgrade, level, playerCache, tempStack, tempSimulate));
             if (consumeCount <= 0) return stack;
             if (consumeCount == stack.getCount()) {
                 return ItemStack.EMPTY;
@@ -72,7 +64,7 @@ public class NetworkPickupUpgradeWrapper extends UpgradeWrapperBase<NetworkPicku
 
         if (shouldEnableVoid() && SUAUtils.Backpack.shouldDestroy(storageWrapper, stack)) return ItemStack.EMPTY;
 
-        return insertHandler.insert(stack, playerCache, simulate);
+        return storage.insert(storageWrapper, upgrade, level, playerCache, stack, simulate);
     }
 
     public void setEnableVoid(boolean enableVoid) {
@@ -90,11 +82,9 @@ public class NetworkPickupUpgradeWrapper extends UpgradeWrapperBase<NetworkPicku
     }
 
     public String shouldNetworkType() {
-        String type = NBTHelper.getString(upgrade, NetworkPickupUpgrade.Data.KEY_NETWORK_TYPE).orElse(NetworkStorageProvider.Type.RS);
-        Map<String, NetworkStorageHandler> networkStorageHandlers = NetworkStorageProvider.get().getNetworkStorageHandlers();
-        NetworkStorageHandler networkStorageHandler = networkStorageHandlers.get(type);
-        if (networkStorageHandler == null) {
-            type = networkStorageHandlers.keySet().iterator().next();
+        String type = NBTHelper.getString(upgrade, NetworkPickupUpgrade.Data.KEY_NETWORK_TYPE).orElse(NetworkStorageProvider.Data.BACKPACK);
+        if (!NetworkStorageProvider.get().hasStorage(type)) {
+            type = NetworkStorageProvider.get().getDefaultStorageType();
             setNetworkType(type);
         }
         return type;

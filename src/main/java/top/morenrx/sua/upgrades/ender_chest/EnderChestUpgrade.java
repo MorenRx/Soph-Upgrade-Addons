@@ -15,7 +15,6 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.common.Mod;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
@@ -27,7 +26,6 @@ import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import top.morenrx.sua.SophUpgradeAddons;
 import top.morenrx.sua.network.S2CEnderChestSyncMessage;
 import top.morenrx.sua.upgrades.base.ISUAItemConfig;
 
@@ -38,7 +36,6 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-@Mod.EventBusSubscriber(modid = SophUpgradeAddons.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class EnderChestUpgrade extends UpgradeItemBase<EnderChestUpgrade.Wrapper> implements ISUAItemConfig {
     public static final UpgradeType<EnderChestUpgrade.Wrapper> TYPE = new UpgradeType<>(EnderChestUpgrade.Wrapper::new);
     public static final List<UpgradeConflictDefinition> UPGRADE_CONFLICT_DEFINITIONS = List.of(new UpgradeConflictDefinition(EnderChestUpgrade.class::isInstance, 0, SBPTranslationHelper.INSTANCE.translError("add.ender_chest_exists")));
@@ -146,6 +143,7 @@ public class EnderChestUpgrade extends UpgradeItemBase<EnderChestUpgrade.Wrapper
 
 
     public static void onEnderChestTick(TickEvent.PlayerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) return;
         if (!(event.player instanceof ServerPlayer player)) return;
         if (player.isSpectator() || player.isDeadOrDying()) return;
         PlayerEnderChestContainer enderChestInventory = player.getEnderChestInventory();

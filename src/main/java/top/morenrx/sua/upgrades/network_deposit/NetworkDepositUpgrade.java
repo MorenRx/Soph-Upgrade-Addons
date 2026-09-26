@@ -28,7 +28,7 @@ public class NetworkDepositUpgrade extends DepositUpgradeItem implements ISUAIte
 
     @Override
     public boolean isEnable() {
-        return enable.getAsBoolean() && !NetworkStorageProvider.get().getNetworkStorageHandlers().isEmpty();
+        return enable.getAsBoolean() && NetworkStorageProvider.get().hasExternalStorages();
     }
 
     @Override
