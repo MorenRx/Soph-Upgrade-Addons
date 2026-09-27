@@ -10,7 +10,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import org.jetbrains.annotations.Nullable;
 import top.morenrx.sua.data.NetworkLocation;
-import top.morenrx.sua.mixin.common.tomstorage.IStorageTerminalBlockEntityAccess;
+import top.morenrx.sua.access.tomstorage.IStorageTerminalBlockEntityAccess;
 
 import java.util.ArrayList;
 import java.util.List;

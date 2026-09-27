@@ -1,4 +1,4 @@
-package top.morenrx.sua.mixin.common.tomstorage;
+package top.morenrx.sua.access.tomstorage;
 
 import net.minecraftforge.items.IItemHandler;
 
