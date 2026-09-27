@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import top.morenrx.sua.SophUpgradeAddons;
 import top.morenrx.sua.helper.SalvagingHelper;
 import top.morenrx.sua.upgrades.compat.network.INetworkStorage;
-import top.morenrx.sua.upgrades.compat.network.NetworkStorageProvider;
+import top.morenrx.sua.data.NetworkLocation;
 import top.morenrx.sua.upgrades.salvaging.SalvagingUpgradeWrapper;
 import top.morenrx.sua.util.SUAUtils;
 
@@ -44,14 +44,12 @@ public class NetworkMagnetUpgradeWrapper extends UpgradeWrapperBase<NetworkMagne
 
     @SubscribeEvent
     public static void globalPostTick(TickEvent.LevelTickEvent event) {
-        if (event.phase != TickEvent.Phase.END || event.level.isClientSide()) {
+        if (event.phase != TickEvent.Phase.END || event.level.isClientSide())
             return;
-        }
 
         long gameTime = event.level.getGameTime();
-        if (gameTime > nextTickTime) {
+        if (gameTime > nextTickTime)
             nextTickTime = gameTime + COOLDOWN_TICKS;
-        }
     }
 
     @SubscribeEvent
@@ -63,15 +61,19 @@ public class NetworkMagnetUpgradeWrapper extends UpgradeWrapperBase<NetworkMagne
     private final ContentsFilterLogic filterLogic;
     private Player playerCache = null;
 
+    private Boolean pickupItemsCache = null;
+    private Boolean pickupXpCache = null;
+    private Boolean enableVoidCache = null;
+    private NetworkLocation locationCache = null;
+
     public NetworkMagnetUpgradeWrapper(IStorageWrapper storageWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
         super(storageWrapper, upgrade, upgradeSaveHandler);
         filterLogic = new ContentsFilterLogic(upgrade, upgradeSaveHandler, upgradeItem.getFilterSlotCount(), storageWrapper::getInventoryHandler, storageWrapper.getSettingsHandler().getTypeCategory(MemorySettingsCategory.class));
     }
 
     private boolean isInCooldown(Level level, @Nullable Entity entity) {
-        if (!(entity instanceof Player)) {
+        if (!(entity instanceof Player))
             return super.isInCooldown(level);
-        }
 
         return nextTickTime > level.getGameTime();
     }
@@ -81,41 +83,51 @@ public class NetworkMagnetUpgradeWrapper extends UpgradeWrapperBase<NetworkMagne
         return filterLogic;
     }
 
+    public NetworkLocation getNetworkLocation() {
+        if (locationCache == null)
+            locationCache = NetworkLocation.fromUpgrade(upgrade);
+        return locationCache;
+    }
+
     @Override
     public @NotNull ItemStack pickup(@NotNull Level world, @NotNull ItemStack stack, boolean simulate) {
-        if (!shouldPickupItems() || !filterLogic.matchesFilter(stack)) return stack;
-        if (!(world instanceof ServerLevel level)) return stack;
-
-        if (playerCache == null) playerCache = SUAUtils.Backpack.getBackpackOwner(level, storageWrapper.getContentsUuid().orElse(null));
-
-        String typeName = shouldNetworkType();
-        INetworkStorage storage = NetworkStorageProvider.get().getStorage(typeName);
-        if (storage == null || !storage.hasBinding(upgrade)) {
+        if (!shouldPickupItems() || !filterLogic.matchesFilter(stack))
             return stack;
-        }
+        if (!(world instanceof ServerLevel level))
+            return stack;
+
+        if (playerCache == null)
+            playerCache = SUAUtils.Backpack.getBackpackOwner(level, storageWrapper.getContentsUuid().orElse(null));
+
+        NetworkLocation location = getNetworkLocation();
+        INetworkStorage storage = location.storage();
+        if (storage == null || !location.hasBinding())
+            return stack;
 
         SalvagingUpgradeWrapper wrapper;
         if (!simulate && (wrapper = SalvagingHelper.shouldSalvaging(storageWrapper, stack)) != null) {
             int consumeCount = wrapper.trySalvagingAndInsertItem(stack, (tempStack, tempSimulate) ->
-                    storage.insert(storageWrapper, upgrade, level, playerCache, tempStack, tempSimulate));
-            if (consumeCount <= 0) return stack;
-            if (consumeCount == stack.getCount()) {
+                    storage.insert(storageWrapper, upgrade, level, playerCache, tempStack, tempSimulate, location));
+            if (consumeCount <= 0)
+                return stack;
+            if (consumeCount == stack.getCount())
                 return ItemStack.EMPTY;
-            } else {
-                ItemStack copy = stack.copy();
-                copy.setCount(copy.getCount() - consumeCount);
-                return copy;
-            }
+
+            ItemStack copy = stack.copy();
+            copy.setCount(copy.getCount() - consumeCount);
+            return copy;
         }
 
-        if (shouldEnableVoid() && SUAUtils.Backpack.shouldDestroy(storageWrapper, stack)) return ItemStack.EMPTY;
+        if (shouldEnableVoid() && SUAUtils.Backpack.shouldDestroy(storageWrapper, stack))
+            return ItemStack.EMPTY;
 
-        return storage.insert(storageWrapper, upgrade, level, playerCache, stack, simulate);
+        return storage.insert(storageWrapper, upgrade, level, playerCache, stack, simulate, location);
     }
 
     @Override
     public void tick(@Nullable Entity entity, @NotNull Level world, @NotNull BlockPos pos) {
-        if (isInCooldown(world, entity)) return;
+        if (isInCooldown(world, entity))
+            return;
 
         if (world instanceof ServerLevel level) {
             if (this.playerCache != entity && entity instanceof Player player) {
@@ -127,9 +139,8 @@ public class NetworkMagnetUpgradeWrapper extends UpgradeWrapperBase<NetworkMagne
 
         int cooldown = shouldPickupItems() ? pickupItems(entity, world, pos) : FULL_COOLDOWN_TICKS;
 
-        if (shouldPickupXp() && canFillStorageWithXp()) {
+        if (shouldPickupXp() && canFillStorageWithXp())
             cooldown = Math.min(cooldown, pickupXpOrbs(entity, world, pos));
-        }
 
         setCooldown(world, cooldown);
     }
@@ -140,9 +151,8 @@ public class NetworkMagnetUpgradeWrapper extends UpgradeWrapperBase<NetworkMagne
 
     private int pickupXpOrbs(@Nullable Entity entity, Level world, BlockPos pos) {
         List<ExperienceOrb> xpEntities = world.getEntitiesOfClass(ExperienceOrb.class, new AABB(pos).inflate(upgradeItem.getRadius()), e -> true);
-        if (xpEntities.isEmpty()) {
+        if (xpEntities.isEmpty())
             return COOLDOWN_TICKS;
-        }
 
         int cooldown = COOLDOWN_TICKS;
         for (ExperienceOrb xpOrb : xpEntities) {
@@ -165,13 +175,11 @@ public class NetworkMagnetUpgradeWrapper extends UpgradeWrapperBase<NetworkMagne
                 xpOrb.value = 0;
                 xpOrb.discard();
 
-                if (entity instanceof Player player) {
+                if (entity instanceof Player player)
                     playXpPickupSound(world, player);
-                }
 
-                if (amountToTransfer > amountAdded) {
+                if (amountToTransfer > amountAdded)
                     world.addFreshEntity(new ExperienceOrb(world, pos.x(), pos.y(), pos.z(), (int) XpHelper.liquidToExperience(amountToTransfer - amountAdded)));
-                }
                 return true;
             }
             return false;
@@ -180,21 +188,18 @@ public class NetworkMagnetUpgradeWrapper extends UpgradeWrapperBase<NetworkMagne
 
     private int pickupItems(@Nullable Entity entity, Level world, BlockPos pos) {
         List<ItemEntity> itemEntities = world.getEntitiesOfClass(ItemEntity.class, new AABB(pos).inflate(upgradeItem.getRadius()), e -> true);
-        if (itemEntities.isEmpty()) {
+        if (itemEntities.isEmpty())
             return COOLDOWN_TICKS;
-        }
 
         Player player = entity instanceof Player ? (Player) entity : null;
 
         int cooldown = FULL_COOLDOWN_TICKS;
         for (ItemEntity itemEntity : itemEntities) {
-            if (!itemEntity.isAlive() || itemEntity.pickupDelay == ItemEntity.INFINITE_PICKUP_DELAY || !filterLogic.matchesFilter(itemEntity.getItem()) || canNotPickup(itemEntity, entity)) {
+            if (!itemEntity.isAlive() || itemEntity.pickupDelay == ItemEntity.INFINITE_PICKUP_DELAY || !filterLogic.matchesFilter(itemEntity.getItem()) || canNotPickup(itemEntity, entity))
                 continue;
-            }
             if (tryToInsertItem(itemEntity)) {
-                if (player != null) {
+                if (player != null)
                     playItemPickupSound(world, player);
-                }
                 cooldown = COOLDOWN_TICKS;
             }
         }
@@ -215,21 +220,22 @@ public class NetworkMagnetUpgradeWrapper extends UpgradeWrapperBase<NetworkMagne
     }
 
     private boolean tryToInsertItem(ItemEntity itemEntity) {
-        if (!(itemEntity.level() instanceof ServerLevel level)) return false;
-
-        String typeName = shouldNetworkType();
-        INetworkStorage storage = NetworkStorageProvider.get().getStorage(typeName);
-        if (storage == null || !storage.hasBinding(upgrade)) {
+        if (!(itemEntity.level() instanceof ServerLevel level))
             return false;
-        }
+
+        NetworkLocation location = getNetworkLocation();
+        INetworkStorage storage = location.storage();
+        if (storage == null || !location.hasBinding())
+            return false;
 
         ItemStack stack = itemEntity.getItem();
 
         SalvagingUpgradeWrapper wrapper;
         if ((wrapper = SalvagingHelper.shouldSalvaging(storageWrapper, stack)) != null) {
             int consumeCount = wrapper.trySalvagingAndInsertItem(stack, (tempStack, tempSimulate) ->
-                    storage.insert(storageWrapper, upgrade, level, playerCache, tempStack, tempSimulate));
-            if (consumeCount <= 0) return false;
+                    storage.insert(storageWrapper, upgrade, level, playerCache, tempStack, tempSimulate, location));
+            if (consumeCount <= 0)
+                return false;
             if (consumeCount == stack.getCount()) {
                 itemEntity.setItem(ItemStack.EMPTY);
             } else {
@@ -245,52 +251,58 @@ public class NetworkMagnetUpgradeWrapper extends UpgradeWrapperBase<NetworkMagne
             return true;
         }
 
-        ItemStack remainingStack = storage.insert(storageWrapper, upgrade, level, playerCache, stack, true);
-        if (remainingStack.getCount() >= stack.getCount()) return false;
-        remainingStack = storage.insert(storageWrapper, upgrade, level, playerCache, stack, false);
+        ItemStack remainingStack = storage.insert(storageWrapper, upgrade, level, playerCache, stack, true, location);
+        if (remainingStack.getCount() >= stack.getCount())
+            return false;
+        remainingStack = storage.insert(storageWrapper, upgrade, level, playerCache, stack, false, location);
 
         itemEntity.setItem(remainingStack);
         return true;
     }
 
     public void setPickupItems(boolean pickupItems) {
+        pickupItemsCache = pickupItems;
         NBTHelper.setBoolean(upgrade, NetworkMagnetUpgrade.Data.KEY_PICKUP_ITEMS, pickupItems);
         save();
     }
 
     public boolean shouldPickupItems() {
-        return NBTHelper.getBoolean(upgrade, NetworkMagnetUpgrade.Data.KEY_PICKUP_ITEMS).orElse(true);
+        if (pickupItemsCache == null)
+            pickupItemsCache = NBTHelper.getBoolean(upgrade, NetworkMagnetUpgrade.Data.KEY_PICKUP_ITEMS).orElse(true);
+        return pickupItemsCache;
     }
 
     public void setPickupXp(boolean pickupXp) {
+        pickupXpCache = pickupXp;
         NBTHelper.setBoolean(upgrade, NetworkMagnetUpgrade.Data.KEY_PICKUP_XP, pickupXp);
         save();
     }
 
     public boolean shouldPickupXp() {
-        return NBTHelper.getBoolean(upgrade, NetworkMagnetUpgrade.Data.KEY_PICKUP_XP).orElse(true);
+        if (pickupXpCache == null)
+            pickupXpCache = NBTHelper.getBoolean(upgrade, NetworkMagnetUpgrade.Data.KEY_PICKUP_XP).orElse(true);
+        return pickupXpCache;
     }
 
     public void setEnableVoid(boolean enableVoid) {
+        enableVoidCache = enableVoid;
         NBTHelper.setBoolean(upgrade, NetworkMagnetUpgrade.Data.KEY_ENABLE_VOID, enableVoid);
         save();
     }
 
     public boolean shouldEnableVoid() {
-        return NBTHelper.getBoolean(upgrade, NetworkMagnetUpgrade.Data.KEY_ENABLE_VOID).orElse(true);
+        if (enableVoidCache == null)
+            enableVoidCache = NBTHelper.getBoolean(upgrade, NetworkMagnetUpgrade.Data.KEY_ENABLE_VOID).orElse(true);
+        return enableVoidCache;
     }
 
     public void setNetworkType(String networkType) {
         NBTHelper.putString(upgrade.getOrCreateTag(), NetworkMagnetUpgrade.Data.KEY_NETWORK_TYPE, networkType);
+        locationCache = null;
         save();
     }
 
     public String shouldNetworkType() {
-        String type = NBTHelper.getString(upgrade, NetworkMagnetUpgrade.Data.KEY_NETWORK_TYPE).orElse(NetworkStorageProvider.Data.BACKPACK);
-        if (!NetworkStorageProvider.get().hasStorage(type)) {
-            type = NetworkStorageProvider.get().getDefaultStorageType();
-            setNetworkType(type);
-        }
-        return type;
+        return getNetworkLocation().storageType();
     }
 }

@@ -8,6 +8,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
+import org.jetbrains.annotations.Nullable;
+import top.morenrx.sua.data.NetworkLocation;
 
 import java.util.List;
 
@@ -38,7 +40,7 @@ public class BackpackNetworkStorage implements INetworkStorage {
     }
 
     @Override
-    public ItemStack insert(IStorageWrapper storageWrapper, ItemStack upgradeStack, ServerLevel serverLevel, Player player, ItemStack toInsert, boolean simulate) {
+    public ItemStack insert(IStorageWrapper storageWrapper, ItemStack upgradeStack, ServerLevel serverLevel, Player player, ItemStack toInsert, boolean simulate, @Nullable NetworkLocation location) {
         if (storageWrapper == null) return toInsert;
         return storageWrapper.getInventoryForUpgradeProcessing().insertItem(toInsert, simulate);
     }

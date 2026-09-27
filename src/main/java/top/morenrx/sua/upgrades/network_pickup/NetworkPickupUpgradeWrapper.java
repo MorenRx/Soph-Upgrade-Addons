@@ -14,7 +14,7 @@ import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
 import org.jetbrains.annotations.NotNull;
 import top.morenrx.sua.helper.SalvagingHelper;
 import top.morenrx.sua.upgrades.compat.network.INetworkStorage;
-import top.morenrx.sua.upgrades.compat.network.NetworkStorageProvider;
+import top.morenrx.sua.data.NetworkLocation;
 import top.morenrx.sua.upgrades.salvaging.SalvagingUpgradeWrapper;
 import top.morenrx.sua.util.SUAUtils;
 
@@ -24,6 +24,8 @@ public class NetworkPickupUpgradeWrapper extends UpgradeWrapperBase<NetworkPicku
         implements IPickupResponseUpgrade, IContentsFilteredUpgrade {
     private final ContentsFilterLogic filterLogic;
     private Player playerCache = null;
+    private Boolean enableVoidCache = null;
+    private NetworkLocation locationCache = null;
 
     public NetworkPickupUpgradeWrapper(IStorageWrapper storageWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
         super(storageWrapper, upgrade, upgradeSaveHandler);
@@ -35,58 +37,66 @@ public class NetworkPickupUpgradeWrapper extends UpgradeWrapperBase<NetworkPicku
         return filterLogic;
     }
 
+    public NetworkLocation getNetworkLocation() {
+        if (locationCache == null)
+            locationCache = NetworkLocation.fromUpgrade(upgrade);
+        return locationCache;
+    }
+
     @Override
     public @NotNull ItemStack pickup(@NotNull Level world, @NotNull ItemStack stack, boolean simulate) {
-        if (!filterLogic.matchesFilter(stack)) return stack;
-        if (!(world instanceof ServerLevel level)) return stack;
-
-        if (playerCache == null) playerCache = SUAUtils.Backpack.getBackpackOwner(level, storageWrapper.getContentsUuid().orElse(null));
-
-        String typeName = shouldNetworkType();
-        INetworkStorage storage = NetworkStorageProvider.get().getStorage(typeName);
-        if (storage == null || !storage.hasBinding(upgrade)) {
+        if (!filterLogic.matchesFilter(stack))
             return stack;
-        }
+        if (!(world instanceof ServerLevel level))
+            return stack;
+
+        if (playerCache == null)
+            playerCache = SUAUtils.Backpack.getBackpackOwner(level, storageWrapper.getContentsUuid().orElse(null));
+
+        NetworkLocation location = getNetworkLocation();
+        INetworkStorage storage = location.storage();
+        if (storage == null || !location.hasBinding())
+            return stack;
 
         SalvagingUpgradeWrapper wrapper;
         if (!simulate && (wrapper = SalvagingHelper.shouldSalvaging(storageWrapper, stack)) != null) {
             int consumeCount = wrapper.trySalvagingAndInsertItem(stack, (tempStack, tempSimulate) ->
-                    storage.insert(storageWrapper, upgrade, level, playerCache, tempStack, tempSimulate));
-            if (consumeCount <= 0) return stack;
-            if (consumeCount == stack.getCount()) {
+                    storage.insert(storageWrapper, upgrade, level, playerCache, tempStack, tempSimulate, location));
+            if (consumeCount <= 0)
+                return stack;
+            if (consumeCount == stack.getCount())
                 return ItemStack.EMPTY;
-            } else {
-                ItemStack copy = stack.copy();
-                copy.setCount(copy.getCount() - consumeCount);
-                return copy;
-            }
+
+            ItemStack copy = stack.copy();
+            copy.setCount(copy.getCount() - consumeCount);
+            return copy;
         }
 
-        if (shouldEnableVoid() && SUAUtils.Backpack.shouldDestroy(storageWrapper, stack)) return ItemStack.EMPTY;
+        if (shouldEnableVoid() && SUAUtils.Backpack.shouldDestroy(storageWrapper, stack))
+            return ItemStack.EMPTY;
 
-        return storage.insert(storageWrapper, upgrade, level, playerCache, stack, simulate);
+        return storage.insert(storageWrapper, upgrade, level, playerCache, stack, simulate, location);
     }
 
     public void setEnableVoid(boolean enableVoid) {
+        enableVoidCache = enableVoid;
         NBTHelper.setBoolean(upgrade, NetworkPickupUpgrade.Data.KEY_ENABLE_VOID, enableVoid);
         save();
     }
 
     public boolean shouldEnableVoid() {
-        return NBTHelper.getBoolean(upgrade, NetworkPickupUpgrade.Data.KEY_ENABLE_VOID).orElse(true);
+        if (enableVoidCache == null)
+            enableVoidCache = NBTHelper.getBoolean(upgrade, NetworkPickupUpgrade.Data.KEY_ENABLE_VOID).orElse(true);
+        return enableVoidCache;
     }
 
     public void setNetworkType(String networkType) {
         NBTHelper.putString(upgrade.getOrCreateTag(), NetworkPickupUpgrade.Data.KEY_NETWORK_TYPE, networkType);
+        locationCache = null;
         save();
     }
 
     public String shouldNetworkType() {
-        String type = NBTHelper.getString(upgrade, NetworkPickupUpgrade.Data.KEY_NETWORK_TYPE).orElse(NetworkStorageProvider.Data.BACKPACK);
-        if (!NetworkStorageProvider.get().hasStorage(type)) {
-            type = NetworkStorageProvider.get().getDefaultStorageType();
-            setNetworkType(type);
-        }
-        return type;
+        return getNetworkLocation().storageType();
     }
 }

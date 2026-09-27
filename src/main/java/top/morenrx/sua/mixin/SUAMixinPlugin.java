@@ -14,11 +14,11 @@ public class SUAMixinPlugin implements IMixinConfigPlugin {
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         String simpleName = mixinClassName.substring(mixinClassName.lastIndexOf('.') + 1);
 
-        return switch (simpleName) {
-            case "MixinInventoryInteractionHelper", "MixinStorageUpgradeSlot" -> SUACompat.SOPHISTICATED_BACKPACKS.getAsBoolean();
-            case "MixinStorageTerminalBlockEntity" -> SUACompat.TOMS_STORAGE.getAsBoolean();
-            default -> true;
-        };
+        if (simpleName.equals("MixinStorageTerminalBlockEntity")) {
+            return SUACompat.TOMS_STORAGE.getAsBoolean();
+        } else {
+            return true;
+        }
     }
 
     @Override

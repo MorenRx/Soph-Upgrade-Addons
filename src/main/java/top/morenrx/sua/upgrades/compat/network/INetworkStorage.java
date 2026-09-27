@@ -19,9 +19,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import org.jetbrains.annotations.Nullable;
 import top.morenrx.sua.SophUpgradeAddons;
+import top.morenrx.sua.data.NetworkLocation;
 import top.morenrx.sua.helper.NetworkStorageHelper;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 public interface INetworkStorage {
     class Data {
@@ -78,7 +80,13 @@ public interface INetworkStorage {
         }
     }
 
-    ItemStack insert(IStorageWrapper storageWrapper, ItemStack upgradeStack, ServerLevel serverLevel, Player player, ItemStack toInsert, boolean simulate);
+    default ItemStack insert(IStorageWrapper storageWrapper, ItemStack upgradeStack, ServerLevel serverLevel, Player player, ItemStack toInsert, boolean simulate) {
+        return insert(storageWrapper, upgradeStack, serverLevel, player, toInsert, simulate, null);
+    }
+
+    default ItemStack insert(IStorageWrapper storageWrapper, ItemStack upgradeStack, ServerLevel serverLevel, Player player, ItemStack toInsert, boolean simulate, @Nullable NetworkLocation location) {
+        return toInsert;
+    }
 
     default boolean isValidDepositBlock(BlockEntity blockEntity) {
         return canBindBlock(blockEntity);
@@ -88,14 +96,29 @@ public interface INetworkStorage {
         return null;
     }
 
+    default boolean isValidRestockBlock(BlockEntity blockEntity) {
+        return canBindBlock(blockEntity);
+    }
+
+    default NetworkExtractHandler getRestockExtractHandler(BlockEntity blockEntity) {
+        return null;
+    }
+
+    default void forEachStoredItem(BlockEntity blockEntity, Predicate<ItemStack> consumer) {
+    }
+
     default @Nullable BlockEntity getTargetBlockEntity(ItemStack upgradeStack, ServerLevel currentLevel) {
         CompoundTag tag = NetworkStorageHelper.getStorageTag(upgradeStack, getName());
-        if (tag == null || !tag.contains(Data.KEY_POS) || tag.getString(Data.KEY_DIM).isEmpty()) return null;
+        if (tag == null || !tag.contains(Data.KEY_POS) || tag.getString(Data.KEY_DIM).isEmpty())
+            return null;
+
         long pos = tag.getLong(Data.KEY_POS);
         String dim = tag.getString(Data.KEY_DIM);
         ResourceKey<Level> dimKey = ResourceKey.create(Registries.DIMENSION, SophUpgradeAddons.parse(dim));
+
         ServerLevel targetLevel = currentLevel.getServer().getLevel(dimKey);
         if (targetLevel == null) return null;
+
         return targetLevel.getBlockEntity(BlockPos.of(pos));
     }
 
@@ -103,4 +126,10 @@ public interface INetworkStorage {
     interface NetworkInsertHandler {
         ItemStack insert(ItemStack stack, Player player, boolean simulate);
     }
+
+    @FunctionalInterface
+    interface NetworkExtractHandler {
+        ItemStack extract(ItemStack filterStack, int maxAmount, Player player, boolean simulate);
+    }
 }
+

@@ -20,7 +20,10 @@
   "item.soph_upgrade_addons.network_pickup_upgrade.tooltip.linked.bd": "已链接的超越维度: ",
 
   "item.soph_upgrade_addons.network_deposit_upgrade": "网络卸货升级",
-  "item.soph_upgrade_addons.network_deposit_upgrade.tooltip": "可对 'RS/AE/TOM/超越维度' 的终端使用卸货功能",
+  "item.soph_upgrade_addons.network_deposit_upgrade.tooltip": "可对存储网络的终端使用卸货功能",
+
+  "item.soph_upgrade_addons.network_restock_upgrade": "网络取货升级",
+  "item.soph_upgrade_addons.network_restock_upgrade.tooltip": "可对存储网络的终端使用取货功能",
 
   "item.soph_upgrade_addons.ender_chest_upgrade": "末影升级",
   "item.soph_upgrade_addons.ender_chest_upgrade.tooltip": "精妙背包可以在末影箱内生效",
@@ -61,6 +64,9 @@
 
   "gui.sophisticatedbackpacks.upgrades.network_deposit": "网络卸货",
   "gui.sophisticatedbackpacks.upgrades.network_deposit.tooltip": "网络卸货设置",
+
+  "gui.sophisticatedbackpacks.upgrades.network_restock": "网络取货",
+  "gui.sophisticatedbackpacks.upgrades.network_restock.tooltip": "网络取货设置",
 
   "gui.sophisticatedbackpacks.upgrades.super_void": "超级虚空",
   "gui.sophisticatedbackpacks.upgrades.super_void.tooltip": "超级虚空设置",

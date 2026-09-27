@@ -11,6 +11,7 @@
     "common.sophisticatedbackpacks.MixinStorageUpgradeSlot"
   ],
   "client": [
+    "client.sophisticatedbackpacks.MixinKeybindHandler"
   ],
   "injectors": {
     "defaultRequire": 1

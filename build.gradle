@@ -57,6 +57,8 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:mouse-tweaks-60089:5338457")
     // 拼音搜索
     runtimeOnly fg.deobf("curse.maven:just-enough-characters-250702:8771525")
+    // 铁氧体磁芯
+    runtimeOnly fg.deobf("curse.maven:ferritecore-429235:4810975")
 }
 
 repositories {

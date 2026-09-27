@@ -18,9 +18,13 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
+import org.jetbrains.annotations.Nullable;
+import top.morenrx.sua.data.NetworkLocation;
 import top.morenrx.sua.helper.NetworkStorageHelper;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class BDNetworkStorage implements INetworkStorage {
 
@@ -47,9 +51,9 @@ public class BDNetworkStorage implements INetworkStorage {
         Player player = context.getPlayer();
         if (!level.isClientSide() && player != null) {
             int netId = netedBlockEntity.getNetId();
-            if (netId == DimensionsNet.NO_PRIMARY_NET_ID) {
+            if (netId == DimensionsNet.NO_PRIMARY_NET_ID)
                 return InteractionResult.FAIL;
-            }
+
             CompoundTag tag = NetworkStorageHelper.getOrCreateStorageTag(upgradeStack, getName());
             tag.putInt(Data.KEY_ID, netId);
             DimensionsNet net = netedBlockEntity.getNet();
@@ -61,9 +65,8 @@ public class BDNetworkStorage implements INetworkStorage {
 
     @Override
     public InteractionResultHolder<ItemStack> onBindAir(Level level, Player player, InteractionHand hand, ItemStack upgradeStack) {
-        if (level.isClientSide()) {
-            return InteractionResultHolder.sidedSuccess(upgradeStack, true);
-        }
+        if (level.isClientSide()) return InteractionResultHolder.sidedSuccess(upgradeStack, true);
+
         DimensionsNet primaryNet = DimensionsNet.getPrimaryNetFromPlayer(player);
         if (primaryNet == null || primaryNet.deleted) {
             player.sendSystemMessage(Component.translatable("message.soph_upgrade_addons.network.bd.linker_fail").withStyle(ChatFormatting.RED));
@@ -99,14 +102,21 @@ public class BDNetworkStorage implements INetworkStorage {
     }
 
     @Override
-    public ItemStack insert(IStorageWrapper storageWrapper, ItemStack upgradeStack, ServerLevel serverLevel, Player player, ItemStack toInsert, boolean simulate) {
-        CompoundTag tag = NetworkStorageHelper.getStorageTag(upgradeStack, getName());
-        if (tag == null || !tag.contains(Data.KEY_ID)) return toInsert;
-        int netId = tag.getInt(Data.KEY_ID);
-        if (netId == DimensionsNet.NO_PRIMARY_NET_ID) return toInsert;
+    public ItemStack insert(IStorageWrapper storageWrapper, ItemStack upgradeStack, ServerLevel serverLevel, Player player, ItemStack toInsert, boolean simulate, @Nullable NetworkLocation location) {
+        int netId;
+        if (location != null && location.hasBinding()) {
+            netId = location.netId();
+        } else {
+            CompoundTag tag = NetworkStorageHelper.getStorageTag(upgradeStack, getName());
+            if (tag == null || !tag.contains(Data.KEY_ID)) return toInsert;
+            netId = tag.getInt(Data.KEY_ID);
+        }
+        if (netId == DimensionsNet.NO_PRIMARY_NET_ID)
+            return toInsert;
 
         DimensionsNet net = DimensionsNet.getNetFromId(netId);
-        if (net == null || net.deleted) return toInsert;
+        if (net == null || net.deleted)
+            return toInsert;
 
         KeyAmount remaining = net.getUnifiedStorage().insert(new ItemStackKey(toInsert), toInsert.getCount(), simulate);
         if (remaining.isEmpty()) return ItemStack.EMPTY;
@@ -128,4 +138,40 @@ public class BDNetworkStorage implements INetworkStorage {
             return copy;
         };
     }
+
+    @Override
+    public NetworkExtractHandler getRestockExtractHandler(BlockEntity blockEntity) {
+        if (!(blockEntity instanceof NetedBlockEntity netedBlockEntity)) return null;
+        DimensionsNet net = netedBlockEntity.getNet();
+        if (net == null || net.deleted) return null;
+
+        return (filterStack, maxAmount, player, simulate) -> {
+            KeyAmount extracted = net.getUnifiedStorage().extract(new ItemStackKey(filterStack), maxAmount, simulate, true);
+            if (extracted.isEmpty() || extracted.amount() <= 0) return ItemStack.EMPTY;
+            ItemStack copy = filterStack.copy();
+            copy.setCount((int) extracted.amount());
+            return copy;
+        };
+    }
+
+    @Override
+    public void forEachStoredItem(BlockEntity blockEntity, Predicate<ItemStack> consumer) {
+        if (!(blockEntity instanceof NetedBlockEntity netedBlockEntity)) return;
+        DimensionsNet net = netedBlockEntity.getNet();
+        if (net == null || net.deleted) return;
+
+        List<ItemStack> snapshot = new ArrayList<>();
+        for (KeyAmount keyAmount : net.getUnifiedStorage().getStorage()) {
+            if (keyAmount.key() instanceof ItemStackKey) {
+                Object obj = keyAmount.toStack();
+                if (obj instanceof ItemStack stack && !stack.isEmpty())
+                    snapshot.add(stack);
+            }
+        }
+
+        for (ItemStack stack : snapshot) {
+            if (!consumer.test(stack)) break;
+        }
+    }
 }
+

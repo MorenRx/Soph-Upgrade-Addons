@@ -20,7 +20,10 @@
   "item.soph_upgrade_addons.network_pickup_upgrade.tooltip.linked.bd": "Linked Beyond Dimensions: ",
 
   "item.soph_upgrade_addons.network_deposit_upgrade": "Network Deposit Upgrade",
-  "item.soph_upgrade_addons.network_deposit_upgrade.tooltip": "Allows depositing items into linked 'RS/AE/TOM/Beyond Dimensions' terminals.",
+  "item.soph_upgrade_addons.network_deposit_upgrade.tooltip": "Allows depositing items into linked storage network terminals.",
+
+  "item.soph_upgrade_addons.network_restock_upgrade": "Network Restock Upgrade",
+  "item.soph_upgrade_addons.network_restock_upgrade.tooltip": "Allows restocking items from linked storage network terminals.",
 
   "item.soph_upgrade_addons.ender_chest_upgrade": "Ender Upgrade",
   "item.soph_upgrade_addons.ender_chest_upgrade.tooltip": "The Sophisticated Backpack can be used inside an Ender Chest.",
@@ -61,6 +64,9 @@
 
   "gui.sophisticatedbackpacks.upgrades.network_deposit": "Network Deposit",
   "gui.sophisticatedbackpacks.upgrades.network_deposit.tooltip": "Network Deposit Setting",
+
+  "gui.sophisticatedbackpacks.upgrades.network_restock": "Network Restock",
+  "gui.sophisticatedbackpacks.upgrades.network_restock.tooltip": "Network Restock Setting",
 
   "gui.sophisticatedbackpacks.upgrades.super_void": "Super Void",
   "gui.sophisticatedbackpacks.upgrades.super_void.tooltip": "Super Void Setting",
