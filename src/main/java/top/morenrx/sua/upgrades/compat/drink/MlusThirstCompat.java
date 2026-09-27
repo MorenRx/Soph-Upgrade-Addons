@@ -8,6 +8,16 @@ import net.minecraft.world.item.ItemStack;
 
 public class MlusThirstCompat implements IThirstCompat {
     @Override
+    public String getName() {
+        return DrinkCompatProvider.Data.THIRST_WAS_RECLAIMED;
+    }
+
+    @Override
+    public boolean isThirstActive(Player player) {
+        return player.getCapability(ModCapabilities.PLAYER_THIRST).isPresent();
+    }
+
+    @Override
     public boolean itemRestoresThirst(ItemStack itemStack) {
         return ThirstHelper.itemRestoresThirst(itemStack);
     }

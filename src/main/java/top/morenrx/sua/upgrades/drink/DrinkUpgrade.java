@@ -10,8 +10,8 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeItemBase;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import top.morenrx.sua.init.SUACompat;
 import top.morenrx.sua.upgrades.base.ISUAItemConfig;
+import top.morenrx.sua.upgrades.compat.drink.DrinkCompatProvider;
 
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -58,7 +58,7 @@ public class DrinkUpgrade extends UpgradeItemBase<DrinkUpgradeWrapper> implement
 
     @Override
     public boolean isEnable() {
-        return SUACompat.THIRST.getAsBoolean() && enable.getAsBoolean();
+        return enable.getAsBoolean() && DrinkCompatProvider.get().hasAnyThirstMod();
     }
 
     @Override

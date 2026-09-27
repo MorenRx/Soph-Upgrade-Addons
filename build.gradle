@@ -29,13 +29,14 @@ dependencies {
     // Tom存储 1.7.1
     implementation fg.deobf("curse.maven:toms-storage-378609:6418133")
     // 口渴重置 3.0.5
-    implementation fg.deobf("curse.maven:thirst-was-reclaimed-884742:8852255")
+    compileOnly fg.deobf("curse.maven:thirst-was-reclaimed-884742:8852255")
     // 口渴
     compileOnly fg.deobf("curse.maven:thirst-was-taken-679270:6660408")
     // 传说生存 2.4.7
-    implementation fg.deobf("curse.maven:legendary-survival-overhaul-840254:8591693")
+    compileOnly fg.deobf("curse.maven:legendary-survival-overhaul-840254:8591693")
     // 意志坚定 9.2.0.171
     implementation fg.deobf("curse.maven:tough-as-nails-246391:5815863")
+    runtimeOnly fg.deobf("curse.maven:glitchcore-955399:5787839")
 
     // 神化
     implementation fg.deobf("curse.maven:apotheosis-313970:6461960")
