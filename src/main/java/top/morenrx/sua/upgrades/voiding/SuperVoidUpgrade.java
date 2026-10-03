@@ -2,14 +2,12 @@ package top.morenrx.sua.upgrades.voiding;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.voiding.VoidUpgradeItem;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import top.morenrx.sua.init.SUAConfig;
 import top.morenrx.sua.upgrades.base.ISUAItemConfig;
 
@@ -19,6 +17,7 @@ import java.util.function.BooleanSupplier;
 public class SuperVoidUpgrade extends VoidUpgradeItem implements ISUAItemConfig {
 
     private final BooleanSupplier enable;
+
     public SuperVoidUpgrade(BooleanSupplier enable) {
         super(Config.SERVER.advancedVoidUpgrade, Config.SERVER.maxUpgradesPerStorage);
         this.enable = enable;
@@ -35,16 +34,11 @@ public class SuperVoidUpgrade extends VoidUpgradeItem implements ISUAItemConfig 
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level worldIn, @NotNull List<Component> tooltip, @NotNull TooltipFlag flagIn) {
+    public void appendHoverText(@NotNull ItemStack stack, Item.@NotNull TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag flagIn) {
         if (!isEnable()) {
             tooltip.add(Component.translatable("item.soph_upgrade_addons.tooltip.disable").withStyle(ChatFormatting.RED));
             return;
         }
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
-    }
-
-    @Override
-    public @NotNull Rarity getRarity(@NotNull ItemStack stack) {
-        return Rarity.EPIC;
+        super.appendHoverText(stack, context, tooltip, flagIn);
     }
 }

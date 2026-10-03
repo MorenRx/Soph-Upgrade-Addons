@@ -18,7 +18,7 @@ public class DrinkUpgradeContainer extends UpgradeContainerBase<DrinkUpgradeWrap
     }
 
     @Override
-    public void handleMessage(CompoundTag data) {
+    public void handlePacket(CompoundTag data) {
         if (data.contains(DrinkUpgrade.Data.KEY_THIRST_LEVEL)) {
             setDrinkAtThirstLevel(data.getInt(DrinkUpgrade.Data.KEY_THIRST_LEVEL));
         } else if (data.contains(DrinkUpgrade.Data.KEY_DRINK_FOR_HURT)) {
@@ -26,7 +26,7 @@ public class DrinkUpgradeContainer extends UpgradeContainerBase<DrinkUpgradeWrap
         } else if (data.contains(DrinkUpgrade.Data.KEY_PURITY)) {
             setPurity(data.getInt(DrinkUpgrade.Data.KEY_PURITY));
         }
-        filterLogicContainer.handleMessage(data);
+        filterLogicContainer.handlePacket(data);
     }
 
     public FilterLogicContainer<FilterLogic> getFilterLogicContainer() {

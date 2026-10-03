@@ -7,7 +7,6 @@ import com.wintercogs.beyonddimensions.common.block.entity.NetedBlockEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -44,9 +43,9 @@ public class BDNetworkStorage implements INetworkStorage {
 
     @Override
     public InteractionResult onBindBlock(UseOnContext context, BlockEntity blockEntity, ItemStack upgradeStack) {
-        if (!(blockEntity instanceof NetedBlockEntity netedBlockEntity)) {
+        if (!(blockEntity instanceof NetedBlockEntity netedBlockEntity))
             return InteractionResult.PASS;
-        }
+
         Level level = context.getLevel();
         Player player = context.getPlayer();
         if (!level.isClientSide() && player != null) {
@@ -75,6 +74,7 @@ public class BDNetworkStorage implements INetworkStorage {
         int netId = primaryNet.getId();
         CompoundTag tag = NetworkStorageHelper.getOrCreateStorageTag(upgradeStack, getName());
         tag.putInt(Data.KEY_ID, netId);
+        NetworkStorageHelper.saveStorageTag(upgradeStack, getName(), tag);
         Component netName = primaryNet.getNetworkName();
         player.sendSystemMessage(Component.translatable("message.soph_upgrade_addons.network.bd.linker", netName, netId));
         return InteractionResultHolder.sidedSuccess(upgradeStack, false);
@@ -89,16 +89,14 @@ public class BDNetworkStorage implements INetworkStorage {
     @Override
     public void appendTooltip(ItemStack upgradeStack, List<Component> tooltip) {
         CompoundTag tag = NetworkStorageHelper.getStorageTag(upgradeStack, getName());
-        if (tag != null && tag.contains(Data.KEY_ID)) {
-            int netId = tag.getInt(Data.KEY_ID);
-            if (netId != DimensionsNet.NO_PRIMARY_NET_ID) {
-                MutableComponent linkedComponent = Component
-                        .translatable("item.soph_upgrade_addons.network_pickup_upgrade.tooltip.linked.bd")
-                        .withStyle(ChatFormatting.AQUA)
-                        .append(Component.literal(" #" + netId));
-                tooltip.add(linkedComponent);
-            }
-        }
+        if (tag == null || !tag.contains(Data.KEY_ID)) return;
+
+        int netId = tag.getInt(Data.KEY_ID);
+        if (netId == DimensionsNet.NO_PRIMARY_NET_ID) return;
+
+        tooltip.add(Component.translatable("item.soph_upgrade_addons.network_pickup_upgrade.tooltip.linked.bd")
+                .withStyle(ChatFormatting.AQUA)
+                .append(Component.literal(" #" + netId)));
     }
 
     @Override
@@ -111,6 +109,7 @@ public class BDNetworkStorage implements INetworkStorage {
             if (tag == null || !tag.contains(Data.KEY_ID)) return toInsert;
             netId = tag.getInt(Data.KEY_ID);
         }
+
         if (netId == DimensionsNet.NO_PRIMARY_NET_ID)
             return toInsert;
 

@@ -9,15 +9,14 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
 import org.jetbrains.annotations.Nullable;
 import top.morenrx.sua.SophUpgradeAddons;
 import top.morenrx.sua.helper.NetworkStorageHelper;
+import top.morenrx.sua.init.SUADataComponents;
 import top.morenrx.sua.upgrades.compat.network.BDNetworkStorage;
 import top.morenrx.sua.upgrades.compat.network.BackpackNetworkStorage;
 import top.morenrx.sua.upgrades.compat.network.INetworkStorage;
 import top.morenrx.sua.upgrades.compat.network.NetworkStorageProvider;
-import top.morenrx.sua.upgrades.network_magnet.NetworkMagnetUpgrade;
 
 public record NetworkLocation(
         String storageType,
@@ -27,24 +26,33 @@ public record NetworkLocation(
         @Nullable BlockPos pos,
         int netId
 ) {
-    public static final NetworkLocation UNBOUND = new NetworkLocation("", null, false, null, null, -1);
 
     public static NetworkLocation fromUpgrade(ItemStack upgrade) {
-        String type = NBTHelper.getString(upgrade, NetworkMagnetUpgrade.Data.KEY_NETWORK_TYPE).orElse(NetworkStorageProvider.Data.BACKPACK);
+        String type = upgrade.getOrDefault(SUADataComponents.NETWORK_TYPE, NetworkStorageProvider.Data.BACKPACK);
+
+        if (type.isEmpty())
+            type = NetworkStorageProvider.Data.BACKPACK;
 
         if (!NetworkStorageProvider.get().hasStorage(type))
             type = NetworkStorageProvider.get().getDefaultStorageType();
 
         INetworkStorage storage = NetworkStorageProvider.get().getStorage(type);
-        if (storage == null) return new NetworkLocation(type, null, false, null, null, -1);
 
-        if (storage instanceof BackpackNetworkStorage) return new NetworkLocation(type, storage, true, null, null, -1);
-
-        if (storage instanceof BDNetworkStorage) {
-            CompoundTag tag = NetworkStorageHelper.getStorageTag(upgrade, storage.getName());
-            int id = (tag != null && tag.contains(BDNetworkStorage.Data.KEY_ID)) ? tag.getInt(BDNetworkStorage.Data.KEY_ID) : DimensionsNet.NO_PRIMARY_NET_ID;
-            boolean bound = id != DimensionsNet.NO_PRIMARY_NET_ID;
-            return new NetworkLocation(type, storage, bound, null, null, id);
+        switch (storage) {
+            case null -> {
+                return new NetworkLocation(type, null, false, null, null, -1);
+            }
+            case BackpackNetworkStorage ignored -> {
+                return new NetworkLocation(type, storage, true, null, null, -1);
+            }
+            case BDNetworkStorage ignored -> {
+                CompoundTag tag = NetworkStorageHelper.getStorageTag(upgrade, storage.getName());
+                int id = (tag != null && tag.contains(BDNetworkStorage.Data.KEY_ID)) ? tag.getInt(BDNetworkStorage.Data.KEY_ID) : DimensionsNet.NO_PRIMARY_NET_ID;
+                boolean bound = id != DimensionsNet.NO_PRIMARY_NET_ID;
+                return new NetworkLocation(type, storage, bound, null, null, id);
+            }
+            default -> {
+            }
         }
 
         CompoundTag tag = NetworkStorageHelper.getStorageTag(upgrade, storage.getName());

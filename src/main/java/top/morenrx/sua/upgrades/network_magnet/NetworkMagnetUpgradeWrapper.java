@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -13,41 +14,45 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
+import net.p3pp3rf1y.sophisticatedcore.init.ModCoreDataComponents;
 import net.p3pp3rf1y.sophisticatedcore.init.ModFluids;
 import net.p3pp3rf1y.sophisticatedcore.settings.memory.MemorySettingsCategory;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.*;
-import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.magnet.IMagnetPreventionChecker;
 import net.p3pp3rf1y.sophisticatedcore.util.XpHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.morenrx.sua.SophUpgradeAddons;
-import top.morenrx.sua.helper.SalvagingHelper;
-import top.morenrx.sua.upgrades.compat.network.INetworkStorage;
 import top.morenrx.sua.data.NetworkLocation;
+import top.morenrx.sua.helper.SalvagingHelper;
+import top.morenrx.sua.init.SUADataComponents;
+import top.morenrx.sua.mixin.common.sophisticatedcore.MagnetUpgradeWrapperAccessor;
+import top.morenrx.sua.upgrades.compat.network.INetworkStorage;
 import top.morenrx.sua.upgrades.salvaging.SalvagingUpgradeWrapper;
 import top.morenrx.sua.util.SUAUtils;
 
 import java.util.List;
 import java.util.function.Consumer;
 
-@Mod.EventBusSubscriber(modid = SophUpgradeAddons.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = SophUpgradeAddons.MODID)
 public class NetworkMagnetUpgradeWrapper extends UpgradeWrapperBase<NetworkMagnetUpgradeWrapper, NetworkMagnetUpgrade>
         implements IContentsFilteredUpgrade, ITickableUpgrade, IPickupResponseUpgrade {
     private static final int COOLDOWN_TICKS = 10;
     private static long nextTickTime = Long.MIN_VALUE;
 
     @SubscribeEvent
-    public static void globalPostTick(TickEvent.LevelTickEvent event) {
-        if (event.phase != TickEvent.Phase.END || event.level.isClientSide())
+    public static void globalPostTick(LevelTickEvent.Pre event) {
+        if (event.getLevel().isClientSide())
             return;
 
-        long gameTime = event.level.getGameTime();
+        long gameTime = event.getLevel().getGameTime();
         if (gameTime > nextTickTime)
             nextTickTime = gameTime + COOLDOWN_TICKS;
     }
@@ -60,15 +65,12 @@ public class NetworkMagnetUpgradeWrapper extends UpgradeWrapperBase<NetworkMagne
     private static final int FULL_COOLDOWN_TICKS = 40;
     private final ContentsFilterLogic filterLogic;
     private Player playerCache = null;
-
-    private Boolean pickupItemsCache = null;
-    private Boolean pickupXpCache = null;
-    private Boolean enableVoidCache = null;
     private NetworkLocation locationCache = null;
 
     public NetworkMagnetUpgradeWrapper(IStorageWrapper storageWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
         super(storageWrapper, upgrade, upgradeSaveHandler);
-        filterLogic = new ContentsFilterLogic(upgrade, upgradeSaveHandler, upgradeItem.getFilterSlotCount(), storageWrapper::getInventoryHandler, storageWrapper.getSettingsHandler().getTypeCategory(MemorySettingsCategory.class));
+        filterLogic = new ContentsFilterLogic(upgrade, stack -> save(), upgradeItem.getFilterSlotCount(), storageWrapper::getInventoryHandler,
+                storageWrapper.getSettingsHandler().getTypeCategory(MemorySettingsCategory.class), ModCoreDataComponents.FILTER_ATTRIBUTES);
     }
 
     private boolean isInCooldown(Level level, @Nullable Entity entity) {
@@ -91,9 +93,7 @@ public class NetworkMagnetUpgradeWrapper extends UpgradeWrapperBase<NetworkMagne
 
     @Override
     public @NotNull ItemStack pickup(@NotNull Level world, @NotNull ItemStack stack, boolean simulate) {
-        if (!shouldPickupItems() || !filterLogic.matchesFilter(stack))
-            return stack;
-        if (!(world instanceof ServerLevel level))
+        if (!shouldPickupItems() || !filterLogic.matchesFilter(stack) || !(world instanceof ServerLevel level))
             return stack;
 
         if (playerCache == null)
@@ -126,14 +126,16 @@ public class NetworkMagnetUpgradeWrapper extends UpgradeWrapperBase<NetworkMagne
 
     @Override
     public void tick(@Nullable Entity entity, @NotNull Level world, @NotNull BlockPos pos) {
-        if (isInCooldown(world, entity))
-            return;
+        if (isInCooldown(world, entity)) return;
 
         if (world instanceof ServerLevel level) {
-            if (this.playerCache != entity && entity instanceof Player player) {
+            if (this.playerCache != entity && entity instanceof Player player && !(player instanceof FakePlayer)) {
                 this.playerCache = player;
-            } else if (this.playerCache == null) {
+            } else if (this.playerCache == null || this.playerCache.isRemoved()) {
                 this.playerCache = SUAUtils.Backpack.getBackpackOwner(level, storageWrapper.getContentsUuid().orElse(null));
+                if (this.playerCache instanceof FakePlayer) {
+                    this.playerCache = null;
+                }
             }
         }
 
@@ -214,7 +216,20 @@ public class NetworkMagnetUpgradeWrapper extends UpgradeWrapperBase<NetworkMagne
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.1F, (world.random.nextFloat() - world.random.nextFloat()) * 0.35F + 0.9F);
     }
 
+    private boolean isBlockedBySomething(Entity entity) {
+        for (IMagnetPreventionChecker checker : MagnetUpgradeWrapperAccessor.sua$getMagnetCheckers()) {
+            if (checker.isBlocked(entity)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private boolean canNotPickup(Entity pickedUpEntity, @Nullable Entity entity) {
+        if (isBlockedBySomething(pickedUpEntity)) {
+            return true;
+        }
+
         CompoundTag data = pickedUpEntity.getPersistentData();
         return entity instanceof Player ? data.contains(NetworkMagnetUpgrade.Data.KEY_PREVENT_REMOTE_MOVEMENT) : data.contains(NetworkMagnetUpgrade.Data.KEY_PREVENT_REMOTE_MOVEMENT) && !data.contains(NetworkMagnetUpgrade.Data.KEY_ALLOW_MACHINE_MOVEMENT);
     }
@@ -229,6 +244,7 @@ public class NetworkMagnetUpgradeWrapper extends UpgradeWrapperBase<NetworkMagne
             return false;
 
         ItemStack stack = itemEntity.getItem();
+        int originalCount = stack.getCount();
 
         SalvagingUpgradeWrapper wrapper;
         if ((wrapper = SalvagingHelper.shouldSalvaging(storageWrapper, stack)) != null) {
@@ -243,61 +259,61 @@ public class NetworkMagnetUpgradeWrapper extends UpgradeWrapperBase<NetworkMagne
                 copy.setCount(copy.getCount() - consumeCount);
                 itemEntity.setItem(copy);
             }
+            if (playerCache != null && !(playerCache instanceof FakePlayer)) {
+                playerCache.awardStat(Stats.ITEM_PICKED_UP.get(stack.getItem()), consumeCount);
+            }
             return true;
         }
 
         if (shouldEnableVoid() && SUAUtils.Backpack.shouldDestroy(storageWrapper, stack)) {
             itemEntity.setItem(ItemStack.EMPTY);
+            if (playerCache != null && !(playerCache instanceof FakePlayer)) {
+                playerCache.awardStat(Stats.ITEM_PICKED_UP.get(stack.getItem()), originalCount);
+            }
             return true;
         }
 
         ItemStack remainingStack = storage.insert(storageWrapper, upgrade, level, playerCache, stack, true, location);
-        if (remainingStack.getCount() >= stack.getCount())
+        if (remainingStack.getCount() >= originalCount)
             return false;
         remainingStack = storage.insert(storageWrapper, upgrade, level, playerCache, stack, false, location);
 
         itemEntity.setItem(remainingStack);
+        if (playerCache != null && !(playerCache instanceof FakePlayer)) {
+            playerCache.awardStat(Stats.ITEM_PICKED_UP.get(stack.getItem()), originalCount - remainingStack.getCount());
+        }
         return true;
     }
 
     public void setPickupItems(boolean pickupItems) {
-        pickupItemsCache = pickupItems;
-        NBTHelper.setBoolean(upgrade, NetworkMagnetUpgrade.Data.KEY_PICKUP_ITEMS, pickupItems);
+        upgrade.set(ModCoreDataComponents.PICKUP_ITEMS, pickupItems);
         save();
     }
 
     public boolean shouldPickupItems() {
-        if (pickupItemsCache == null)
-            pickupItemsCache = NBTHelper.getBoolean(upgrade, NetworkMagnetUpgrade.Data.KEY_PICKUP_ITEMS).orElse(true);
-        return pickupItemsCache;
+        return upgrade.getOrDefault(ModCoreDataComponents.PICKUP_ITEMS, true);
     }
 
     public void setPickupXp(boolean pickupXp) {
-        pickupXpCache = pickupXp;
-        NBTHelper.setBoolean(upgrade, NetworkMagnetUpgrade.Data.KEY_PICKUP_XP, pickupXp);
+        upgrade.set(ModCoreDataComponents.PICKUP_XP, pickupXp);
         save();
     }
 
     public boolean shouldPickupXp() {
-        if (pickupXpCache == null)
-            pickupXpCache = NBTHelper.getBoolean(upgrade, NetworkMagnetUpgrade.Data.KEY_PICKUP_XP).orElse(true);
-        return pickupXpCache;
+        return upgrade.getOrDefault(ModCoreDataComponents.PICKUP_XP, true);
     }
 
     public void setEnableVoid(boolean enableVoid) {
-        enableVoidCache = enableVoid;
-        NBTHelper.setBoolean(upgrade, NetworkMagnetUpgrade.Data.KEY_ENABLE_VOID, enableVoid);
+        upgrade.set(SUADataComponents.ENABLE_VOID, enableVoid);
         save();
     }
 
     public boolean shouldEnableVoid() {
-        if (enableVoidCache == null)
-            enableVoidCache = NBTHelper.getBoolean(upgrade, NetworkMagnetUpgrade.Data.KEY_ENABLE_VOID).orElse(true);
-        return enableVoidCache;
+        return upgrade.getOrDefault(SUADataComponents.ENABLE_VOID, true);
     }
 
     public void setNetworkType(String networkType) {
-        NBTHelper.putString(upgrade.getOrCreateTag(), NetworkMagnetUpgrade.Data.KEY_NETWORK_TYPE, networkType);
+        upgrade.set(SUADataComponents.NETWORK_TYPE, networkType);
         locationCache = null;
         save();
     }

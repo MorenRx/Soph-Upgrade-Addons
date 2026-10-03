@@ -89,8 +89,8 @@
   "gui.sophisticatedbackpacks.upgrades.advanced_salvaging": "高级神化回收",
   "gui.sophisticatedbackpacks.upgrades.advanced_salvaging.tooltip": "高级神化回收设置",
 
-  "gui.sophisticatedbackpacks.upgrades.buttons.enable_void": "允许虚空升级销毁物品",
-  "gui.sophisticatedbackpacks.upgrades.buttons.do_not_enable_void": "不允许虚空升级销毁物品",
+  "gui.sophisticatedbackpacks.upgrades.buttons.enable_void": "允许虚空升级销毁进入网络存储的物品",
+  "gui.sophisticatedbackpacks.upgrades.buttons.do_not_enable_void": "不允许虚空升级销毁进入网络存储的物品",
 
   "gui.sophisticatedbackpacks.upgrades.buttons.use_backpack": "将物品存入背包",
   "gui.sophisticatedbackpacks.upgrades.buttons.use_rs": "将物品吸入RS网络",
@@ -109,6 +109,7 @@
   "gui.sophisticatedbackpacks.upgrades.buttons.purity_purified": "仅自动饮用纯净饮品",
 
   "gui.sophisticatedbackpacks.upgrades.buttons.gem": "宝石",
+  "gui.sophisticatedbackpacks.upgrades.buttons.gem_with_purity": "%s品质的宝石",
   "gui.sophisticatedbackpacks.upgrades.buttons.equipment": "%s的装备",
   "gui.sophisticatedbackpacks.upgrades.buttons.salvaging_equipment_enable": "允许回收有品质的装备",
   "gui.sophisticatedbackpacks.upgrades.buttons.salvaging_equipment_disable": "不允许回收有品质的装备",

@@ -1,11 +1,9 @@
 package top.morenrx.sua.upgrades.compat.drink;
 
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
-import top.morenrx.sua.SophUpgradeAddons;
+import toughasnails.api.potion.TANEffects;
 import toughasnails.api.thirst.IThirst;
 import toughasnails.api.thirst.ThirstHelper;
 import toughasnails.init.ModTags;
@@ -68,14 +66,10 @@ public class TANThirstCompat implements IThirstCompat {
             float hydration = getHydration(drinkItem);
             float poisonChance = getPoisonChance(drinkItem);
 
-            thirst.addThirst(thirstRestored);
-            thirst.addHydration(hydration);
+            thirst.drink(thirstRestored, hydration);
 
             if (player.level().random.nextFloat() < poisonChance) {
-                MobEffect thirstEffect = ForgeRegistries.MOB_EFFECTS.getValue(SophUpgradeAddons.id("toughasnails", "thirst"));
-                if (thirstEffect != null) {
-                    player.addEffect(new MobEffectInstance(thirstEffect, 600));
-                }
+                player.addEffect(new MobEffectInstance(TANEffects.THIRST, 600));
             }
         }
     }

@@ -12,13 +12,10 @@ public class SUAMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        String simpleName = mixinClassName.substring(mixinClassName.lastIndexOf('.') + 1);
-
-        if (simpleName.equals("MixinStorageTerminalBlockEntity")) {
+        if (mixinClassName.contains("tomstorage")) {
             return SUACompat.TOMS_STORAGE.getAsBoolean();
-        } else {
-            return true;
         }
+        return true;
     }
 
     @Override

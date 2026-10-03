@@ -1,10 +1,7 @@
 package top.morenrx.sua.access.tomstorage;
 
-import net.minecraftforge.items.IItemHandler;
+import com.tom.storagemod.inventory.NetworkInventory;
 
 public interface IStorageTerminalBlockEntityAccess {
-
-    IItemHandler sua$getItemHandler();
-
-    void sua$setUpdateItems(boolean updateItems);
+    NetworkInventory sua$getItemCache();
 }

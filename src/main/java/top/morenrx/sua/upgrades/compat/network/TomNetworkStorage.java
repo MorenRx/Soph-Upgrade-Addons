@@ -1,16 +1,19 @@
 package top.morenrx.sua.upgrades.compat.network;
 
-import com.tom.storagemod.tile.StorageTerminalBlockEntity;
+import com.tom.storagemod.block.entity.StorageTerminalBlockEntity;
+import com.tom.storagemod.inventory.IInventoryAccess;
+import com.tom.storagemod.inventory.NetworkInventory;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.wrapper.EmptyItemHandler;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import org.jetbrains.annotations.Nullable;
-import top.morenrx.sua.data.NetworkLocation;
 import top.morenrx.sua.access.tomstorage.IStorageTerminalBlockEntityAccess;
+import top.morenrx.sua.data.NetworkLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,89 +32,87 @@ public class TomNetworkStorage implements INetworkStorage {
     }
 
     public static @Nullable IItemHandler getTerminalItemHandler(StorageTerminalBlockEntity terminal) {
-        if (terminal instanceof IStorageTerminalBlockEntityAccess access) {
-            IItemHandler handler = access.sua$getItemHandler();
-            if (handler == null) {
-                access.sua$setUpdateItems(true);
-                terminal.updateServer();
-                handler = access.sua$getItemHandler();
-            }
-            return handler;
-        }
-        return null;
+        if (terminal.isRemoved() || terminal.getLevel() == null || !(terminal instanceof IStorageTerminalBlockEntityAccess access))
+            return null;
+
+        NetworkInventory netInv = access.sua$getItemCache();
+        if (netInv == null) return null;
+
+        IInventoryAccess invAccess = netInv.getAccess(terminal.getLevel(), terminal.getBlockPos());
+        if (invAccess == null) return null;
+
+        IItemHandler handler = invAccess.getPlatformHandler();
+        if (handler == null || handler == EmptyItemHandler.INSTANCE || handler.getSlots() <= 0)
+            return null;
+
+
+        return handler;
     }
 
     public static ItemStack pushStack(StorageTerminalBlockEntity terminal, ItemStack stack, boolean simulate) {
         if (stack.isEmpty()) return ItemStack.EMPTY;
+
         IItemHandler handler = getTerminalItemHandler(terminal);
-        if (handler != null) return ItemHandlerHelper.insertItemStacked(handler, stack, simulate);
-        return stack;
+        if (handler == null) return stack;
+
+        return ItemHandlerHelper.insertItemStacked(handler, stack, simulate);
     }
 
     public static ItemStack pullStack(StorageTerminalBlockEntity terminal, ItemStack filterStack, int maxAmount, boolean simulate) {
         if (filterStack.isEmpty() || maxAmount <= 0) return ItemStack.EMPTY;
+
         IItemHandler handler = getTerminalItemHandler(terminal);
         if (handler == null) return ItemStack.EMPTY;
 
         int remainingNeeded = maxAmount;
-        ItemStack extracted = ItemStack.EMPTY;
+        ItemStack result = ItemStack.EMPTY;
 
-        for (int i = 0; i < handler.getSlots(); i++) {
+        for (int i = 0; i < handler.getSlots() && remainingNeeded > 0; i++) {
             ItemStack inSlot = handler.getStackInSlot(i);
-            if (inSlot.isEmpty() || !ItemHandlerHelper.canItemStacksStack(inSlot, filterStack)) continue;
+            if (inSlot.isEmpty() || !ItemStack.isSameItemSameComponents(inSlot, filterStack))
+                continue;
 
-            ItemStack pulled = handler.extractItem(i, remainingNeeded, simulate);
-            if (pulled.isEmpty()) continue;
+            ItemStack extracted = handler.extractItem(i, remainingNeeded, simulate);
+            if (extracted.isEmpty()) continue;
 
-            if (extracted.isEmpty()) {
-                extracted = pulled.copy();
+            if (result.isEmpty()) {
+                result = extracted.copy();
             } else {
-                extracted.grow(pulled.getCount());
+                result.grow(extracted.getCount());
             }
-
-            remainingNeeded -= pulled.getCount();
-            if (remainingNeeded <= 0) break;
+            remainingNeeded -= extracted.getCount();
         }
-        return extracted;
+
+        return result;
     }
 
     @Override
     public ItemStack insert(IStorageWrapper storageWrapper, ItemStack upgradeStack, ServerLevel serverLevel, Player player, ItemStack toInsert, boolean simulate, @Nullable NetworkLocation location) {
         BlockEntity blockEntity = location != null ? location.getBlockEntity(serverLevel) : getTargetBlockEntity(upgradeStack, serverLevel);
-        if (!(blockEntity instanceof StorageTerminalBlockEntity terminal)) return toInsert;
-        if (!terminal.canInteractWith(player)) return toInsert;
+        if (!(blockEntity instanceof StorageTerminalBlockEntity terminal))
+            return toInsert;
 
         return pushStack(terminal, toInsert, simulate);
-    }
-
-    public static boolean isTerminalAccessible(StorageTerminalBlockEntity terminal, Player player) {
-        if (terminal.canInteractWith(player)) return true;
-        return player.level() == terminal.getLevel() && player.distanceToSqr(terminal.getBlockPos().getX() + 0.5, terminal.getBlockPos().getY() + 0.5, terminal.getBlockPos().getZ() + 0.5) <= 36.0;
     }
 
     @Override
     public NetworkInsertHandler getDepositInsertHandler(BlockEntity blockEntity) {
         if (!(blockEntity instanceof StorageTerminalBlockEntity terminal)) return null;
 
-        return (stack, player, simulate) -> {
-            if (!isTerminalAccessible(terminal, player)) return stack;
-            return pushStack(terminal, stack, simulate);
-        };
+        return (stack, player, simulate) -> pushStack(terminal, stack, simulate);
     }
 
     @Override
     public NetworkExtractHandler getRestockExtractHandler(BlockEntity blockEntity) {
         if (!(blockEntity instanceof StorageTerminalBlockEntity terminal)) return null;
 
-        return (filterStack, maxAmount, player, simulate) -> {
-            if (!isTerminalAccessible(terminal, player)) return ItemStack.EMPTY;
-            return pullStack(terminal, filterStack, maxAmount, simulate);
-        };
+        return (filterStack, maxAmount, player, simulate) -> pullStack(terminal, filterStack, maxAmount, simulate);
     }
 
     @Override
     public void forEachStoredItem(BlockEntity blockEntity, Predicate<ItemStack> consumer) {
         if (!(blockEntity instanceof StorageTerminalBlockEntity terminal)) return;
+
         IItemHandler handler = getTerminalItemHandler(terminal);
         if (handler == null) return;
 

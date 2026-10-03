@@ -1,25 +1,23 @@
 package top.morenrx.sua.upgrades.compat.network;
 
-import com.refinedmods.refinedstorage.api.network.INetwork;
-import com.refinedmods.refinedstorage.api.network.node.INetworkNodeProxy;
-import com.refinedmods.refinedstorage.api.storage.AccessType;
-import com.refinedmods.refinedstorage.api.storage.IStorage;
-import com.refinedmods.refinedstorage.api.util.Action;
-import com.refinedmods.refinedstorage.api.util.IComparer;
+import com.refinedmods.refinedstorage.api.core.Action;
+import com.refinedmods.refinedstorage.api.network.Network;
+import com.refinedmods.refinedstorage.api.network.storage.StorageNetworkComponent;
+import com.refinedmods.refinedstorage.api.storage.Actor;
+import com.refinedmods.refinedstorage.common.Platform;
+import com.refinedmods.refinedstorage.common.api.support.network.AbstractNetworkNodeContainerBlockEntity;
+import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerProvider;
+import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
-import net.p3pp3rf1y.sophisticatedcore.inventory.ItemStackKey;
 import org.jetbrains.annotations.Nullable;
 import top.morenrx.sua.data.NetworkLocation;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Predicate;
 
 public class RSNetworkStorage implements INetworkStorage {
@@ -29,77 +27,103 @@ public class RSNetworkStorage implements INetworkStorage {
         return NetworkStorageProvider.Data.RS;
     }
 
+    @Nullable
+    private static NetworkNodeContainerProvider getContainerProvider(@Nullable BlockEntity blockEntity) {
+        if (blockEntity instanceof AbstractNetworkNodeContainerBlockEntity<?> nodeEntity) {
+            return nodeEntity.getContainerProvider();
+        }
+        if (blockEntity != null && blockEntity.getLevel() != null) {
+            return Platform.INSTANCE.getContainerProviderSafely(blockEntity.getLevel(), blockEntity.getBlockPos(), null);
+        }
+        return null;
+    }
+
     @Override
     public boolean canBindBlock(BlockEntity blockEntity) {
-        return blockEntity instanceof INetworkNodeProxy<?>;
+        return getContainerProvider(blockEntity) != null;
+    }
+
+    @Nullable
+    private static Network getNetwork(BlockEntity blockEntity) {
+        NetworkNodeContainerProvider provider = getContainerProvider(blockEntity);
+        if (provider == null) return null;
+        for (var container : provider.getContainers()) {
+            Network network = container.getNode().getNetwork();
+            if (network != null) return network;
+        }
+        return null;
     }
 
     @Override
     public ItemStack insert(IStorageWrapper storageWrapper, ItemStack upgradeStack, ServerLevel serverLevel, Player player, ItemStack toInsert, boolean simulate, @Nullable NetworkLocation location) {
         BlockEntity blockEntity = location != null ? location.getBlockEntity(serverLevel) : getTargetBlockEntity(upgradeStack, serverLevel);
-        if (!(blockEntity instanceof INetworkNodeProxy<?> proxy)) return toInsert;
+        Network network = getNetwork(blockEntity);
+        if (network == null) return toInsert;
 
-        INetwork network = proxy.getNode().getNetwork();
-        if (network == null || !network.canRun()) return toInsert;
+        StorageNetworkComponent storage = network.getComponent(StorageNetworkComponent.class);
 
-        ItemStack remaining = network.insertItem(toInsert, toInsert.getCount(), simulate ? Action.SIMULATE : Action.PERFORM);
-        if (!simulate) network.getItemStorageTracker().changed(player, toInsert.copy());
-        return remaining;
+        ItemResource itemResource = ItemResource.ofItemStack(toInsert);
+        Action action = simulate ? Action.SIMULATE : Action.EXECUTE;
+        Actor actor = player != null ? player::getScoreboardName : Actor.EMPTY;
+
+        long inserted = storage.insert(itemResource, toInsert.getCount(), action, actor);
+        if (inserted == toInsert.getCount()) return ItemStack.EMPTY;
+        if (inserted <= 0) return toInsert;
+
+        ItemStack copy = toInsert.copy();
+        copy.setCount(copy.getCount() - (int) inserted);
+        return copy;
     }
 
     @Override
     public NetworkInsertHandler getDepositInsertHandler(BlockEntity blockEntity) {
-        if (!(blockEntity instanceof INetworkNodeProxy<?> proxy)) return null;
-        INetwork network = proxy.getNode().getNetwork();
-        if (network == null || !network.canRun()) return null;
+        Network network = getNetwork(blockEntity);
+        if (network == null) return null;
+        StorageNetworkComponent storage = network.getComponent(StorageNetworkComponent.class);
 
         return (stack, player, simulate) -> {
-            ItemStack remaining = network.insertItem(stack, stack.getCount(), simulate ? Action.SIMULATE : Action.PERFORM);
-            if (!simulate) network.getItemStorageTracker().changed(player, stack.copy());
-            return remaining;
+            ItemResource itemResource = ItemResource.ofItemStack(stack);
+            Action action = simulate ? Action.SIMULATE : Action.EXECUTE;
+            Actor actor = player != null ? player::getScoreboardName : Actor.EMPTY;
+
+            long inserted = storage.insert(itemResource, stack.getCount(), action, actor);
+            if (inserted == stack.getCount()) return ItemStack.EMPTY;
+            if (inserted <= 0) return stack;
+
+            ItemStack copy = stack.copy();
+            copy.setCount(copy.getCount() - (int) inserted);
+            return copy;
         };
     }
 
     @Override
     public NetworkExtractHandler getRestockExtractHandler(BlockEntity blockEntity) {
-        if (!(blockEntity instanceof INetworkNodeProxy<?> proxy)) return null;
-        INetwork network = proxy.getNode().getNetwork();
-        if (network == null || !network.canRun()) return null;
+        Network network = getNetwork(blockEntity);
+        if (network == null) return null;
+        StorageNetworkComponent storage = network.getComponent(StorageNetworkComponent.class);
 
         return (filterStack, maxAmount, player, simulate) -> {
-            Action action = simulate ? Action.SIMULATE : Action.PERFORM;
-            int compareFlags = filterStack.hasTag() ? IComparer.COMPARE_NBT : 0;
+            ItemResource itemResource = ItemResource.ofItemStack(filterStack);
+            Action action = simulate ? Action.SIMULATE : Action.EXECUTE;
+            Actor actor = player != null ? player::getScoreboardName : Actor.EMPTY;
 
-            ItemStack extracted = network.extractItem(filterStack, maxAmount, compareFlags, action);
-            if (extracted.isEmpty() && compareFlags != 0)
-                extracted = network.extractItem(filterStack, maxAmount, 0, action);
-
-            if (!extracted.isEmpty() && !simulate)
-                network.getItemStorageTracker().changed(player, extracted.copy());
-            return extracted;
+            long extracted = storage.extract(itemResource, maxAmount, action, actor);
+            if (extracted <= 0) return ItemStack.EMPTY;
+            return itemResource.toItemStack(extracted);
         };
     }
 
     @Override
     public void forEachStoredItem(BlockEntity blockEntity, Predicate<ItemStack> consumer) {
-        if (!(blockEntity instanceof INetworkNodeProxy<?> proxy)) return;
-        INetwork network = proxy.getNode().getNetwork();
-        if (network == null || !network.canRun()) return;
-
-        List<IStorage<ItemStack>> storages = network.getItemStorageCache().getStorages();
-        if (storages == null) return;
+        Network network = getNetwork(blockEntity);
+        if (network == null) return;
+        StorageNetworkComponent storage = network.getComponent(StorageNetworkComponent.class);
 
         List<ItemStack> snapshot = new ArrayList<>();
-        Set<ItemStackKey> seen = new HashSet<>();
-
-        for (IStorage<ItemStack> storage : storages) {
-            if (storage.getAccessType() == AccessType.INSERT) continue;
-            Collection<ItemStack> stacks = storage.getStacks();
-            if (stacks == null || stacks.isEmpty()) continue;
-
-            for (ItemStack stack : stacks) {
-                if (stack != null && !stack.isEmpty() && stack.getCount() > 0 && seen.add(ItemStackKey.of(stack)))
-                    snapshot.add(stack);
+        for (var resourceAmount : storage.getAll()) {
+            if (resourceAmount.resource() instanceof ItemResource itemResource) {
+                ItemStack stack = itemResource.toItemStack(resourceAmount.amount());
+                if (!stack.isEmpty()) snapshot.add(stack);
             }
         }
 

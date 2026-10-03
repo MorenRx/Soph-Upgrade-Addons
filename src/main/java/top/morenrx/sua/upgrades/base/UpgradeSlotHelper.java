@@ -2,7 +2,7 @@ package top.morenrx.sua.upgrades.base;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.IUpgradeItem;
 
 public class UpgradeSlotHelper {

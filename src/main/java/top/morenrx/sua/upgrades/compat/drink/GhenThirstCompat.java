@@ -1,8 +1,7 @@
 package top.morenrx.sua.upgrades.compat.drink;
 
 import dev.ghen.thirst.api.ThirstHelper;
-import dev.ghen.thirst.foundation.common.capability.IThirst;
-import dev.ghen.thirst.foundation.common.capability.ModCapabilities;
+import dev.ghen.thirst.foundation.common.capability.ModAttachment;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -14,7 +13,7 @@ public class GhenThirstCompat implements IThirstCompat {
 
     @Override
     public boolean isThirstActive(Player player) {
-        return player.getCapability(ModCapabilities.PLAYER_THIRST).isPresent();
+        return player.hasData(ModAttachment.PLAYER_THIRST);
     }
 
     @Override
@@ -39,6 +38,10 @@ public class GhenThirstCompat implements IThirstCompat {
 
     @Override
     public int getPlayerThirst(Player player, int defaultValue) {
-        return player.getCapability(ModCapabilities.PLAYER_THIRST).map(IThirst::getThirst).orElse(defaultValue);
+        if (player.hasData(ModAttachment.PLAYER_THIRST)) {
+            var thirst = player.getData(ModAttachment.PLAYER_THIRST);
+            return thirst != null ? thirst.getThirst() : defaultValue;
+        }
+        return defaultValue;
     }
 }

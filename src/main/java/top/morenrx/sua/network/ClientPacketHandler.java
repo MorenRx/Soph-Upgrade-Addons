@@ -12,7 +12,7 @@ public class ClientPacketHandler {
         if (player != null && msg.items() != null) {
             if (msg.items().contains(S2CEnderChestSyncMessage.EnderChestNbtKey, Tag.TAG_LIST)) {
                 ListTag listTag = msg.items().getList(S2CEnderChestSyncMessage.EnderChestNbtKey, Tag.TAG_COMPOUND);
-                player.getEnderChestInventory().fromTag(listTag);
+                player.getEnderChestInventory().fromTag(listTag, player.registryAccess());
             }
         }
     }

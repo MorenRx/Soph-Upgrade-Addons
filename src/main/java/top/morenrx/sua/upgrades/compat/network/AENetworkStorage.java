@@ -1,6 +1,7 @@
 package top.morenrx.sua.upgrades.compat.network;
 
 import appeng.api.config.Actionable;
+import appeng.api.networking.GridHelper;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.IInWorldGridNodeHost;
@@ -8,7 +9,6 @@ import appeng.api.networking.security.IActionSource;
 import appeng.api.stacks.AEItemKey;
 import appeng.api.stacks.KeyCounter;
 import appeng.api.storage.MEStorage;
-import appeng.capabilities.Capabilities;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
@@ -29,11 +29,19 @@ public class AENetworkStorage implements INetworkStorage {
         return NetworkStorageProvider.Data.AE;
     }
 
+    private static @Nullable IInWorldGridNodeHost getNodeHost(BlockEntity blockEntity) {
+        if (blockEntity == null) return null;
+        if (blockEntity instanceof IInWorldGridNodeHost h) return h;
+        if (blockEntity.getLevel() == null) return null;
+
+        return GridHelper.getNodeHost(blockEntity.getLevel(), blockEntity.getBlockPos());
+    }
+
     @Override
     public boolean canBindBlock(BlockEntity blockEntity) {
         if (blockEntity == null) return false;
         if (blockEntity instanceof IInWorldGridNodeHost) return true;
-        return blockEntity.getCapability(Capabilities.IN_WORLD_GRID_NODE_HOST).isPresent();
+        return getNodeHost(blockEntity) != null;
     }
 
     @Override
@@ -41,7 +49,7 @@ public class AENetworkStorage implements INetworkStorage {
         BlockEntity blockEntity = location != null ? location.getBlockEntity(serverLevel) : getTargetBlockEntity(upgradeStack, serverLevel);
         if (blockEntity == null) return toInsert;
 
-        IInWorldGridNodeHost host = (blockEntity instanceof IInWorldGridNodeHost h) ? h : blockEntity.getCapability(Capabilities.IN_WORLD_GRID_NODE_HOST).orElse(null);
+        IInWorldGridNodeHost host = getNodeHost(blockEntity);
         if (host == null) return toInsert;
 
         IGridNode gridNode = host.getGridNode(Direction.UP);
@@ -52,10 +60,8 @@ public class AENetworkStorage implements INetworkStorage {
 
         MEStorage inventory = grid.getStorageService().getInventory();
         long amount = inventory.insert(AEItemKey.of(toInsert), toInsert.getCount(), simulate ? Actionable.SIMULATE : Actionable.MODULATE, IActionSource.ofPlayer(player));
-        if (amount == toInsert.getCount())
-            return ItemStack.EMPTY;
-        if (amount == 0)
-            return toInsert;
+        if (amount == toInsert.getCount()) return ItemStack.EMPTY;
+        if (amount == 0) return toInsert;
 
         ItemStack copy = toInsert.copy();
         copy.setCount(copy.getCount() - (int) amount);
@@ -75,7 +81,7 @@ public class AENetworkStorage implements INetworkStorage {
     @Override
     public NetworkInsertHandler getDepositInsertHandler(BlockEntity blockEntity) {
         if (blockEntity == null) return null;
-        IInWorldGridNodeHost host = (blockEntity instanceof IInWorldGridNodeHost h) ? h : blockEntity.getCapability(Capabilities.IN_WORLD_GRID_NODE_HOST).orElse(null);
+        IInWorldGridNodeHost host = getNodeHost(blockEntity);
         if (host == null) return null;
 
         IGridNode gridNode = findGridNode(host);
@@ -99,7 +105,7 @@ public class AENetworkStorage implements INetworkStorage {
     @Override
     public NetworkExtractHandler getRestockExtractHandler(BlockEntity blockEntity) {
         if (blockEntity == null) return null;
-        IInWorldGridNodeHost host = (blockEntity instanceof IInWorldGridNodeHost h) ? h : blockEntity.getCapability(Capabilities.IN_WORLD_GRID_NODE_HOST).orElse(null);
+        IInWorldGridNodeHost host = getNodeHost(blockEntity);
         if (host == null) return null;
 
         IGridNode gridNode = findGridNode(host);
@@ -121,7 +127,8 @@ public class AENetworkStorage implements INetworkStorage {
     @Override
     public void forEachStoredItem(BlockEntity blockEntity, Predicate<ItemStack> consumer) {
         if (blockEntity == null) return;
-        IInWorldGridNodeHost host = (blockEntity instanceof IInWorldGridNodeHost h) ? h : blockEntity.getCapability(Capabilities.IN_WORLD_GRID_NODE_HOST).orElse(null);
+        IInWorldGridNodeHost host = getNodeHost(blockEntity);
+        if (host == null) return;
 
         IGridNode gridNode = findGridNode(host);
         if (gridNode == null) return;
@@ -135,9 +142,7 @@ public class AENetworkStorage implements INetworkStorage {
         for (var entry : counter) {
             if (entry.getKey() instanceof AEItemKey itemKey) {
                 ItemStack stack = itemKey.toStack();
-                if (!stack.isEmpty()) {
-                    snapshot.add(stack);
-                }
+                if (!stack.isEmpty()) snapshot.add(stack);
             }
         }
 
@@ -146,4 +151,3 @@ public class AENetworkStorage implements INetworkStorage {
         }
     }
 }
-

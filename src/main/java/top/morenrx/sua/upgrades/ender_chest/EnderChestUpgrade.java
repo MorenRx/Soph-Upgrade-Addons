@@ -6,18 +6,17 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.PlayerEnderChestContainer;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.PlayerContainerEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
-import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.SBPTranslationHelper;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryHandler;
@@ -25,7 +24,6 @@ import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.*;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import top.morenrx.sua.network.S2CEnderChestSyncMessage;
 import top.morenrx.sua.upgrades.base.ISUAItemConfig;
 
@@ -56,14 +54,13 @@ public class EnderChestUpgrade extends UpgradeItemBase<EnderChestUpgrade.Wrapper
         return UPGRADE_CONFLICT_DEFINITIONS;
     }
 
-
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level worldIn, @NotNull List<Component> tooltip, @NotNull TooltipFlag flagIn) {
+    public void appendHoverText(@NotNull ItemStack stack, Item.@NotNull TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag flagIn) {
         if (!isEnable()) {
             tooltip.add(Component.translatable("item.soph_upgrade_addons.tooltip.disable").withStyle(ChatFormatting.RED));
             return;
         }
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
+        super.appendHoverText(stack, context, tooltip, flagIn);
     }
 
     @Override
@@ -86,7 +83,7 @@ public class EnderChestUpgrade extends UpgradeItemBase<EnderChestUpgrade.Wrapper
     }
 
     public static void init() {
-        IEventBus eventBus = MinecraftForge.EVENT_BUS;
+        IEventBus eventBus = NeoForge.EVENT_BUS;
         eventBus.addListener(EnderChestUpgrade::onEnderChestTick);
         eventBus.addListener(EnderChestUpgrade::onPlayerJoin);
         eventBus.addListener(EnderChestUpgrade::onPlayerChangedDimension);
@@ -97,67 +94,58 @@ public class EnderChestUpgrade extends UpgradeItemBase<EnderChestUpgrade.Wrapper
     }
 
     private static void initEnderChestCompat() {
-        // 改用反射适配多版本, 暂时放弃该方案
-        //ArtifactVersion currentVersion = new DefaultArtifactVersion(FMLLoader.getLoadingModList().getModFileById(SophisticatedBackpacks.MOD_ID).versionString());
-        //ArtifactVersion targetVersion = new DefaultArtifactVersion("3.24.14");
-        //if (currentVersion.compareTo(targetVersion) >= 0) {
-        //    PlayerInventoryProvider.get().addPlayerInventoryHandler("ender_chest", (player) -> PlayerInventoryHandler.SINGLE_IDENTIFIER, (player, identifier) -> player.getEnderChestInventory().getContainerSize(),
-        //            EnderChestUpgrade::enderChestSlotStackGetter, false, false, false, false);
-        //    return;
-        //}
-
         try {
-            Method method = PlayerInventoryProvider.class.getMethod("addPlayerInventoryHandler", String.class, Function.class,
+            Method method = PlayerInventoryProvider.class.getMethod("addPlayerInventoryHandler",
+                    String.class, Function.class,
                     PlayerInventoryHandler.SlotCountGetter.class,
                     PlayerInventoryHandler.SlotStackGetter.class,
                     boolean.class, boolean.class, boolean.class, boolean.class
             );
 
+            Function<Object, Set<String>> identifiersGetter = ignored -> PlayerInventoryHandler.SINGLE_IDENTIFIER;
+
             method.invoke(PlayerInventoryProvider.get(), "ender_chest",
-                    (Function<Object, Set<String>>) ignored -> PlayerInventoryHandler.SINGLE_IDENTIFIER,
+                    identifiersGetter,
                     (PlayerInventoryHandler.SlotCountGetter) (player, identifier) -> player.getEnderChestInventory().getContainerSize(),
                     (PlayerInventoryHandler.SlotStackGetter) EnderChestUpgrade::enderChestSlotStackGetter,
                     false, false, false, false
             );
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
     }
 
-
     private static ItemStack enderChestSlotStackGetter(Player player, String identifier, int slot) {
         ItemStack stack = player.getEnderChestInventory().getItem(slot);
         if (!(stack.getItem() instanceof BackpackItem)) return ItemStack.EMPTY;
-        if (player.level().isClientSide()) return player.getEnderChestInventory().getItem(slot);
+        if (player.level().isClientSide()) return stack;
 
-        LazyOptional<IBackpackWrapper> backpackWrapper = stack.getCapability(CapabilityBackpackWrapper.getCapabilityInstance());
-        return backpackWrapper.map(wrapper -> {
+        IBackpackWrapper wrapper = BackpackWrapper.fromStack(stack);
+        if (wrapper != IBackpackWrapper.Noop.INSTANCE) {
             UpgradeHandler upgradeHandler = wrapper.getUpgradeHandler();
             if (upgradeHandler.hasUpgrade(EnderChestUpgrade.TYPE)) {
                 return stack;
-            } else {
-                return ItemStack.EMPTY;
             }
-        }).orElse(ItemStack.EMPTY);
+        }
+        return ItemStack.EMPTY;
     }
 
-
-    public static void onEnderChestTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) return;
-        if (!(event.player instanceof ServerPlayer player)) return;
+    public static void onEnderChestTick(PlayerTickEvent.Post event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
         if (player.isSpectator() || player.isDeadOrDying()) return;
         PlayerEnderChestContainer enderChestInventory = player.getEnderChestInventory();
         for (int i = 0; i < enderChestInventory.getContainerSize(); i++) {
             ItemStack stack = enderChestInventory.getItem(i);
             if (stack.isEmpty()) continue;
             if (!(stack.getItem() instanceof BackpackItem)) continue;
-            stack.getCapability(CapabilityBackpackWrapper.getCapabilityInstance()).ifPresent(wrapper -> {
+            IBackpackWrapper wrapper = BackpackWrapper.fromStack(stack);
+            if (wrapper != IBackpackWrapper.Noop.INSTANCE) {
                 UpgradeHandler upgradeHandler = wrapper.getUpgradeHandler();
                 if (upgradeHandler.hasUpgrade(EnderChestUpgrade.TYPE)) {
-                    upgradeHandler.getWrappersThatImplement(ITickableUpgrade.class).forEach((upgrade) ->
+                    upgradeHandler.getWrappersThatImplement(ITickableUpgrade.class).forEach(upgrade ->
                             upgrade.tick(player, player.level(), player.blockPosition()));
                 }
-            });
+            }
         }
     }
 

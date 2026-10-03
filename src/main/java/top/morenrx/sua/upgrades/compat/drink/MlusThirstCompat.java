@@ -2,7 +2,7 @@ package top.morenrx.sua.upgrades.compat.drink;
 
 import cn.mlus.thirst.api.ThirstHelper;
 import cn.mlus.thirst.foundation.common.capability.IThirst;
-import cn.mlus.thirst.foundation.common.capability.ModCapabilities;
+import cn.mlus.thirst.foundation.common.capability.ModAttachment;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -14,7 +14,7 @@ public class MlusThirstCompat implements IThirstCompat {
 
     @Override
     public boolean isThirstActive(Player player) {
-        return player.getCapability(ModCapabilities.PLAYER_THIRST).isPresent();
+        return player.hasData(ModAttachment.PLAYER_THIRST);
     }
 
     @Override
@@ -39,6 +39,10 @@ public class MlusThirstCompat implements IThirstCompat {
 
     @Override
     public int getPlayerThirst(Player player, int defaultValue) {
-        return player.getCapability(ModCapabilities.PLAYER_THIRST).map(IThirst::getThirst).orElse(defaultValue);
+        if (player.hasData(ModAttachment.PLAYER_THIRST)) {
+            IThirst thirst = player.getData(ModAttachment.PLAYER_THIRST);
+            return thirst != null ? thirst.getThirst() : defaultValue;
+        }
+        return defaultValue;
     }
 }

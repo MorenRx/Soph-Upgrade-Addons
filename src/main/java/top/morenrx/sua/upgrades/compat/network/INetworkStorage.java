@@ -45,6 +45,7 @@ public interface INetworkStorage {
             CompoundTag tag = NetworkStorageHelper.getOrCreateStorageTag(upgradeStack, getName());
             tag.putString(Data.KEY_DIM, dimensionKey);
             tag.putLong(Data.KEY_POS, pos);
+            NetworkStorageHelper.saveStorageTag(upgradeStack, getName(), tag);
             player.sendSystemMessage(Component.translatable("message.soph_upgrade_addons.network." + getName() + ".linker"));
         }
         return InteractionResult.sidedSuccess(level.isClientSide());

@@ -5,8 +5,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
@@ -14,7 +14,6 @@ import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeItemBase;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import top.morenrx.sua.helper.NetworkUpgradeHelper;
 import top.morenrx.sua.upgrades.base.ISUAItemConfig;
 
@@ -68,13 +67,8 @@ public class NetworkPickupUpgrade extends UpgradeItemBase<NetworkPickupUpgradeWr
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level worldIn, @NotNull List<Component> tooltip, @NotNull TooltipFlag flagIn) {
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
-        NetworkUpgradeHelper.appendHoverText(stack, worldIn, tooltip, flagIn, this::isEnable);
-    }
-
-    @Override
-    public @NotNull Rarity getRarity(@NotNull ItemStack stack) {
-        return Rarity.RARE;
+    public void appendHoverText(@NotNull ItemStack stack, Item.@NotNull TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltip, flagIn);
+        NetworkUpgradeHelper.appendHoverText(stack, context, tooltip, flagIn, this::isEnable);
     }
 }

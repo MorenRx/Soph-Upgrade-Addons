@@ -2,7 +2,7 @@ package top.morenrx.sua.upgrades.potion_charm;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.ISyncedContainer;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.UpgradeContainerBase;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.UpgradeContainerType;
@@ -17,7 +17,7 @@ public class PotionCharmUpgradeContainer extends UpgradeContainerBase<PotionChar
     }
 
     @Override
-    public void handleMessage(@NotNull CompoundTag compoundTag) {
+    public void handlePacket(@NotNull CompoundTag compoundTag) {
 
     }
 }

@@ -1,23 +1,26 @@
 package top.morenrx.sua.upgrades.salvaging;
 
-import dev.shadowsoffire.apotheosis.adventure.affix.AffixHelper;
-import dev.shadowsoffire.apotheosis.adventure.loot.LootRarity;
-import dev.shadowsoffire.apotheosis.adventure.socket.gem.GemItem;
+import dev.shadowsoffire.apotheosis.affix.AffixHelper;
+import dev.shadowsoffire.apotheosis.loot.LootRarity;
+import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
+import dev.shadowsoffire.apotheosis.socket.gem.GemItem;
+import dev.shadowsoffire.apotheosis.socket.gem.UnsocketedGem;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 import net.p3pp3rf1y.sophisticatedcore.api.ISlotChangeResponseUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
+import net.p3pp3rf1y.sophisticatedcore.init.ModCoreDataComponents;
 import net.p3pp3rf1y.sophisticatedcore.inventory.InventoryHandler;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.*;
-import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.morenrx.sua.helper.SalvagingHelper;
+import top.morenrx.sua.init.SUADataComponents;
 
 import java.util.HashSet;
 import java.util.List;
@@ -33,7 +36,7 @@ public class SalvagingUpgradeWrapper extends UpgradeWrapperBase<SalvagingUpgrade
 
     public SalvagingUpgradeWrapper(IStorageWrapper storageWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
         super(storageWrapper, upgrade, upgradeSaveHandler);
-        this.filterLogic = new FilterLogic(upgrade, upgradeSaveHandler, this.upgradeItem.getFilterSlotCount());
+        this.filterLogic = new FilterLogic(upgrade, upgradeSaveHandler, this.upgradeItem.getFilterSlotCount(), ModCoreDataComponents.FILTER_ATTRIBUTES);
     }
 
     @Override
@@ -68,17 +71,24 @@ public class SalvagingUpgradeWrapper extends UpgradeWrapperBase<SalvagingUpgrade
     public boolean canSalvaging(ItemStack stack) {
         if (!SalvagingHelper.findMatchSalvaging(stack)) return false;
 
+        if (stack.getItem() instanceof GemItem) {
+            if (!shouldSalvagingGem()) return false;
+            UnsocketedGem gem = UnsocketedGem.of(stack);
+            if (!gem.isValid()) return false;
+            int purityIndex = gem.purity().ordinal();
+            return (shouldGemRarityMask() & (1 << purityIndex)) != 0;
+        }
+
         DynamicHolder<LootRarity> rarityDynamicHolder = AffixHelper.getRarity(stack);
         if (!rarityDynamicHolder.isBound()) {
             return shouldSalvagingOther() && stack.getMaxStackSize() == 1;
         }
 
         LootRarity lootRarity = rarityDynamicHolder.get();
-        if (stack.getItem() instanceof GemItem) {
-            return shouldSalvagingGem() && (shouldGemRarityMask() & (1 << lootRarity.ordinal())) != 0;
-        } else {
-            return shouldSalvagingEquipment() && (shouldEquipmentRarityMask() & (1 << lootRarity.ordinal())) != 0;
-        }
+        int rarityIndex = RarityRegistry.getSortedRarities().indexOf(lootRarity);
+        if (rarityIndex < 0) return false;
+
+        return shouldSalvagingEquipment() && (shouldEquipmentRarityMask() & (1 << rarityIndex)) != 0;
     }
 
     public int trySalvagingAndInsertItem(ItemStack stack, BiFunction<ItemStack, Boolean, ItemStack> insertHandler) {
@@ -142,56 +152,56 @@ public class SalvagingUpgradeWrapper extends UpgradeWrapperBase<SalvagingUpgrade
     }
 
     public void setWorkInGUI(boolean workInGUI) {
-        NBTHelper.setBoolean(this.upgrade, SalvagingUpgrade.Data.KEY_WORK_IN_GUI, workInGUI);
+        this.upgrade.set(ModCoreDataComponents.SHOULD_WORK_IN_GUI, workInGUI);
         this.save();
     }
 
     public boolean shouldWorkInGUI() {
-        return NBTHelper.getBoolean(this.upgrade, SalvagingUpgrade.Data.KEY_WORK_IN_GUI).orElse(false);
+        return this.upgrade.getOrDefault(ModCoreDataComponents.SHOULD_WORK_IN_GUI, false);
     }
 
     public void setEquipmentRarityMask(int equipmentRarityMask) {
-        NBTHelper.setInteger(this.upgrade, SalvagingUpgrade.Data.KEY_EQUIPMENT_RARITY_MASK, equipmentRarityMask);
+        this.upgrade.set(SUADataComponents.EQUIPMENT_RARITY_MASK, equipmentRarityMask);
         this.save();
     }
 
     public int shouldEquipmentRarityMask() {
-        return NBTHelper.getInt(this.upgrade, SalvagingUpgrade.Data.KEY_EQUIPMENT_RARITY_MASK).orElse(Integer.MAX_VALUE);
+        return this.upgrade.getOrDefault(SUADataComponents.EQUIPMENT_RARITY_MASK, Integer.MAX_VALUE);
     }
 
     public void setGemRarityMask(int gemRarityMask) {
-        NBTHelper.setInteger(this.upgrade, SalvagingUpgrade.Data.KEY_GEM_RARITY_MASK, gemRarityMask);
+        this.upgrade.set(SUADataComponents.GEM_RARITY_MASK, gemRarityMask);
         this.save();
     }
 
     public int shouldGemRarityMask() {
-        return NBTHelper.getInt(this.upgrade, SalvagingUpgrade.Data.KEY_GEM_RARITY_MASK).orElse(Integer.MAX_VALUE);
+        return this.upgrade.getOrDefault(SUADataComponents.GEM_RARITY_MASK, Integer.MAX_VALUE);
     }
 
     public void setSalvagingEquipment(boolean salvagingEquipment) {
-        NBTHelper.setBoolean(this.upgrade, SalvagingUpgrade.Data.KEY_SALVAGING_EQUIPMENT, salvagingEquipment);
+        this.upgrade.set(SUADataComponents.SALVAGING_EQUIPMENT, salvagingEquipment);
         this.save();
     }
 
     public boolean shouldSalvagingEquipment() {
-        return NBTHelper.getBoolean(this.upgrade, SalvagingUpgrade.Data.KEY_SALVAGING_EQUIPMENT).orElse(true);
+        return this.upgrade.getOrDefault(SUADataComponents.SALVAGING_EQUIPMENT, true);
     }
 
     public void setSalvagingGem(boolean salvagingGem) {
-        NBTHelper.setBoolean(this.upgrade, SalvagingUpgrade.Data.KEY_SALVAGING_GEM, salvagingGem);
+        this.upgrade.set(SUADataComponents.SALVAGING_GEM, salvagingGem);
         this.save();
     }
 
     public boolean shouldSalvagingGem() {
-        return NBTHelper.getBoolean(this.upgrade, SalvagingUpgrade.Data.KEY_SALVAGING_GEM).orElse(true);
+        return this.upgrade.getOrDefault(SUADataComponents.SALVAGING_GEM, true);
     }
 
     public void setSalvagingOther(boolean salvagingOther) {
-        NBTHelper.setBoolean(this.upgrade, SalvagingUpgrade.Data.KEY_SALVAGING_OTHER, salvagingOther);
+        this.upgrade.set(SUADataComponents.SALVAGING_OTHER, salvagingOther);
         this.save();
     }
 
     public boolean shouldSalvagingOther() {
-        return NBTHelper.getBoolean(this.upgrade, SalvagingUpgrade.Data.KEY_SALVAGING_OTHER).orElse(false);
+        return this.upgrade.getOrDefault(SUADataComponents.SALVAGING_OTHER, false);
     }
 }

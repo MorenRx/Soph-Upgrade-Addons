@@ -2,43 +2,43 @@ package top.morenrx.sua;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLEnvironment;
 import org.slf4j.Logger;
 import top.morenrx.sua.helper.SalvagingHelper;
-import top.morenrx.sua.init.SUAConfig;
-import top.morenrx.sua.init.SUAItems;
-import top.morenrx.sua.init.SUANetwork;
-import top.morenrx.sua.init.SUARecipes;
+import top.morenrx.sua.init.*;
 
 @Mod(SophUpgradeAddons.MODID)
 public class SophUpgradeAddons {
     public static final String MODID = "soph_upgrade_addons";
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public SophUpgradeAddons(FMLJavaModLoadingContext context) {
-        IEventBus modEventBus = context.getModEventBus();
-
-        SUAConfig.init(context);
+    public SophUpgradeAddons(IEventBus modEventBus, ModContainer modContainer) {
+        SUAConfig.init(modContainer);
+        SUADataComponents.register(modEventBus);
         SUAItems.init(modEventBus);
         SUARecipes.init(modEventBus);
-        SUANetwork.init();
+        SUANetwork.init(modEventBus);
 
         SalvagingHelper.init();
+
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            SUAClient.init(modEventBus);
+        }
     }
 
-
-    // 用于适配 Forge 47.4 以下
     public static ResourceLocation id(String path) {
-        return new ResourceLocation(MODID, path);
+        return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
 
     public static ResourceLocation id(String namespace, String path) {
-        return new ResourceLocation(namespace, path);
+        return ResourceLocation.fromNamespaceAndPath(namespace, path);
     }
 
     public static ResourceLocation parse(String location) {
-        return new ResourceLocation(location);
+        return ResourceLocation.parse(location);
     }
 }

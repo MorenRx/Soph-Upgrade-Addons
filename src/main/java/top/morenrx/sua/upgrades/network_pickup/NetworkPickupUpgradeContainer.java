@@ -16,13 +16,13 @@ public class NetworkPickupUpgradeContainer extends UpgradeContainerBase<NetworkP
     }
 
     @Override
-    public void handleMessage(CompoundTag data) {
+    public void handlePacket(CompoundTag data) {
         if (data.contains(NetworkPickupUpgrade.Data.KEY_ENABLE_VOID)) {
             setEnableVoid(data.getBoolean(NetworkPickupUpgrade.Data.KEY_ENABLE_VOID));
         } else if (data.contains(NetworkPickupUpgrade.Data.KEY_NETWORK_TYPE)) {
             setNetworkType(data.getString(NetworkPickupUpgrade.Data.KEY_NETWORK_TYPE));
         }
-        filterLogicContainer.handleMessage(data);
+        filterLogicContainer.handlePacket(data);
     }
 
     public ContentsFilterLogicContainer getFilterLogicContainer() {

@@ -20,7 +20,7 @@ public class SalvagingUpgradeContainer extends UpgradeContainerBase<SalvagingUpg
 
 
     @Override
-    public void handleMessage(@NotNull CompoundTag data) {
+    public void handlePacket(@NotNull CompoundTag data) {
         if (data.contains(SalvagingUpgrade.Data.KEY_WORK_IN_GUI)) {
             setWorkInGUI(data.getBoolean(SalvagingUpgrade.Data.KEY_WORK_IN_GUI));
         } else if (data.contains(SalvagingUpgrade.Data.KEY_EQUIPMENT_RARITY_MASK)) {
@@ -34,7 +34,7 @@ public class SalvagingUpgradeContainer extends UpgradeContainerBase<SalvagingUpg
         } else if (data.contains(SalvagingUpgrade.Data.KEY_SALVAGING_OTHER)) {
             setSalvagingOther(data.getBoolean(SalvagingUpgrade.Data.KEY_SALVAGING_OTHER));
         }
-        filterLogicContainer.handleMessage(data);
+        filterLogicContainer.handlePacket(data);
     }
 
     public FilterLogicContainer<FilterLogic> getFilterLogicContainer() {

@@ -1,6 +1,7 @@
 package top.morenrx.sua.init;
 
-import net.minecraftforge.fml.loading.FMLLoader;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.LoadingModList;
 
 import java.util.function.BooleanSupplier;
 
@@ -12,11 +13,11 @@ public class SUACompat {
     public static final BooleanSupplier BEYOND_DIMENSIONS = isModLoaded("beyonddimensions");
     public static final BooleanSupplier TOMS_STORAGE = isModLoaded("toms_storage");
     public static final BooleanSupplier THIRST = isModLoaded("thirst");
+    public static final BooleanSupplier THIRST_WAS_TAKEN = isModLoaded("thirst_was_taken");
     public static final BooleanSupplier TOUGH_AS_NAILS = isModLoaded("toughasnails");
     public static final BooleanSupplier LEGENDARY_SURVIVAL = isModLoaded("legendarysurvivaloverhaul");
 
-
     private static BooleanSupplier isModLoaded(String modId) {
-        return () -> FMLLoader.getLoadingModList().getModFileById(modId) != null;
+        return () -> ModList.get() != null ? ModList.get().isLoaded(modId) : LoadingModList.get().getModFileById(modId) != null;
     }
 }

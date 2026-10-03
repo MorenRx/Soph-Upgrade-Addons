@@ -1,7 +1,8 @@
 package top.morenrx.sua.upgrades.drink;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -9,18 +10,20 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.event.EventHooks;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
+import net.p3pp3rf1y.sophisticatedcore.init.ModCoreDataComponents;
 import net.p3pp3rf1y.sophisticatedcore.inventory.ITrackedContentsItemHandler;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.FilterLogic;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.IFilteredUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.ITickableUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeWrapperBase;
+import net.p3pp3rf1y.sophisticatedcore.util.CapabilityHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.InventoryHelper;
-import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import top.morenrx.sua.init.SUADataComponents;
 import top.morenrx.sua.upgrades.compat.drink.DrinkCompatProvider;
 import top.morenrx.sua.upgrades.compat.drink.IThirstCompat;
 
@@ -36,31 +39,25 @@ public class DrinkUpgradeWrapper extends UpgradeWrapperBase<DrinkUpgradeWrapper,
 
     public DrinkUpgradeWrapper(IStorageWrapper storageWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
         super(storageWrapper, upgrade, upgradeSaveHandler);
-        filterLogic = new FilterLogic(upgrade, upgradeSaveHandler, upgradeItem.getFilterSlotCount(), stack -> DrinkCompatProvider.get().itemRestoresThirst(stack));
+        filterLogic = new FilterLogic(upgrade, upgradeSaveHandler, upgradeItem.getFilterSlotCount(),
+                stack -> DrinkCompatProvider.get().itemRestoresThirst(stack), ModCoreDataComponents.FILTER_ATTRIBUTES);
     }
 
     @Override
     public void tick(@Nullable Entity entity, @NotNull Level level, @NotNull BlockPos pos) {
-        if (isInCooldown(level) || (entity != null && !(entity instanceof Player))) {
-            return;
-        }
+        if (isInCooldown(level)) return;
 
         boolean thirstPlayer = false;
-        if (entity == null) {
+        if (!(entity instanceof Player)) {
             AtomicBoolean stillThirstPlayer = new AtomicBoolean(false);
-            level.getEntities(EntityType.PLAYER, new AABB(pos).inflate(RANGE), p -> true).forEach(p -> stillThirstPlayer.set(stillThirstPlayer.get() || drinkPlayerAndGetThirst(p, level)));
+            level.getEntities(EntityType.PLAYER, new AABB(pos).inflate(RANGE), p -> true)
+                    .forEach(p -> stillThirstPlayer.set(stillThirstPlayer.get() || drinkPlayerAndGetThirst(p, level)));
             thirstPlayer = stillThirstPlayer.get();
-        } else {
-            if (drinkPlayerAndGetThirst((Player) entity, level)) {
-                thirstPlayer = true;
-            }
-        }
-        if (thirstPlayer) {
-            setCooldown(level, STILL_THIRST_COOLDOWN);
-            return;
+        } else if (drinkPlayerAndGetThirst((Player) entity, level)) {
+            thirstPlayer = true;
         }
 
-        setCooldown(level, COOLDOWN);
+        setCooldown(level, thirstPlayer ? STILL_THIRST_COOLDOWN : COOLDOWN);
     }
 
     private boolean drinkPlayerAndGetThirst(Player player, Level level) {
@@ -88,26 +85,37 @@ public class DrinkUpgradeWrapper extends UpgradeWrapperBase<DrinkUpgradeWrapper,
         boolean isHurt = player.getHealth() < player.getMaxHealth() - 0.1F;
         if (!isDrink(stack, compat) || !meetsPurity(stack, compat)) return false;
         if (!filterLogic.matchesFilter(stack)) return false;
-        if (!(isThirstEnoughForDrink(thirstLevel, stack, compat) || shouldDrinkForHurt() && thirstLevel > 0 && isHurt)) return false;
+        if (!(isThirstEnoughForDrink(thirstLevel, stack, compat) || shouldDrinkForHurt() && thirstLevel > 0 && isHurt))
+            return false;
+
+        ItemStack mainHandItem = player.getMainHandItem();
+        player.getInventory().items.set(player.getInventory().selected, stack);
 
         ItemStack singleItemCopy = stack.copy();
         singleItemCopy.setCount(1);
         ItemStack drinkItem = singleItemCopy.copy();
         int thirstBefore = compat.getPlayerThirst(player, 20);
 
-        stack.shrink(1);
-        inventory.setStackInSlot(slot, stack);
+        InteractionResult useResult = singleItemCopy.use(level, player, InteractionHand.MAIN_HAND).getResult();
+        if (useResult == InteractionResult.CONSUME || useResult == InteractionResult.SUCCESS) {
+            stack.shrink(1);
+            inventory.setStackInSlot(slot, stack);
 
-        ItemStack resultItem = ForgeEventFactory.onItemUseFinish(player, singleItemCopy.copy(), 0, singleItemCopy.getItem().finishUsingItem(singleItemCopy, level, player));
-        compat.onDrink(player, drinkItem, thirstBefore);
-        if (!resultItem.isEmpty()) {
-            ItemStack insertResult = inventory.insertItem(resultItem, false);
-            if (!insertResult.isEmpty()) {
-                player.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.UP).ifPresent(playerInventory ->
-                        InventoryHelper.insertOrDropItem(player, insertResult, playerInventory));
+            ItemStack resultItem = EventHooks.onItemUseFinish(player, singleItemCopy.copy(), 0, singleItemCopy.getItem().finishUsingItem(singleItemCopy, level, player));
+            compat.onDrink(player, drinkItem, thirstBefore);
+            if (!resultItem.isEmpty()) {
+                ItemStack insertResult = inventory.insertItem(resultItem, false);
+                if (!insertResult.isEmpty()) {
+                    CapabilityHelper.runOnCapability(player, Capabilities.ItemHandler.ENTITY, null,
+                            playerInventory -> InventoryHelper.insertOrDropItem(player, insertResult, playerInventory));
+                }
             }
+
+            player.getInventory().items.set(player.getInventory().selected, mainHandItem);
+            return true;
         }
-        return true;
+        player.getInventory().items.set(player.getInventory().selected, mainHandItem);
+        return false;
     }
 
     private boolean isDrink(ItemStack stack, IThirstCompat compat) {
@@ -137,29 +145,29 @@ public class DrinkUpgradeWrapper extends UpgradeWrapperBase<DrinkUpgradeWrapper,
     }
 
     public int getDrinkAtThirstLevel() {
-        return NBTHelper.getInt(upgrade, DrinkUpgrade.Data.KEY_THIRST_LEVEL).orElse(DrinkUpgrade.Data.THIRST_LEVEL_HALF);
+        return upgrade.getOrDefault(SUADataComponents.THIRST_LEVEL, DrinkUpgrade.Data.THIRST_LEVEL_HALF);
     }
 
     public void setDrinkAtThirstLevel(int thirstLevel) {
-        NBTHelper.setInteger(upgrade, DrinkUpgrade.Data.KEY_THIRST_LEVEL, thirstLevel);
+        upgrade.set(SUADataComponents.THIRST_LEVEL, thirstLevel);
         save();
     }
 
     public boolean shouldDrinkForHurt() {
-        return NBTHelper.getBoolean(upgrade, DrinkUpgrade.Data.KEY_DRINK_FOR_HURT).orElse(false);
+        return upgrade.getOrDefault(SUADataComponents.DRINK_FOR_HURT, false);
     }
 
     public void setDrinkForHurt(boolean drinkForHurt) {
-        NBTHelper.setBoolean(upgrade, DrinkUpgrade.Data.KEY_DRINK_FOR_HURT, drinkForHurt);
+        upgrade.set(SUADataComponents.DRINK_FOR_HURT, drinkForHurt);
         save();
     }
 
     public int shouldPurity() {
-        return NBTHelper.getInt(upgrade, DrinkUpgrade.Data.KEY_PURITY).orElse(DrinkUpgrade.Data.PURITY_DIRTY);
+        return upgrade.getOrDefault(SUADataComponents.PURITY, DrinkUpgrade.Data.PURITY_DIRTY);
     }
 
     public void setPurity(int purity) {
-        NBTHelper.setInteger(upgrade, DrinkUpgrade.Data.KEY_PURITY, purity);
+        upgrade.set(SUADataComponents.PURITY, purity);
         save();
     }
 }

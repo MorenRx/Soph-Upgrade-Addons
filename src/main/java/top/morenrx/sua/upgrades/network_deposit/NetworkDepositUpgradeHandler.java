@@ -5,7 +5,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.upgrades.deposit.DepositUpgradeWrapper;
 import net.p3pp3rf1y.sophisticatedcore.inventory.InventoryHandler;
@@ -25,17 +25,16 @@ public class NetworkDepositUpgradeHandler {
         if (player.level().isClientSide())
             return true;
 
-        return backpack.getCapability(CapabilityBackpackWrapper.getCapabilityInstance())
-                .map(wrapper -> {
-                    List<DepositUpgradeWrapper> upgradeWrappers = wrapper.getUpgradeHandler().getTypeWrappers(NetworkDepositUpgrade.TYPE);
-                    if (upgradeWrappers.isEmpty()) return false;
+        IBackpackWrapper wrapper = BackpackWrapper.fromStack(backpack);
+        if (wrapper == IBackpackWrapper.Noop.INSTANCE) return false;
 
-                    INetworkStorage.NetworkInsertHandler insertHandler = storage.getDepositInsertHandler(te);
-                    if (insertHandler == null) return false;
+        List<DepositUpgradeWrapper> upgradeWrappers = wrapper.getUpgradeHandler().getTypeWrappers(NetworkDepositUpgrade.TYPE);
+        if (upgradeWrappers.isEmpty()) return false;
 
-                    return processBackpackDeposit(wrapper, upgradeWrappers, player, insertHandler);
-                })
-                .orElse(false);
+        INetworkStorage.NetworkInsertHandler insertHandler = storage.getDepositInsertHandler(te);
+        if (insertHandler == null) return false;
+
+        return processBackpackDeposit(wrapper, upgradeWrappers, player, insertHandler);
     }
 
     private static @Nullable INetworkStorage findDepositStorage(BlockEntity te) {

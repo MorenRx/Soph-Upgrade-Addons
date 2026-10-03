@@ -1,8 +1,8 @@
 package top.morenrx.sua.init;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.common.ModConfigSpec;
 import top.morenrx.sua.upgrades.drink.DrinkUpgradeConfig;
 import top.morenrx.sua.upgrades.ender_chest.EnderChestUpgradeConfig;
 import top.morenrx.sua.upgrades.network_deposit.NetworkDepositUpgradeConfig;
@@ -15,7 +15,7 @@ import top.morenrx.sua.upgrades.voiding.SuperVoidUpgradeConfig;
 
 public class SUAConfig {
     public static final SUAConfig INSTANCE = new SUAConfig();
-    public final ForgeConfigSpec SPEC;
+    public final ModConfigSpec SPEC;
 
     public final NetworkMagnetUpgradeConfig networkMagnetUpgrade;
     public final NetworkPickupUpgradeConfig networkPickupUpgrade;
@@ -30,9 +30,8 @@ public class SUAConfig {
     public final SalvagingUpgradeConfig salvagingUpgradeConfig;
     public final SalvagingUpgradeConfig advancedSalvagingUpgradeConfig;
 
-
     public SUAConfig() {
-        ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+        ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
         networkMagnetUpgrade = new NetworkMagnetUpgradeConfig(builder, "网络磁铁升级", "NetworkMagnetUpgrade", 24, 4, 5);
         networkPickupUpgrade = new NetworkPickupUpgradeConfig(builder, "网络拾取升级", "NetworkPickupUpgrade", 24, 4);
@@ -51,7 +50,7 @@ public class SUAConfig {
         SPEC = builder.build();
     }
 
-    public static void init(FMLJavaModLoadingContext context) {
-        context.registerConfig(ModConfig.Type.COMMON, SUAConfig.INSTANCE.SPEC);
+    public static void init(ModContainer modContainer) {
+        modContainer.registerConfig(ModConfig.Type.COMMON, SUAConfig.INSTANCE.SPEC);
     }
 }

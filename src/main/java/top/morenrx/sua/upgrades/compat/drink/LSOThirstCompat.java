@@ -7,10 +7,10 @@ import sfiomn.legendarysurvivaloverhaul.api.data.json.JsonThirstConsumable;
 import sfiomn.legendarysurvivaloverhaul.api.data.manager.ThirstDataManager;
 import sfiomn.legendarysurvivaloverhaul.api.thirst.HydrationEnum;
 import sfiomn.legendarysurvivaloverhaul.api.thirst.ThirstUtil;
-import sfiomn.legendarysurvivaloverhaul.common.capabilities.thirst.ThirstCapability;
+import sfiomn.legendarysurvivaloverhaul.common.attachments.thirst.ThirstAttachment;
 import sfiomn.legendarysurvivaloverhaul.common.items.drink.CanteenItem;
 import sfiomn.legendarysurvivaloverhaul.config.Config;
-import sfiomn.legendarysurvivaloverhaul.util.CapabilityUtil;
+import sfiomn.legendarysurvivaloverhaul.util.AttachmentUtil;
 
 public class LSOThirstCompat implements IThirstCompat {
     @Override
@@ -80,7 +80,7 @@ public class LSOThirstCompat implements IThirstCompat {
 
     @Override
     public int getPlayerThirst(Player player, int defaultValue) {
-        ThirstCapability thirstCapability = CapabilityUtil.getThirstCapability(player);
-        return thirstCapability != null ? thirstCapability.getHydrationLevel() : defaultValue;
+        ThirstAttachment thirstAttachment = AttachmentUtil.getThirstAttachment(player);
+        return thirstAttachment != null ? thirstAttachment.getHydrationLevel() : defaultValue;
     }
 }

@@ -1,8 +1,8 @@
 package top.morenrx.sua.helper.client;
 
-import dev.shadowsoffire.apotheosis.adventure.loot.LootRarity;
-import dev.shadowsoffire.apotheosis.adventure.loot.RarityRegistry;
-import dev.shadowsoffire.placebo.reload.DynamicHolder;
+import dev.shadowsoffire.apotheosis.loot.LootRarity;
+import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
+import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.SBPTranslationHelper;
@@ -39,31 +39,32 @@ public class SalvagingClientHelper {
 
     static {
         if (SUACompat.APOTHEOSIS.getAsBoolean()) {
-            for (DynamicHolder<LootRarity> orderedRarity : RarityRegistry.INSTANCE.getOrderedRarities()) {
-                LootRarity lootRarity = orderedRarity.get();
+            for (LootRarity lootRarity : RarityRegistry.getSortedRarities()) {
                 EQUIPMENT_RARITY.add(new OverlayToggleButton.StateData<>(
                         ButtonDefinitions.createToggleButtonDefinition(ButtonDefinitions.getBooleanStateData(
                                 SUAUtils.Gui.getButtonStateData(new UV(48, 16),
-                                        Component.translatable(SBPTranslationHelper.INSTANCE.translUpgradeButton("equipment_rarity_enable")).append(Component.translatable(SBPTranslationHelper.INSTANCE.translUpgradeButton("equipment"), Component.translatable("rarity." + RarityRegistry.INSTANCE.getKey(lootRarity)))).withStyle(Style.EMPTY.withColor(lootRarity.getColor())),
+                                        Component.translatable(SBPTranslationHelper.INSTANCE.translUpgradeButton("equipment_rarity_enable")).append(Component.translatable(SBPTranslationHelper.INSTANCE.translUpgradeButton("equipment"), Component.translatable("rarity." + RarityRegistry.INSTANCE.getKey(lootRarity)))).withStyle(Style.EMPTY.withColor(lootRarity.color())),
                                         Dimension.SQUARE_16, new Position(1, 1)),
                                 SUAUtils.Gui.getButtonStateData(new UV(64, 16),
-                                        Component.translatable(SBPTranslationHelper.INSTANCE.translUpgradeButton("equipment_rarity_disable")).append(Component.translatable(SBPTranslationHelper.INSTANCE.translUpgradeButton("equipment"), Component.translatable("rarity." + RarityRegistry.INSTANCE.getKey(lootRarity)))).withStyle(Style.EMPTY.withColor(lootRarity.getColor())),
+                                        Component.translatable(SBPTranslationHelper.INSTANCE.translUpgradeButton("equipment_rarity_disable")).append(Component.translatable(SBPTranslationHelper.INSTANCE.translUpgradeButton("equipment"), Component.translatable("rarity." + RarityRegistry.INSTANCE.getKey(lootRarity)))).withStyle(Style.EMPTY.withColor(lootRarity.color())),
                                         Dimension.SQUARE_16, new Position(1, 1))
                         )),
                         SUAUtils.Gui.getTextureBlitData(new UV(80, 16), Dimension.SQUARE_16, new Position(1, 1)),
-                        lootRarity.getColor()::getValue
+                        lootRarity.color()::getValue
                 ));
+            }
+            for (Purity purity : Purity.values()) {
                 GEM_RARITY.add(new OverlayToggleButton.StateData<>(
                         ButtonDefinitions.createToggleButtonDefinition(ButtonDefinitions.getBooleanStateData(
                                 SUAUtils.Gui.getButtonStateData(new UV(0, 16),
-                                        Component.translatable(SBPTranslationHelper.INSTANCE.translUpgradeButton("gem_rarity_enable")).append(Component.translatable("item.apotheosis.gem." + RarityRegistry.INSTANCE.getKey(lootRarity), Component.translatable(SBPTranslationHelper.INSTANCE.translUpgradeButton("gem")))).withStyle(Style.EMPTY.withColor(lootRarity.getColor())),
+                                        Component.translatable(SBPTranslationHelper.INSTANCE.translUpgradeButton("gem_rarity_enable")).append(Component.translatable(SBPTranslationHelper.INSTANCE.translUpgradeButton("gem_with_purity"), purity.toComponent())).withStyle(Style.EMPTY.withColor(purity.getColor())),
                                         Dimension.SQUARE_16, new Position(1, 1)),
                                 SUAUtils.Gui.getButtonStateData(new UV(16, 16),
-                                        Component.translatable(SBPTranslationHelper.INSTANCE.translUpgradeButton("gem_rarity_disable")).append(Component.translatable("item.apotheosis.gem." + RarityRegistry.INSTANCE.getKey(lootRarity), Component.translatable(SBPTranslationHelper.INSTANCE.translUpgradeButton("gem")))).withStyle(Style.EMPTY.withColor(lootRarity.getColor())),
+                                        Component.translatable(SBPTranslationHelper.INSTANCE.translUpgradeButton("gem_rarity_disable")).append(Component.translatable(SBPTranslationHelper.INSTANCE.translUpgradeButton("gem_with_purity"), purity.toComponent())).withStyle(Style.EMPTY.withColor(purity.getColor())),
                                         Dimension.SQUARE_16, new Position(1, 1))
                         )),
                         SUAUtils.Gui.getTextureBlitData(new UV(32, 16), Dimension.SQUARE_16, new Position(1, 1)),
-                        lootRarity.getColor()::getValue
+                        purity.getColor()::getValue
                 ));
             }
         }

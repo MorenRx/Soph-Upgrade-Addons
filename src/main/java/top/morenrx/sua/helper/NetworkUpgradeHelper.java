@@ -6,12 +6,12 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import org.jetbrains.annotations.Nullable;
 import top.morenrx.sua.upgrades.compat.network.NetworkStorageProvider;
 
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ public class NetworkUpgradeHelper {
         return NetworkStorageProvider.get().onBindBlock(context, blockEntity, context.getItemInHand());
     }
 
-    public static void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn, BooleanSupplier isEnable) {
+    public static void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn, BooleanSupplier isEnable) {
         if (!isEnable.getAsBoolean()) {
             tooltip.add(Component.translatable("item.soph_upgrade_addons.tooltip.disable").withStyle(ChatFormatting.RED));
             return;

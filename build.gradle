@@ -1,74 +1,74 @@
 plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'net.neoforged.moddev' version '2.0.148'
     id 'idea'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
-    id 'org.spongepowered.mixin' version '0.7.+'
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-
     // JEI
-    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
-    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
-    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
+    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-${mod_loader}-api:${jei_version}"
+    runtimeOnly "mezz.jei:jei-${minecraft_version}-${mod_loader}:${jei_version}"
 
     // 精妙背包
-    implementation fg.deobf("curse.maven:sophisticated-backpacks-422301:8845923")
-    // implementation fg.deobf("curse.maven:sophisticated-backpacks-422301:8687830")
-    implementation fg.deobf("curse.maven:sophisticated-core-618298:8839328")
-    // implementation fg.deobf("curse.maven:sophisticated-core-618298:8705513")
+    implementation modrinth("sophisticated-backpacks:1.21.1-3.26.6.2174")
+    implementation modrinth("sophisticated-core:1.21.1-1.5.2.2343")
 
+    // RS2
+    implementation modrinth("refined-storage:2.0.9")
     // AE2
-    implementation fg.deobf("curse.maven:applied-energistics-2-223794:7148487")
-    implementation fg.deobf("curse.maven:guideme-1173950:8204776")
-    // RS 1.12.4
-    implementation fg.deobf("curse.maven:refined-storage-243076:4844585")
-    // 超越维度 0.7.30
-    implementation fg.deobf("curse.maven:beyond-dimensions-1222890:8812498")
-    // Tom存储 1.7.1
-    implementation fg.deobf("curse.maven:toms-storage-378609:6418133")
-    // 口渴重置 3.0.5
-    compileOnly fg.deobf("curse.maven:thirst-was-reclaimed-884742:8852255")
-    // 口渴
-    compileOnly fg.deobf("curse.maven:thirst-was-taken-679270:6660408")
-    // 传说生存 2.4.7
-    compileOnly fg.deobf("curse.maven:legendary-survival-overhaul-840254:8591693")
-    // 意志坚定 9.2.0.171
-    implementation fg.deobf("curse.maven:tough-as-nails-246391:5815863")
-    runtimeOnly fg.deobf("curse.maven:glitchcore-955399:5787839")
+    implementation modrinth("ae2:19.2.18")
+    runtimeOnly modrinth("guideme:21.1.19")
+    // 超越维度
+    implementation modrinth("beyonddimensions:0.7.30-1.21.1-neoforge")
+    // Tom's Storage
+    implementation modrinth("toms-storage:1.21-2.4.2")
+
+    // Thirst Was Reclaimed
+    implementation modrinth("thirst-was-reclaimed:1.21.1-3.0.6")
+    // Thirst Was Taken
+    compileOnly modrinth("thirst-was-taken:1.21.1-2.1.5")
+    // Legendary Survival Overhaul
+    implementation modrinth("legendary-survival-overhaul:1.21.1-2.4.7.2")
+    // Tough As Nails
+    implementation modrinth("tough-as-nails:10.1.0.13")
+    runtimeOnly modrinth("glitchcore:2.1.0.2")
+    // 农夫乐事
+    runtimeOnly modrinth("farmers-delight:1.21.1-1.3.4")
 
     // 神化
-    implementation fg.deobf("curse.maven:apotheosis-313970:6461960")
-    implementation fg.deobf("curse.maven:apothic-attributes-898963:5634071")
-    implementation fg.deobf("curse.maven:placebo-283644:6274231")
+    implementation modrinth("apotheosis:1.21.1-8.9.0")
+    implementation modrinth("placebo:1.21.1-9.9.2")
+    implementation modrinth("apothic-attributes:1.21.1-2.11.0")
+    // 品质附加
+    runtimeOnly "curse.maven:nadir-1424172:8687490"
 
-    // Embeddium
-    runtimeOnly fg.deobf("curse.maven:embeddium-908741:5681725")
-    // 神化附加
-    runtimeOnly fg.deobf("curse.maven:apotheotic-additions-924640:6393313")
-    // 农夫乐事
-    runtimeOnly fg.deobf("curse.maven:farmers-delight-398521:8083474")
-    // AppleSkin
-    runtimeOnly fg.deobf("curse.maven:appleskin-248787:4770828")
-    // IBE编辑器
-    runtimeOnly fg.deobf("curse.maven:ibe-editor-256822:4994072")
-    // 鼠标手势
-    runtimeOnly fg.deobf("curse.maven:mouse-tweaks-60089:5338457")
-    // 拼音搜索
-    runtimeOnly fg.deobf("curse.maven:just-enough-characters-250702:8771525")
-    // 铁氧体磁芯
-    runtimeOnly fg.deobf("curse.maven:ferritecore-429235:4810975")
+    // 测试用
+    runtimeOnly modrinth("embeddium:1.0.15+mc1.21.1")
+    runtimeOnly modrinth("ferrite-core:7.0.3-neoforge")
+    runtimeOnly modrinth("appleskin:3.0.9+mc1.21")
+    runtimeOnly modrinth("cad-editor:0.1.0")
+    runtimeOnly modrinth("mouse-tweaks:1.21-2.26.1-neoforge")
+    runtimeOnly modrinth("justenoughcharacters:4.5.29")
 }
 
 repositories {
+    mavenCentral()
     maven {
         name = "LocalRepo"
-        url = layout.projectDirectory.dir(".local=repo")
+        url = layout.projectDirectory.dir(".local-repo")
     }
     maven {
         name = "ModMaven"
         url = "https://modmaven.dev"
+    }
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+        content {
+            includeGroup "maven.modrinth"
+        }
     }
     maven {
         name = "CurseForge"
@@ -79,94 +79,93 @@ repositories {
     }
 }
 
-mixin {
-    add sourceSets.main, "${mod_id}.refmap.json"
-    config "${mod_id}.mixins.json"
-}
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-
-group = mod_group_id
 version = mod_version
+group = mod_group_id
 base.archivesName = archives_name
 
-minecraft {
-    mappings channel: mapping_channel, version: mapping_version
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-    copyIdeResources = true
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    var replaceProperties = [
+            minecraft_version          : minecraft_version,
+            minecraft_version_range    : minecraft_version_range,
+            neo_version                : neo_version,
+            neo_version_range          : neo_version_range,
+            loader_version_range       : loader_version_range,
+            soph_backpack_version_range: soph_backpack_version_range,
+            soph_core_version_range    : soph_core_version_range,
+            mod_id                     : mod_id,
+            mod_name                   : mod_name,
+            mod_license                : mod_license,
+            mod_version                : mod_version,
+            mod_authors                : mod_authors,
+            mod_description            : mod_description,
+    ]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
+}
+
+neoForge {
+    version = project.neo_version
+
+    accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
+
+    parchment {
+        minecraftVersion = project.minecraft_version
+        mappingsVersion = project.parchment_mappings_version
+    }
 
     runs {
-        configureEach {
-            workingDirectory project.file('run')
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
-        }
-
         client {
-            property 'forge.enabledGameTestNamespaces', mod_id
+            client()
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
         server {
-            property 'forge.enabledGameTestNamespaces', mod_id
-            args '--nogui'
+            server()
+            programArgument '--nogui'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
         gameTestServer {
-            property 'forge.enabledGameTestNamespaces', mod_id
+            type = "gameTestServer"
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
         data {
-            workingDirectory project.file('run-data')
-            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            data()
+            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+        }
+
+        configureEach {
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            logLevel = org.slf4j.event.Level.DEBUG
         }
     }
-}
 
-sourceSets.main.resources { srcDir 'src/generated/resources' }
-
-processResources {
-    var replaceProperties = [
-            minecraft_version           : minecraft_version,
-            minecraft_version_range     : minecraft_version_range,
-            forge_version               : forge_version,
-            forge_version_range         : forge_version_range,
-            loader_version_range        : loader_version_range,
-            mod_id                      : mod_id,
-            mod_name                    : mod_name,
-            mod_license                 : mod_license,
-            mod_version                 : mod_version,
-            mod_authors                 : mod_authors,
-            mod_description             : mod_description,
-            soph_backpack_version_range : soph_backpack_version_range,
-            soph_core_version_range     : soph_core_version_range,
-    ]
-
-    inputs.properties replaceProperties
-
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
-        expand replaceProperties + [project: project]
-    }
-}
-
-jar {
-    manifest {
-        attributes([
-                "Specification-Title"     : mod_id,
-                "Specification-Vendor"    : mod_authors,
-                "Specification-Version"   : "1", // We are version 1 of ourselves
-                "Implementation-Title"    : project.name,
-                "Implementation-Version"  : project.jar.archiveVersion,
-                "Implementation-Vendor"   : mod_authors,
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
     }
 
-    finalizedBy 'reobfJar'
+    ideSyncTask(generateModMetadata)
+}
+
+def modrinth(String notation) {
+    return "maven.modrinth:${notation}-${mod_loader},${minecraft_version}"
+}
+
+sourceSets.main.resources {
+    srcDir(generateModMetadata)
+    srcDir('src/generated/resources')
+    exclude("src/generated/**/.cache")
+}
+
+tasks.named('wrapper', Wrapper).configure {
+    distributionType = Wrapper.DistributionType.BIN
 }
 
 tasks.withType(JavaCompile).configureEach {

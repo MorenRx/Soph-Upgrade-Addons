@@ -5,8 +5,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.upgrades.restock.RestockUpgradeWrapper;
 import net.p3pp3rf1y.sophisticatedcore.inventory.InventoryHandler;
@@ -27,22 +26,21 @@ public class NetworkRestockUpgradeHandler {
         if (player.level().isClientSide())
             return true;
 
-        return backpack.getCapability(CapabilityBackpackWrapper.getCapabilityInstance())
-                .map(wrapper -> {
-                    List<RestockUpgradeWrapper> upgradeWrappers = wrapper.getUpgradeHandler().getTypeWrappers(NetworkRestockUpgrade.TYPE);
-                    if (upgradeWrappers.isEmpty()) return false;
+        IBackpackWrapper wrapper = BackpackWrapper.fromStack(backpack);
+        if (wrapper == IBackpackWrapper.Noop.INSTANCE) return false;
 
-                    INetworkStorage.NetworkExtractHandler extractHandler = storage.getRestockExtractHandler(te);
-                    if (extractHandler == null) return false;
+        List<RestockUpgradeWrapper> upgradeWrappers = wrapper.getUpgradeHandler().getTypeWrappers(NetworkRestockUpgrade.TYPE);
+        if (upgradeWrappers.isEmpty()) return false;
 
-                    InventoryHandler inventoryHandler = wrapper.getInventoryHandler();
-                    inventoryHandler.getSlotTracker();
+        INetworkStorage.NetworkExtractHandler extractHandler = storage.getRestockExtractHandler(te);
+        if (extractHandler == null) return false;
 
-                    RestockContext ctx = new RestockContext(player, wrapper, inventoryHandler, storage, te, extractHandler);
+        InventoryHandler inventoryHandler = wrapper.getInventoryHandler();
+        inventoryHandler.getSlotTracker();
 
-                    return processBackpackRestock(ctx, upgradeWrappers);
-                })
-                .orElse(false);
+        RestockContext ctx = new RestockContext(player, wrapper, inventoryHandler, storage, te, extractHandler);
+
+        return processBackpackRestock(ctx, upgradeWrappers);
     }
 
     private static @Nullable INetworkStorage findRestockStorage(BlockEntity te) {
@@ -94,7 +92,6 @@ public class NetworkRestockUpgradeHandler {
     }
 
     private static int transferBatch(RestockContext ctx, ItemStack targetStack, int requestedAmount, BiFunction<ItemStack, Boolean, ItemStack> inserter) {
-        // Phase 1: 模拟入库
         ItemStack testStack = targetStack.copyWithCount(requestedAmount);
         ItemStack simRemainder = inserter.apply(testStack, true);
         int canAccept = requestedAmount - simRemainder.getCount();
@@ -116,7 +113,7 @@ public class NetworkRestockUpgradeHandler {
             ItemStack inSlot = handler.getStackInSlot(i);
             if (inSlot.isEmpty())
                 return true;
-            if (ItemHandlerHelper.canItemStacksStack(inSlot, stack) && inSlot.getCount() < handler.getStackLimit(i, inSlot))
+            if (ItemStack.isSameItemSameComponents(inSlot, stack) && inSlot.getCount() < handler.getStackLimit(i, inSlot))
                 return true;
         }
         return false;

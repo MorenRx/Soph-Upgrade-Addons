@@ -1,11 +1,11 @@
 package top.morenrx.sua.helper;
 
-import dev.shadowsoffire.apotheosis.adventure.affix.salvaging.SalvagingMenu;
+import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingMenu;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.level.LevelEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.level.LevelEvent;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import org.jetbrains.annotations.Nullable;
 import top.morenrx.sua.upgrades.salvaging.SalvagingUpgrade;
@@ -19,7 +19,7 @@ public class SalvagingHelper {
     private static WeakReference<Level> levelRef = new WeakReference<>(null);
 
     public static void init() {
-        MinecraftForge.EVENT_BUS.addListener(SalvagingHelper::onLevelLoad);
+        NeoForge.EVENT_BUS.addListener(SalvagingHelper::onLevelLoad);
     }
 
     private static void onLevelLoad(LevelEvent.Load event) {
@@ -51,13 +51,13 @@ public class SalvagingHelper {
         Level l = levelRef.get();
         List<ItemStack> stacks = new ArrayList<>();
         if (l == null) return stacks;
-        stacks.addAll(SalvagingMenu.salvageItem(l, stack));
+        stacks.addAll(SalvagingMenu.getSalvageResults(l, stack));
         return stacks;
     }
 
     public static boolean findMatchSalvaging(ItemStack stack) {
         Level l = levelRef.get();
         if (l == null) return false;
-        return SalvagingMenu.findMatch(l, stack) != null;
+        return !SalvagingMenu.findMatch(l, stack).isEmpty();
     }
 }

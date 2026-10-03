@@ -17,7 +17,7 @@ public class NetworkMagnetUpgradeContainer extends UpgradeContainerBase<NetworkM
     }
 
     @Override
-    public void handleMessage(CompoundTag data) {
+    public void handlePacket(CompoundTag data) {
         if (data.contains(NetworkMagnetUpgrade.Data.KEY_PICKUP_ITEMS)) {
             setPickupItems(data.getBoolean(NetworkMagnetUpgrade.Data.KEY_PICKUP_ITEMS));
         } else if (data.contains(NetworkMagnetUpgrade.Data.KEY_PICKUP_XP)) {
@@ -27,7 +27,7 @@ public class NetworkMagnetUpgradeContainer extends UpgradeContainerBase<NetworkM
         } else if (data.contains(NetworkMagnetUpgrade.Data.KEY_NETWORK_TYPE)) {
             setNetworkType(data.getString(NetworkMagnetUpgrade.Data.KEY_NETWORK_TYPE));
         }
-        filterLogicContainer.handleMessage(data);
+        filterLogicContainer.handlePacket(data);
     }
 
     public ContentsFilterLogicContainer getFilterLogicContainer() {

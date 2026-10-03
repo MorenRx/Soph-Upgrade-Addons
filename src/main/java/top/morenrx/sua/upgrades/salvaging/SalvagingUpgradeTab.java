@@ -60,6 +60,9 @@ public class SalvagingUpgradeTab extends UpgradeSettingsTab<SalvagingUpgradeCont
                 addHideableChild(new OverlayToggleButton<>(new Position(x + 3 + rarityFilterX, y + 24 + (i * 18)), SalvagingClientHelper.EQUIPMENT_RARITY.get(i),
                         button -> getContainer().setEquipmentRarityMask(getContainer().shouldEquipmentRarityMask() ^ mask),
                         () -> getContainer().shouldSalvagingEquipment() && (getContainer().shouldEquipmentRarityMask() & mask) != 0));
+            }
+            for (int i = 0; i < SalvagingClientHelper.GEM_RARITY.size(); i++) {
+                int mask = 1 << i;
                 addHideableChild(new OverlayToggleButton<>(new Position(x + 3 + rarityFilterX + 18, y + 24 + (i * 18)), SalvagingClientHelper.GEM_RARITY.get(i),
                         button -> getContainer().setGemRarityMask(getContainer().shouldGemRarityMask() ^ mask),
                         () -> getContainer().shouldSalvagingGem() && (getContainer().shouldGemRarityMask() & mask) != 0));
