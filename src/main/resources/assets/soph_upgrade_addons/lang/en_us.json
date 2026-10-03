@@ -89,8 +89,8 @@
   "gui.sophisticatedbackpacks.upgrades.advanced_salvaging": "Advanced Apotheosis Salvaging",
   "gui.sophisticatedbackpacks.upgrades.advanced_salvaging.tooltip": "Advanced Apotheosis Salvaging Setting",
 
-  "gui.sophisticatedbackpacks.upgrades.buttons.enable_void": "Allow Void Upgrade to Destroy Items",
-  "gui.sophisticatedbackpacks.upgrades.buttons.do_not_enable_void": "Void upgrades are not allowed to destroy items.",
+  "gui.sophisticatedbackpacks.upgrades.buttons.enable_void": "Allow Void Upgrade to Destroy Items Entering Network Storage",
+  "gui.sophisticatedbackpacks.upgrades.buttons.do_not_enable_void": "Do not allow void upgrade to destroy items entering network storage",
 
   "gui.sophisticatedbackpacks.upgrades.buttons.use_backpack": "Store items into backpack",
   "gui.sophisticatedbackpacks.upgrades.buttons.use_rs": "Pull items into RS network",

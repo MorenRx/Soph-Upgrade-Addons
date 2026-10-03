@@ -27,8 +27,6 @@ public record NetworkLocation(
         @Nullable BlockPos pos,
         int netId
 ) {
-    public static final NetworkLocation UNBOUND = new NetworkLocation("", null, false, null, null, -1);
-
     public static NetworkLocation fromUpgrade(ItemStack upgrade) {
         String type = NBTHelper.getString(upgrade, NetworkMagnetUpgrade.Data.KEY_NETWORK_TYPE).orElse(NetworkStorageProvider.Data.BACKPACK);
 

@@ -12,9 +12,9 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.IPickupResponseUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeWrapperBase;
 import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
 import org.jetbrains.annotations.NotNull;
+import top.morenrx.sua.data.NetworkLocation;
 import top.morenrx.sua.helper.SalvagingHelper;
 import top.morenrx.sua.upgrades.compat.network.INetworkStorage;
-import top.morenrx.sua.data.NetworkLocation;
 import top.morenrx.sua.upgrades.salvaging.SalvagingUpgradeWrapper;
 import top.morenrx.sua.util.SUAUtils;
 

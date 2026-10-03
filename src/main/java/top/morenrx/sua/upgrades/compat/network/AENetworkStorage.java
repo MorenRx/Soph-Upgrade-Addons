@@ -42,7 +42,6 @@ public class AENetworkStorage implements INetworkStorage {
         if (blockEntity == null) return toInsert;
 
         IInWorldGridNodeHost host = (blockEntity instanceof IInWorldGridNodeHost h) ? h : blockEntity.getCapability(Capabilities.IN_WORLD_GRID_NODE_HOST).orElse(null);
-        if (host == null) return toInsert;
 
         IGridNode gridNode = host.getGridNode(Direction.UP);
         if (gridNode == null) return toInsert;
@@ -76,7 +75,6 @@ public class AENetworkStorage implements INetworkStorage {
     public NetworkInsertHandler getDepositInsertHandler(BlockEntity blockEntity) {
         if (blockEntity == null) return null;
         IInWorldGridNodeHost host = (blockEntity instanceof IInWorldGridNodeHost h) ? h : blockEntity.getCapability(Capabilities.IN_WORLD_GRID_NODE_HOST).orElse(null);
-        if (host == null) return null;
 
         IGridNode gridNode = findGridNode(host);
         if (gridNode == null) return null;
@@ -100,7 +98,6 @@ public class AENetworkStorage implements INetworkStorage {
     public NetworkExtractHandler getRestockExtractHandler(BlockEntity blockEntity) {
         if (blockEntity == null) return null;
         IInWorldGridNodeHost host = (blockEntity instanceof IInWorldGridNodeHost h) ? h : blockEntity.getCapability(Capabilities.IN_WORLD_GRID_NODE_HOST).orElse(null);
-        if (host == null) return null;
 
         IGridNode gridNode = findGridNode(host);
         if (gridNode == null) return null;

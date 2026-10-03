@@ -15,11 +15,7 @@ import net.p3pp3rf1y.sophisticatedcore.inventory.ItemStackKey;
 import org.jetbrains.annotations.Nullable;
 import top.morenrx.sua.data.NetworkLocation;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class RSNetworkStorage implements INetworkStorage {

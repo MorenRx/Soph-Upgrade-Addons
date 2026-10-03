@@ -97,15 +97,6 @@ public class EnderChestUpgrade extends UpgradeItemBase<EnderChestUpgrade.Wrapper
     }
 
     private static void initEnderChestCompat() {
-        // 改用反射适配多版本, 暂时放弃该方案
-        //ArtifactVersion currentVersion = new DefaultArtifactVersion(FMLLoader.getLoadingModList().getModFileById(SophisticatedBackpacks.MOD_ID).versionString());
-        //ArtifactVersion targetVersion = new DefaultArtifactVersion("3.24.14");
-        //if (currentVersion.compareTo(targetVersion) >= 0) {
-        //    PlayerInventoryProvider.get().addPlayerInventoryHandler("ender_chest", (player) -> PlayerInventoryHandler.SINGLE_IDENTIFIER, (player, identifier) -> player.getEnderChestInventory().getContainerSize(),
-        //            EnderChestUpgrade::enderChestSlotStackGetter, false, false, false, false);
-        //    return;
-        //}
-
         try {
             Method method = PlayerInventoryProvider.class.getMethod("addPlayerInventoryHandler", String.class, Function.class,
                     PlayerInventoryHandler.SlotCountGetter.class,
@@ -119,7 +110,7 @@ public class EnderChestUpgrade extends UpgradeItemBase<EnderChestUpgrade.Wrapper
                     (PlayerInventoryHandler.SlotStackGetter) EnderChestUpgrade::enderChestSlotStackGetter,
                     false, false, false, false
             );
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
     }

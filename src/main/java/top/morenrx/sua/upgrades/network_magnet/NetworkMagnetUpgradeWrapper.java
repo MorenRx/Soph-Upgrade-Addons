@@ -22,14 +22,16 @@ import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.init.ModFluids;
 import net.p3pp3rf1y.sophisticatedcore.settings.memory.MemorySettingsCategory;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.*;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.magnet.IMagnetPreventionChecker;
 import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.XpHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.morenrx.sua.SophUpgradeAddons;
-import top.morenrx.sua.helper.SalvagingHelper;
-import top.morenrx.sua.upgrades.compat.network.INetworkStorage;
 import top.morenrx.sua.data.NetworkLocation;
+import top.morenrx.sua.helper.SalvagingHelper;
+import top.morenrx.sua.mixin.common.sophisticatedcore.MagnetUpgradeWrapperAccessor;
+import top.morenrx.sua.upgrades.compat.network.INetworkStorage;
 import top.morenrx.sua.upgrades.salvaging.SalvagingUpgradeWrapper;
 import top.morenrx.sua.util.SUAUtils;
 
@@ -214,7 +216,20 @@ public class NetworkMagnetUpgradeWrapper extends UpgradeWrapperBase<NetworkMagne
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.1F, (world.random.nextFloat() - world.random.nextFloat()) * 0.35F + 0.9F);
     }
 
+    private boolean isBlockedBySomething(Entity entity) {
+        for (IMagnetPreventionChecker checker : MagnetUpgradeWrapperAccessor.sua$getMagnetCheckers()) {
+            if (checker.isBlocked(entity)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private boolean canNotPickup(Entity pickedUpEntity, @Nullable Entity entity) {
+        if (isBlockedBySomething(pickedUpEntity)) {
+            return true;
+        }
+
         CompoundTag data = pickedUpEntity.getPersistentData();
         return entity instanceof Player ? data.contains(NetworkMagnetUpgrade.Data.KEY_PREVENT_REMOTE_MOVEMENT) : data.contains(NetworkMagnetUpgrade.Data.KEY_PREVENT_REMOTE_MOVEMENT) && !data.contains(NetworkMagnetUpgrade.Data.KEY_ALLOW_MACHINE_MOVEMENT);
     }

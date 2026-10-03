@@ -1,15 +1,13 @@
 package top.morenrx.sua.helper.client;
 
-import net.minecraft.network.chat.Component;
-import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.SBPButtonDefinitions;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.SBPTranslationHelper;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.controls.ButtonDefinition;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.controls.ButtonDefinitions;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.controls.ToggleButton;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.utils.Dimension;
+import net.p3pp3rf1y.sophisticatedcore.client.gui.utils.GuiHelper;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.utils.Position;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.utils.UV;
-import net.p3pp3rf1y.sophisticatedcore.upgrades.ContentsFilterType;
 import top.morenrx.sua.init.SUACompat;
 import top.morenrx.sua.upgrades.compat.network.NetworkStorageProvider;
 import top.morenrx.sua.util.SUAUtils;
@@ -25,17 +23,10 @@ public class NetworkStorageClientHelper {
         if (BUTTON_STATES == null) {
             BUTTON_STATES = new LinkedHashMap<>();
 
-            ToggleButton.StateData backpackState = SBPButtonDefinitions.BACKPACK_CONTENTS_FILTER_TYPE
-                    .getStateData().get(ContentsFilterType.STORAGE);
-            if (backpackState != null) {
-                BUTTON_STATES.put(
-                        NetworkStorageProvider.Data.BACKPACK,
-                        new ToggleButton.StateData(
-                                backpackState.getTexture(),
-                                Component.translatable("gui.sophisticatedbackpacks.upgrades.buttons.use_backpack")
-                        )
-                );
-            }
+            BUTTON_STATES.put(
+                    NetworkStorageProvider.Data.BACKPACK,
+                    GuiHelper.getButtonStateData(new UV(80, 16), SBPTranslationHelper.INSTANCE.translUpgradeButton("use_backpack"), Dimension.SQUARE_16, new Position(1, 1))
+            );
 
             if (SUACompat.REFINED_STORAGE.getAsBoolean()) {
                 BUTTON_STATES.put(

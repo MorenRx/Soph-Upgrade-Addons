@@ -6,9 +6,10 @@
   "plugin": "top.morenrx.sua.mixin.SUAMixinPlugin",
   "refmap": "soph_upgrade_addons.refmap.json",
   "mixins": [
-    "common.tomstorage.MixinStorageTerminalBlockEntity",
     "common.sophisticatedbackpacks.MixinInventoryInteractionHelper",
-    "common.sophisticatedbackpacks.MixinStorageUpgradeSlot"
+    "common.sophisticatedbackpacks.MixinStorageUpgradeSlot",
+    "common.sophisticatedcore.MagnetUpgradeWrapperAccessor",
+    "common.tomstorage.MixinStorageTerminalBlockEntity"
   ],
   "client": [
     "client.sophisticatedbackpacks.MixinKeybindHandler"
