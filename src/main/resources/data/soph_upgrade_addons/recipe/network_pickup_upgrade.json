@@ -1,16 +1,12 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "soph_upgrade_addons:item_enabled",
       "itemRegistryName": "soph_upgrade_addons:network_pickup_upgrade"
     }
   ],
-  "pattern": [
-    " A ",
-    "CBC",
-    " C "
-  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "A": {
       "item": "minecraft:echo_shard"
@@ -19,11 +15,16 @@
       "item": "sophisticatedbackpacks:advanced_pickup_upgrade"
     },
     "C": {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     }
   },
+  "pattern": [
+    " A ",
+    "CBC",
+    " C "
+  ],
   "result": {
-    "item": "soph_upgrade_addons:network_pickup_upgrade",
-    "count": 1
+    "count": 1,
+    "id": "soph_upgrade_addons:network_pickup_upgrade"
   }
 }

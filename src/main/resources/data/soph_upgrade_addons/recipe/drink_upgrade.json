@@ -1,16 +1,12 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "soph_upgrade_addons:item_enabled",
       "itemRegistryName": "soph_upgrade_addons:drink_upgrade"
     }
   ],
-  "pattern": [
-    "BBB",
-    "BAB",
-    "BBB"
-  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "A": {
       "item": "sophisticatedbackpacks:upgrade_base"
@@ -19,8 +15,13 @@
       "item": "minecraft:water_bucket"
     }
   },
+  "pattern": [
+    "BBB",
+    "BAB",
+    "BBB"
+  ],
   "result": {
-    "item": "soph_upgrade_addons:drink_upgrade",
-    "count": 1
+    "count": 1,
+    "id": "soph_upgrade_addons:drink_upgrade"
   }
 }

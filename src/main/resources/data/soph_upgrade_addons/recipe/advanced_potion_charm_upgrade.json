@@ -1,0 +1,40 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "apotheosis"
+    },
+    {
+      "type": "soph_upgrade_addons:item_enabled",
+      "itemRegistryName": "soph_upgrade_addons:advanced_potion_charm_upgrade"
+    }
+  ],
+  "type": "sophisticatedcore:upgrade_next_tier",
+  "category": "misc",
+  "key": {
+    "D": {
+      "tag": "c:gems/diamond"
+    },
+    "G": {
+      "tag": "c:ingots/gold"
+    },
+    "N": {
+      "tag": "c:nether_stars"
+    },
+    "R": {
+      "tag": "c:dusts/redstone"
+    },
+    "V": {
+      "item": "soph_upgrade_addons:potion_charm_upgrade"
+    }
+  },
+  "pattern": [
+    " N ",
+    "GVG",
+    "RDR"
+  ],
+  "result": {
+    "count": 1,
+    "id": "soph_upgrade_addons:advanced_potion_charm_upgrade"
+  }
+}

@@ -1,16 +1,16 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "conditions": [
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "apotheosis"
+    },
     {
       "type": "soph_upgrade_addons:item_enabled",
       "itemRegistryName": "soph_upgrade_addons:salvaging_upgrade"
     }
   ],
-  "pattern": [
-    "CCC",
-    "BAB",
-    "CCC"
-  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "A": {
       "item": "sophisticatedbackpacks:upgrade_base"
@@ -22,8 +22,13 @@
       "item": "apotheosis:gem_fused_slate"
     }
   },
+  "pattern": [
+    "CCC",
+    "BAB",
+    "CCC"
+  ],
   "result": {
-    "item": "soph_upgrade_addons:salvaging_upgrade",
-    "count": 1
+    "count": 1,
+    "id": "soph_upgrade_addons:salvaging_upgrade"
   }
 }

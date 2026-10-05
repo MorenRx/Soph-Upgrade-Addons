@@ -1,20 +1,21 @@
 {
-  "type": "sophisticatedcore:upgrade_next_tier",
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "soph_upgrade_addons:item_enabled",
       "itemRegistryName": "soph_upgrade_addons:advanced_drink_upgrade"
     }
   ],
+  "type": "sophisticatedcore:upgrade_next_tier",
+  "category": "misc",
   "key": {
     "D": {
-      "tag": "forge:gems/diamond"
+      "tag": "c:gems/diamond"
     },
     "G": {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     "R": {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:dusts/redstone"
     },
     "V": {
       "item": "soph_upgrade_addons:drink_upgrade"
@@ -26,6 +27,7 @@
     "RRR"
   ],
   "result": {
-    "item": "soph_upgrade_addons:advanced_drink_upgrade"
+    "count": 1,
+    "id": "soph_upgrade_addons:advanced_drink_upgrade"
   }
 }
