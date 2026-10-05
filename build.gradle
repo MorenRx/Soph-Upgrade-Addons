@@ -58,7 +58,7 @@ dependencies {
 repositories {
     maven {
         name = "LocalRepo"
-        url = layout.projectDirectory.dir(".local=repo")
+        url = layout.projectDirectory.dir(".local_repo")
     }
     maven {
         name = "ModMaven"
